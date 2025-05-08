@@ -5,6 +5,14 @@ body {
     background-color: #ffffff;
     color: #202042;
   }
+
+  @media (min-width: 900px) { /* Ejemplo para pantallas extra grandes */
+    body {
+        background-color: #7a0c0c; /* Cambia el fondo en pantallas grandes */
+        /* Podrías añadir padding aquí si no quieres que el contenido toque los bordes */
+        /* padding: 0 20px; */
+    }
+}
   
   header {
     background-color: #A8C3A0;
@@ -255,3 +263,39 @@ body {
     object-fit: contain;
   }
   
+
+  /* Index.css */
+.card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 2px 2px 12px #aaa;
+  max-width: 400px; /* Ejemplo: limita el ancho de la tarjeta */
+  margin: 12% auto; /* Ejemplo: céntrala en la página */
+  padding: 0; /* Elimina el padding por defecto si el card-body lo manejará */
+}
+
+.card-body {
+  
+   padding: 20px; /* Espacio interno del cuerpo de la tarjeta */
+}
+
+.card-body h3 {
+   text-align: center;
+   margin-bottom: 20px;
+   color: #333;
+}
+
+/* Estilos básicos para inputs y botón si no usas Bootstrap o para personalizarlos */
+.card-body input {
+   display: block; /* Cada input en una nueva línea */
+   width: calc(100% - 22px); /* Ancho completo menos padding/border */
+   margin-bottom: 15px;
+   padding: 10px;
+   border: 1px solid #ddd;
+   border-radius: 4px;
+}
+
+.card-body a{
+  margin-right: 20px;
+  
+}

@@ -1,7 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import VisitSchedule from './pages/VisitSchedule';
-import Index from './pages/Personal/Index';
+import Index from './pages/Employee/Index';
+import AddEmployee from './pages/Employee/AddEmployee';
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/visita" element={<VisitSchedule />} />
         <Route path='/personal' element={<Index/>} />
+        <Route path='/agregar' element={< AddEmployee/>}/>
       </Routes>
     </Router>
   );

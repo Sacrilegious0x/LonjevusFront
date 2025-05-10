@@ -1,9 +1,10 @@
 import { useState, type ChangeEvent, type FormEvent } from'react';
-import Footer from '../../components/Footer';
+import { useNavigate } from 'react-router-dom';
+
 
 
 const Index = () =>{
-
+const navigate = useNavigate();
 const [formData, setFormData] = useState({
     userEmail: "",
     password: ""
@@ -19,8 +20,10 @@ const [formData, setFormData] = useState({
 
    
     const submit = (e: FormEvent<HTMLFormElement>)=>{
+        e.preventDefault();
         if (formData.password === "pass"){
-            console.log("Puede ingresar");
+            console.log("Puede ingresar" );
+            navigate("/mostrar");
         }else{
             console.log("No puede ingresar");
         }
@@ -30,14 +33,14 @@ const [formData, setFormData] = useState({
     return(
         <>
             
-                <div className = 'card'>
+                <div className = 'cardLogin'>
                     <div className='row'>
-                        <div className='card-body text-center'>
+                        <div className='cardLogin-body text-center'>
                             <h3>Inicio de Sesion</h3>
                             <form onSubmit={submit}>
                                 <input type='text' name='userEmail' onChange={handleForm} placeholder='Ingrese su correo' value={formData.userEmail}/>
                                 <input type='password' name='password' onChange={handleForm} placeholder='Ingrese su contraseña ' value={formData.password}/> 
-                                <button className='btn btn-success btn-fload-end' type='submit'> <i className="bi bi-box-arrow-in-right"> </i>Iniciar sesion</button>
+                                <button className='btn btn-success btn-fload-end' type='submit'> <i className="bi bi-box-arrow-in-right"/>Iniciar sesion</button>
                             </form>
                             <div className='card-footer'>
                                 <a href='#'>Olvide mi contraseña</a>

@@ -1,4 +1,4 @@
-
+import { Link } from 'react-router-dom';
 const Footer = () => {
   return (
     <footer className="footer">
@@ -45,7 +45,7 @@ const Footer = () => {
 
         {/* Parte inferior */}
         <div className="footer-bottom">
-          <button className="btn-footer">Uso Interno</button>
+          <Link className="btn-footer" to="/login">Uso Interno</Link>
           <p>&copy; 2025 Hogar de Ancianos La Colonia</p>
         </div>
       </div>

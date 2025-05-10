@@ -13,7 +13,7 @@ function App() {
          <Route path="/inventario" element={<InventoryPage />} />
         <Route path="/visita" element={<VisitSchedule />} />
         <Route path='/login' element={<Index/>} />
-        <Route path='/agregar' element={< AddEmployee/>}/>
+        <Route path='/agregarEmpleado' element={< AddEmployee/>}/>
       </Routes>
     </Router>
   );

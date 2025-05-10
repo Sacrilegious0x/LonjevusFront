@@ -5,6 +5,7 @@ body {
     background-color: #ffffff;
     color: #202042;
   }
+
   
   header {
     background-color: #A8C3A0;
@@ -44,7 +45,7 @@ body {
   }
   
   .hero {
-    background: url("../img/portada.png") no-repeat center center / cover;
+    background: url("../img/portada.jpg") no-repeat center center / cover;
     height: 500px;
     display: flex;
     align-items: center;
@@ -214,7 +215,7 @@ body {
     cursor: pointer;
     transition: background-color 0.3s;
   }
-  
+
   .btn-footer:hover {
     background-color: #e6e600;
   }
@@ -254,6 +255,7 @@ body {
     height: 150px;
     object-fit: contain;
   }
+<<<<<<< HEAD
 
   .table thead td{
     background-color: inherit !important;
@@ -279,3 +281,46 @@ body {
 .tableTittled{
   color: #422C20
 }
+=======
+  
+
+  /* Index.css */
+.cardLogin {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 2px 2px 12px #aaa;
+  max-width: 400px; /* Ejemplo: limita el ancho de la tarjeta */
+  margin: 12% auto; /* Ejemplo: céntrala en la página */
+  padding: 0; /* Elimina el padding por defecto si el card-body lo manejará */
+}
+
+.cardLogin-body {
+  
+   padding: 20px; /* Espacio interno del cuerpo de la tarjeta */
+}
+
+.cardLogin-body h3 {
+   text-align: center;
+   margin-bottom: 20px;
+   color: #333;
+}
+
+/* Estilos básicos para inputs y botón si no usas Bootstrap o para personalizarlos */
+.cardLogin-body input {
+   display: block; /* Cada input en una nueva línea */
+   width: calc(100% - 22px); /* Ancho completo menos padding/border */
+   margin-bottom: 15px;
+   padding: 10px;
+   border: 1px solid #ddd;
+   border-radius: 4px;
+}
+
+.card-footer{
+  margin-top: 4%;
+}
+
+.card-body label{
+  margin-right: 5px;
+}
+
+>>>>>>> developer

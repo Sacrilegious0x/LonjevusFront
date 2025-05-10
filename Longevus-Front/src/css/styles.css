@@ -44,7 +44,7 @@ body {
   }
   
   .hero {
-    background: url("../img/portada.png") no-repeat center center / cover;
+    background: url("../img/portada.jpg") no-repeat center center / cover;
     height: 500px;
     display: flex;
     align-items: center;

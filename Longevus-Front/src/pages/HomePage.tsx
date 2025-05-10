@@ -36,7 +36,7 @@ const HomePage = () => {
         <div className="hero-content">
           <h1>Hogar de Ancianos La Colonia</h1>
           <p>“Porque en cada vida hay un legado que cuidar.”</p>
-          <Link className="btn-visita" to="/visita">Agendar una visita</Link>
+          <Link className="btn-visita" to="/residentes">Ver residentes</Link>
         </div>
       </section>
       <Carousel />

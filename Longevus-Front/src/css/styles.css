@@ -254,4 +254,28 @@ body {
     height: 150px;
     object-fit: contain;
   }
+
+  .table thead td{
+    background-color: inherit !important;
+    color: inherit !important;
+  }
+
+  .table thead th{
+    background-color: #202042 !important;
+    color: white !important;
+  }
   
+  .table tbody td {
+    background-color: inherit !important;
+    color: inherit !important;
+  }
+
+  .table tbody tr {
+    background-color: #422C20 !important;
+    color: white !important;
+  }
+  
+
+.tableTittled{
+  color: #422C20
+}

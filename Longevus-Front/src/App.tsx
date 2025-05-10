@@ -10,7 +10,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/visita" element={<VisitSchedule />} />
-        <Route path='/personal' element={<Index/>} />
+        <Route path='/login' element={<Index/>} />
         <Route path='/agregar' element={< AddEmployee/>}/>
       </Routes>
     </Router>

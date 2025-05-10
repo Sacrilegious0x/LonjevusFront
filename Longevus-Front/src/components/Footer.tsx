@@ -11,7 +11,7 @@ const Footer = () => {
             <p>La Colonia, Guápiles, Limón, Costa Rica</p>
             <div className="mapa-footer">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3926.5049222354664!2d-83.7850991!3d10.220799500000007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8fa0b86ae0c16a21%3A0x5cf7698e45baf43f!2s66C7%2B8X7%20Hogar%20de%20Ancianos%20de%20Gu%C3%A1piles%2C%20Lim%C3%B3n%2C%20Gu%C3%A1piles!5e0!3m2!1ses-419!2scr!4v1746554952304!5m2!1ses-419!2scr"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7852.52194499198!2d-83.80404383209641!3d10.240523683220607!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8fa0b9445a658c99%3A0xe8e01953b8d7cde3!2sHogar%20NOA!5e0!3m2!1ses-419!2scr!4v1746819331742!5m2!1ses-419!2scr"
                 width="100%"
                 height="200"
                 style={{ border: 0 }}

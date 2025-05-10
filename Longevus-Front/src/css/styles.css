@@ -2,7 +2,7 @@
 body {
     margin: 0;
     font-family: sans-serif;
-    background-color: #fae7e7;
+    background-color: #A8C3A0;
     color: #202042;
   }
   
@@ -254,4 +254,8 @@ body {
     height: 150px;
     object-fit: contain;
   }
+
+.form-container {
+  background-color: #A8C3A0; /* o el mismo color que el body */
+}
   

@@ -1,8 +1,7 @@
+import { useState } from "react";
 
-import React, { useState } from 'react';
 
-
-export default function SuppliersAdd() {
+export default function SuppliersEdit() {
 
     const [formData, setFormData] = useState({
     name: '',
@@ -19,7 +18,7 @@ export default function SuppliersAdd() {
             <div className='container mt-5 form-container'>
                 <div className='row'>
                     <div className='col-12'>
-                        <center><h1 className="mt-2">Agregar Proveedores</h1></center>
+                        <center><h1>Editar Proveedores</h1></center>
                         <form>
                             <div className='mb-3'>
                                 <label className='form-label'>Nombre: </label>
@@ -49,7 +48,6 @@ export default function SuppliersAdd() {
                                 <input type='submit' value={"Guardar"} className='btn btn-primary' required/>
                                 <a href="/proveedores" className="btn btn-light m-1">Volver</a>
                             </div>
-
                         </form>
 
                     </div>

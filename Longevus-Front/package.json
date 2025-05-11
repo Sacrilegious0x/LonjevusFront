@@ -10,17 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-<<<<<<< HEAD
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-=======
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.6",
-    "bootstrap-icons": "^1.12.1",
+    "bootstrap-icons": "^1.13.1",
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^19.1.0",
->>>>>>> developer
     "react-router-dom": "^7.5.3"
   },
   "devDependencies": {

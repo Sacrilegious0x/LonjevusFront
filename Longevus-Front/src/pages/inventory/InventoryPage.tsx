@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import StandardTable from '../../components/StandardTable';
 import type { Column } from '../../components/StandardTable';
 import CategoryFilter from '../../components/CategoryFilter';
 import DateFilter from '../../components/DateFilter';
 import Footer from '../../components/Footer';
+import Header from '../../components/Header';
 import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 interface InventoryItem {
   id: number;
@@ -19,36 +22,6 @@ interface InventoryItem {
 
 const inventoryData: InventoryItem[] = [
   {
-    id: 1,
-    name: "Vitamina C",
-    quantity: 100,
-    expirationDate: "2025-12-31",
-    supplierName: "Proveedor Salud", 
-    purchaseId: "COMP-001",
-    photoUrl: "https://picsum.photos/60/60",
-    category: "Salud",
-  },
-   {
-    id: 1,
-    name: "Vitamina C",
-    quantity: 100,
-    expirationDate: "2025-12-31",
-    supplierName: "Proveedor Salud", 
-    purchaseId: "COMP-001",
-    photoUrl: "https://picsum.photos/60/60",
-    category: "Limpieza",
-  },
-   {
-    id: 1,
-    name: "Vitamina C",
-    quantity: 100,
-    expirationDate: "2025-12-31",
-    supplierName: "Proveedor Salud", 
-    purchaseId: "COMP-001",
-    photoUrl: "https://picsum.photos/60/60",
-     category: "Alimentos",
-  },
-   {
     id: 1,
     name: "Vitamina C",
     quantity: 100,
@@ -88,8 +61,10 @@ const InventoryPage = () => {
     },
   ];
 
+  const navigate = useNavigate();
+  
   const handleEdit = (item: InventoryItem) => {
-    console.log("Editar", item);
+    navigate(`/inventario/editar/${item.id}`);
   };
 
   const handleDelete = (id: number) => {
@@ -110,6 +85,7 @@ const InventoryPage = () => {
 
   return (
     <>
+    <Header/>
       <div className="container mt-4">
         <h1>Inventario</h1>
         <div className="row mb-3">

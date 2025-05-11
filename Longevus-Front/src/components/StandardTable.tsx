@@ -49,7 +49,7 @@ function StandardTable<T extends { id: number }>({
                       className="btn btn-sm btn-primary"
                       onClick={() => onEdit(item)}
                     >
-                      <i className="bi bi-pencil"></i> Editar
+                      <i className="bi bi-pencil"></i>
                     </button>
                   )}
                   {onDelete && (
@@ -57,7 +57,7 @@ function StandardTable<T extends { id: number }>({
                       className="btn btn-sm btn-danger"
                       onClick={() => onDelete(item.id)}
                     >
-                      <i className="bi bi-trash"></i> Eliminar
+                      <i className="bi bi-trash"></i>
                     </button>
                   )}
                 </div>

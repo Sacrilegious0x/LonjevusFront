@@ -1,22 +1,22 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import VisitSchedule from './pages/VisitSchedule';
-import SuppliersList from './pages/SuppliersList';
-import SuppliersAdd from './pages/SuppliersAdd';
-import SuppliersEdit from './pages/SuppliertsUpdate';
-import Role_Permissions from './pages/Role_permission';
+import HomePage from './pages/home/HomePage';
+import InventoryPage from "./pages/inventory/InventoryPage";
+import VisitSchedule from './pages/home/VisitSchedule';
+import Index from './pages/Employee/Index';
+import AddEmployee from './pages/Employee/AddEmployee';
+import ShowEmployee from './pages/Employee/ShowEmployee';
 
 function App() {
   return (
     
     <Router>
       <Routes>
-        <Route path="/" element={<HomePage/>} />
+        <Route path="/" element={<HomePage />} />
+         <Route path="/inventario" element={<InventoryPage />} />
         <Route path="/visita" element={<VisitSchedule />} />
-        <Route path="/proveedores" element={<SuppliersList />} />
-        <Route path="/proveedores/guardar" element={<SuppliersAdd/>} />
-        <Route path="/roles_permisos" element={<Role_Permissions />} />
-        <Route path="/proveedores/editar" element={<SuppliersEdit/>} />
+        <Route path='/login' element={<Index/>} />
+        <Route path='/agregar' element={< AddEmployee/>}/>
+        <Route path='/mostrar' element={<ShowEmployee/>}/>
       </Routes>
     </Router>
   );

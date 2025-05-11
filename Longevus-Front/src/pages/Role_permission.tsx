@@ -67,7 +67,7 @@ export default function Role_Permissions() {
                   }
                 </td>
                 <td className="text-center">
-                  <button className="btn btn-sm btn-outline-secondary me-1">
+                  <button className="btn btn-sm btn-outline-success me-1">
                     <i className="bi bi-eye"></i>
                   </button>
                   <button className="btn btn-sm btn-outline-primary me-1">

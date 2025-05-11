@@ -1,4 +1,5 @@
 
+import { href } from "react-router-dom";
 import Header from "../components/Header";
 
 export default function SuppliersCrudPage() {
@@ -9,9 +10,9 @@ export default function SuppliersCrudPage() {
         <div className="text-success border border-success">
         <h2 className="text-center p-1">Proveedores</h2>
         </div>
-      <button className="btn btn-success mt-2 mb-2">
+      <a href="proveedores/guardar"  className="btn btn-success mt-2 mb-2">
           <i className="bi bi-file-earmark-plus"></i>
-        </button>
+        </a>
         <table className="table table-striped table-bordered table-hover table-success">
           <thead>
             <tr className="text-center">
@@ -35,7 +36,7 @@ export default function SuppliersCrudPage() {
               <td>1</td>
               <td>1</td>
               <td>
-                <a href="#" className="btn btn-warning ">Editar</a>
+                <a href="proveedores/editar" className="btn btn-warning ">Editar</a>
                 <a href="#" className="btn btn-danger ">Eliminar</a>
               </td>
             </tr>

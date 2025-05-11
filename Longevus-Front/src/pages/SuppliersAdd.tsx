@@ -46,7 +46,7 @@ export default function SuppliersAdd() {
                                 <input type='hidden' name='isActive'  value={formData.isActive} className='form-control' required/>
                             </div>
                             <div className='mb-3'>
-                                <input type='submit' value={"Guardar"} className='btn btn-primary' required/>
+                                <input type='submit' value={"Guardar"} className='btn btn-success' required/>
                                 <a href="/proveedores" className="btn btn-light m-1">Volver</a>
                             </div>
 

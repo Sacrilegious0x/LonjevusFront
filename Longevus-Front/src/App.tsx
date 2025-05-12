@@ -8,6 +8,7 @@ import ShowResidents from './pages/Residents/ShowResidents';
 import ShowEmployee from './pages/Employee/ShowEmployees';
 import EditEmployee from './pages/Employee/EditEmployee';
 import ViewEmployee from './pages/Employee/VIewEmployee';
+import AddResident from './pages/Residents/AddResident';
 
 function App() {
   return (
@@ -19,9 +20,10 @@ function App() {
         <Route path='/login' element={<Index/>} />
         <Route path='/agregar' element={< AddEmployee/>}/>
         <Route path='/mostrar' element={<ShowEmployee/>}/>
-        <Route path='/mostrarResidentes' element={<ShowResidents/>}/>
         <Route path='/editar/:id' element={<EditEmployee/>}/>
         <Route path='/perfil/:id' element={< ViewEmployee/>}/>
+        <Route path='/mostrarResidentes' element={<ShowResidents/>}/>
+        <Route path='/AgregarResidente' element={<AddResident/>}/>
       </Routes>
     </BrowserRouter>
   );

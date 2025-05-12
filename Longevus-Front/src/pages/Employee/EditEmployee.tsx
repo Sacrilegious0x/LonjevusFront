@@ -12,7 +12,6 @@ const fetchEmployeeById = async (id: string): Promise<EmployeeInitialData | null
     // const response = await fetch(`/api/employees/${id}`);
     // const data = await response.json();
     // return data as EmployeeInitialData;
-
     // Simulación de datos
     const dummyData: EmployeeInitialData = {
         id: id,

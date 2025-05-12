@@ -9,12 +9,13 @@ interface IPerson{
     name: string,
     identification: string,
     email: string,
+    salary: string
 }
 const userData: IPerson[] = [
-  { id: 1, name: 'Alice Smith',identification: '3423242' ,email: 'alice@example.com'},
-  { id: 4, name: 'Karla ', identification: 't65fg5gs',email: 'bob@example.com'  },
-  { id: 7, name: 'Harry', identification: 't65fg5gs',email: 'bob@example.com'  },
-  { id: 10, name: 'Krystal', identification: 't65fg5gs',email: 'bob@example.com'  },
+  { id: 1, name: 'Alice Smith',identification: '3423242' ,email: 'alice@example.com', salary: "50000"},
+  { id: 4, name: 'Karla ', identification: 't65fg5gs',email: 'bob@example.com',salary: "50000"  },
+  { id: 7, name: 'Harry', identification: 't65fg5gs',email: 'bob@example.com', salary: "50000" },
+  { id: 10, name: 'Krystal', identification: 't65fg5gs',email: 'bob@example.com' ,salary: "50000" },
   // ... más usuarios
 ];
 const ShowEmployee = () =>{
@@ -25,10 +26,11 @@ const ShowEmployee = () =>{
     {header: 'Nombre', accessor: 'name'},
     {header: 'Identificacion', accessor: 'identification'},
     {header: 'Correo', accessor: 'email'},
+    {header: 'Salario', accessor: 'salary'},
     {header: 'Acciones', accessor: (person) => person,   
         Cell: (person) =>(
             <>
-            <a className='btn btn-info me-2' onClick={()=>console.log("Mostrar"+person.id)}>
+            <a className='btn btn-info me-2' onClick={()=>navigate(`/perfil/${person.id}`)}>
                 <i className='bi bi-eye'/>
             </a>
             <a className='btn btn-warning me-2' onClick={()=>navigate(`/editar/${person.id}`)}>

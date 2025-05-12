@@ -1,12 +1,13 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const EditInventoryPage = () => {
-  const { id } = useParams();
+  const { id } = useParams(); //Obtiene el id del producto
+  const navigate = useNavigate();
 
-  // Simulación: obtener el ítem por ID
-  const item = {
+  //Ejemplo de inserts
+  const initialItem = {
     id: 1,
     name: "Vitamina C",
     quantity: 100,
@@ -17,34 +18,119 @@ const EditInventoryPage = () => {
     category: "Salud"
   };
 
+  const [formData, setFormData] = useState(initialItem); //Estado del formulario, para poder detectar cambios y asi dar el warning
+  const [isDirty, setIsDirty] = useState(false); //Este los detecta
+
+  useEffect(() => {
+    setIsDirty(JSON.stringify(formData) !== JSON.stringify(initialItem));
+  }, [formData]);
+
+  //Cambio en los campos del formulario
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  //Enviar el formulario
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Datos actualizados:", formData);
+    setIsDirty(false);
+    //Los voy a enviar al back
+  };
+ 
+  //Regresar a Inventario
+  const handleBack = () => {
+    if (isDirty) {
+      const confirmLeave = window.confirm("Tienes cambios sin guardar. ¿Deseas salir sin guardar?");
+      if (!confirmLeave) return;
+    }
+    navigate('/inventario');
+  };
+
+  //De aquí comienza la interfaz
   return (
     <div className="container mt-4">
       <h2>Editar Inventario - ID: {id}</h2>
-      <form>
+
+      {/* Botón Volver */}
+      <div className="mb-3">
+        <button onClick={handleBack} className="btn btn-secondary">
+          ← Volver
+        </button>
+      </div>
+
+      {/* Foto */}
+      <div className="mb-4 text-center">
+        <img
+          src={formData.photoUrl}
+          alt={formData.name}
+          className="img-thumbnail"
+          width="120"
+          height="120"
+          style={{ objectFit: 'cover' }}
+        />
+      </div>
+
+      <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label className="form-label">Producto</label>
-          <input type="text" className="form-control" value={item.name} />
+          <input
+            type="text"
+            className="form-control"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+          />
         </div>
+
         <div className="mb-3">
           <label className="form-label">Cantidad</label>
-          <input type="number" className="form-control" value={item.quantity} />
+          <input
+            type="number"
+            className="form-control"
+            name="quantity"
+            value={formData.quantity}
+            onChange={handleChange}
+          />
         </div>
+
         <div className="mb-3">
           <label className="form-label">Fecha de Vencimiento</label>
-          <input type="date" className="form-control" value={item.expirationDate} />
+          <input
+            type="date"
+            className="form-control"
+            name="expirationDate"
+            value={formData.expirationDate}
+            onChange={handleChange}
+          />
         </div>
+
         <div className="mb-3">
           <label className="form-label">Proveedor</label>
-          <input type="text" className="form-control" value={item.supplierName} />
+          <input
+            type="text"
+            className="form-control"
+            name="supplierName"
+            value={formData.supplierName}
+            onChange={handleChange}
+          />
         </div>
+
         <div className="mb-3">
           <label className="form-label">Categoría</label>
-          <select className="form-select" value={item.category}>
+          <select
+            className="form-select"
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+          >
             <option value="Alimentos">Alimentos</option>
             <option value="Salud">Salud</option>
             <option value="Limpieza">Limpieza</option>
           </select>
         </div>
+
         <button type="submit" className="btn btn-primary">Guardar Cambios</button>
       </form>
     </div>

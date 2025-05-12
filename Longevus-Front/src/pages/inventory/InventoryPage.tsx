@@ -68,8 +68,10 @@ const InventoryPage = () => {
   };
 
   const handleDelete = (id: number) => {
-    console.log("Eliminar ID", id);
+    console.log("Eliminar", id);
   };
+
+  
 
   const categoryOptions = Array.from(
     new Set(inventoryData.map((item) => item.category).filter((cat) => cat))

@@ -8,8 +8,12 @@ import ShowEmployee from './pages/Employee/ShowEmployees';
 import EditEmployee from './pages/Employee/EditEmployee';
 import ViewEmployee from './pages/Employee/VIewEmployee';
 import ShowResidents from './pages/Residents/ShowResidents';
-import AgregarResidente from './pages/Residents/AddResident'
-import PurchasePage from './pages/purchase/PurchasePage';
+import SuppliersList from './pages/suppliers/SuppliersList';
+import SuppliersAdd from './pages/suppliers/SuppliersAdd';
+import Role_Permissions from './pages/suppliers/Role_permission';
+import SuppliersEdit from './pages/suppliers/SuppliertsUpdate';
+
+
 function App() {
   return (
     <BrowserRouter>  
@@ -23,8 +27,18 @@ function App() {
         <Route path='/editar/:id' element={<EditEmployee/>}/>
         <Route path='/perfil/:id' element={< ViewEmployee/>}/>
         <Route path='/mostrarResidentes' element={<ShowResidents/>}/>
-        <Route path='/agregarresidente' element={<AgregarResidente/>}/>
-         <Route path='/compras' element={<PurchasePage/>}/>
+        <Route path='/AgregarResidente' element={<AddResident/>}/>
+        <Route path="/compras" element={<PurchasePage />} />
+        <Route path="/compras/editar/:id" element={<EditPurchase />} />    
+        <Route path="/compras/agregar" element={<AddPurchase/>} /> 
+        <Route path="/productos" element={<ProductPage/>} />
+        <Route path="/productos/editar/:id" element={<EditProduct />} />
+        <Route path="/productos/agregar" element={<AddProduct />} />
+        <Route path="/proveedores" element={<SuppliersList />} />
+        <Route path="/proveedores/guardar" element={<SuppliersAdd/>} />
+        <Route path="/roles_permisos" element={<Role_Permissions />} />
+        <Route path="/proveedores/editar" element={<SuppliersEdit/>} />
+
       </Routes>
     </BrowserRouter>
   );

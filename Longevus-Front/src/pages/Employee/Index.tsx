@@ -32,7 +32,6 @@ const [formData, setFormData] = useState({
     
     return(
         <>
-            
                 <div className = 'cardLogin'>
                     <div className='row'>
                         <div className='cardLogin-body text-center'>
@@ -45,13 +44,9 @@ const [formData, setFormData] = useState({
                             <div className='card-footer'>
                                 <a href='#'>Olvide mi contraseña</a>
                             </div>
-                            
                         </div> 
                     </div>
-                    
                 </div>
-            
-        
         </>
     )
 }

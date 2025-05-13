@@ -7,11 +7,12 @@ const Header = () => {
     const [menuActive, setMenuActive] = useState<string | null>(null);
 
     return (
-        <header className="header">
+        <header className="navbar navbar-expand-lg">
+            <div className="container-fluid">
             <div className="logo">
                 <img src="/img/logo.jpg" alt="Logo del sitio" />
             </div>
-            <nav>
+            <nav >
                 <ul className="ul-actions">
 
                     <li className="ul-actions-li"
@@ -86,6 +87,7 @@ const Header = () => {
                     
                 </ul>
             </nav>
+            </div>
         </header>
     );
 };

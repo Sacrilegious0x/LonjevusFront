@@ -28,7 +28,7 @@ const RolesList = () =>{
         Cell: (supplier) =>(
             <>
             <a className='btn btn-warning me-2' onClick={()=>console.log("Editar"+supplier.name)}>
-                <i className='bi bi-pencil-square'/>
+                <i className="bi bi-key-fill"></i>
             </a>
             </>
         ) 

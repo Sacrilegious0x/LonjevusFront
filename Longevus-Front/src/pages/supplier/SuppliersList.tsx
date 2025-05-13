@@ -29,17 +29,12 @@ const SuppliersList = () =>{
     {header: 'Nombre', accessor: 'name'},
     {header: 'Teléfono', accessor: 'phoneNumber'},
     {header: 'Correo', accessor: 'email'},
-    {header: 'Direccion', accessor: 'address'},
+    {header: 'Dirección', accessor: 'address'},
     {header: 'Foto', accessor: 'photo'},
     {header: 'Acciones', accessor: (supplier) => supplier,   
         Cell: (supplier) =>(
             <>
-            <a className='btn btn-info me-2' onClick={()=>console.log("Mostrar"+supplier.id)}>
-                <i className='bi bi-eye'/>
-            </a>
-            <a className='btn btn-warning me-2' onClick={()=>console.log("Editar"+supplier.name)}>
-                <i className='bi bi-pencil-square'/>
-            </a>
+            <Link className="btn btn-warning me-2" to='/proveedores/editar'><i className='bi bi-pencil-square'/></Link>
             <a className='btn btn-danger me-2' onClick={()=>console.log("Eliminar"+supplier.id)}>
                 <i className="bi bi-trash"/>
             </a>  

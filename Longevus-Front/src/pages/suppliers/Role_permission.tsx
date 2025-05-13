@@ -1,5 +1,7 @@
 
 import React, { useState } from 'react'
+import Footer from '../../components/Footer'
+import Header from '../../components/Header'
 
 type Role = {
   id: number
@@ -28,65 +30,70 @@ export default function Role_Permissions() {
   const shown = filtered.slice(0, perPage)
 
   return (
+    <>
     <div className="container-fluid p-4">
       {/* Título y botón Nuevo */}
-      <div className="d-flex align-items-center mb-3">
-        <h2 className="flex-grow-1 mb-0">
-          <i className="bi bi-person-badge me-2"></i>
-          Roles Usuario Hogar de Ancianos
-        </h2>
-        <button className="btn btn-success">
-          <i className="bi bi-plus-lg me-1"></i> Nuevo
-        </button>
-      </div>
-
 
 
       {/* Tabla */}
-      <div className="table-responsive border-success">
-        <table className="table table-striped table-hover align-middle table-success ">
-          <thead className="">
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Descripción</th>
-              <th>Status</th>
-              <th className="text-center">Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="table-group-divider">
-            {shown.map(r => (
-              <tr key={r.id}>
-                <td>{r.id}</td>
-                <td>{r.name}</td>
-                <td>{r.description}</td>
-                <td>
-                  {r.isActive
-                    ? <span className="badge bg-success">Activo</span>
-                    : <span className="badge bg-danger">Inactivo</span>
-                  }
-                </td>
-                <td className="text-center">
-                  <button className="btn btn-sm btn-outline-success me-1">
-                    <i className="bi bi-eye"></i>
-                  </button>
-                  <button className="btn btn-sm btn-outline-primary me-1">
-                    <i className="bi bi-pencil"></i>
-                  </button>
-                  <button className="btn btn-sm btn-outline-danger">
-                    <i className="bi bi-trash"></i>
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {shown.length === 0 && (
-              <tr>
-                <td colSpan={5} className="text-center py-4">No hay resultados</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      <div className="container ">
+        <div className='row'>
+          <div className='card'>
+            <div className="d-flex align-items-center mb-3">
+              <h2 className="flex-grow-1 mt-2">
+                <i className="bi bi-person-badge me-2"></i>
+                Roles Usuario Hogar de Ancianos
+              </h2>
+              <button className="btn btn-success">
+                <i className="bi bi-plus-lg me-1"></i> Nuevo
+              </button>
+            </div>
+            <div className="table-responsive border-success">
+              <table className="table table-striped table-hover align-middle table-success ">
+                <thead className="">
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Status</th>
+                    <th className="text-center">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody className="table-group-divider">
+                  {shown.map(r => (
+                    <tr key={r.id}>
+                      <td>{r.name}</td>
+                      <td>{r.description}</td>
+                      <td>
+                        {r.isActive
+                          ? <span className="badge bg-success">Activo</span>
+                          : <span className="badge bg-danger">Inactivo</span>
+                        }
+                      </td>
+                      <td className="text-center">
+                        <button className="btn btn-sm btn-outline-success me-1">
+                          <i className="bi bi-eye"></i>
+                        </button>
+                        <button className="btn btn-sm btn-outline-primary me-1">
+                          <i className="bi bi-pencil"></i>
+                        </button>
+                        <button className="btn btn-sm btn-outline-danger">
+                          <i className="bi bi-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {shown.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="text-center py-4">No hay resultados</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+    </>
   )
 }

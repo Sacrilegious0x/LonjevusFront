@@ -11,7 +11,7 @@ export default function SuppliersAdd() {
     dir: '',
     photo: null,
     isActive: '',
-  });
+    });
 
     return (
         <>

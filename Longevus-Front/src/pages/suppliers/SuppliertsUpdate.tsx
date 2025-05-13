@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Footer from "../../components/Footer";
 
 
 export default function SuppliersEdit() {
@@ -11,6 +12,28 @@ export default function SuppliersEdit() {
     photo: null,
     isActive: '',
   });
+
+  const fetchEmployeeById = async (id: string): Promise<EmployeeInitialData | null> => {
+    console.log(`Workspaceing employee with ID: ${id}`);
+    // Aquí harías la llamada a tu API para obtener los datos del empleado
+    // const response = await fetch(`/api/employees/${id}`);
+    // const data = await response.json();
+    // return data as EmployeeInitialData;
+
+    // Simulación de datos
+    const dummyData: EmployeeInitialData = {
+        id: id,
+        name: "Juan Perez",
+        identification: "123456789",
+        email: "juan.perez@example.com",
+        photoURL: "", 
+        salary: 50000,
+        selectedDays: ["K", "M", "V"],
+
+    };
+    return new Promise(resolve => setTimeout(() => resolve(dummyData), 500)); // Simula retardo de red
+};
+
 
     return (
         <>
@@ -53,7 +76,7 @@ export default function SuppliersEdit() {
                     </div>
                 </div>
             </div>
-        
+        <Footer/>
         </>
     );
 

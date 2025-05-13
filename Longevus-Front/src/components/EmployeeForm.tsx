@@ -16,8 +16,8 @@ export interface EmployeeFormData {
     workSchedule: IShift[];
     selectedShifts: string[];
 }
-interface EmployeeInitialData{
-    id?: number,
+export interface EmployeeInitialData{
+    id?: string,
     name: string,
     identification: string,
     email: string,
@@ -30,7 +30,7 @@ interface EmployeeInitialData{
 
 interface EmployeeFormProps{
     initialData?: EmployeeInitialData,
-    onSubmit: (data: EmployeeFormData, employeeId?: number)=>void;
+    onSubmit: (data: EmployeeFormData, employeeId?: string)=>void;
     onCancel: ()=> void;
 }
 

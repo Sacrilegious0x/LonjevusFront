@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom'; // Ejemplo con React Router
 import EmployeeForm from '../../components/EmployeeForm'; // Asegúrate de que la ruta sea correcta
 import type { EmployeeFormData, EmployeeInitialData } from '../../components/EmployeeForm'; // Importa los tipos

@@ -2,44 +2,48 @@
 import React, { useState } from 'react'
 import Footer from '../../components/Footer'
 import Header from '../../components/Header'
+import type { columnDefinition } from '../../components/TableBasic'
+import Table from '../../components/TableBasic';
 
-type Role = {
+interface IRole{
   id: number
   name: string
   description: string
   isActive: boolean
 }
 
-const mockRoles: Role[] = [
+const rolesData: IRole[] = [
   { id: 1, name: 'Administrador', description: 'Acceso a todo el sistema', isActive: true },
   { id: 2, name: 'Cuidador', description: 'Se mantiene al tanto de los residentes', isActive: true },
 ]
 
-export default function Role_Permissions() {
-  const [roles] = useState(mockRoles)
-  const [perPage, setPerPage] = useState(10)
-  const [search, setSearch] = useState('')
+const RolesList = () =>{
 
-  // Filtrar según búsqueda
-  const filtered = roles.filter(r =>
-    r.name.toLowerCase().includes(search.toLowerCase()) ||
-    r.description.toLowerCase().includes(search.toLowerCase())
-  )
+  const rolesColumns: columnDefinition<IRole>[]=[
 
-  // Paginación sencilla: solo primeros perPage registros
-  const shown = filtered.slice(0, perPage)
+    {header: '#', accessor: 'id', Cell:(_role, index)=>{return(index+1)}},
+    {header: 'Nombre', accessor: 'name'},
+    {header: 'Descripcion', accessor: 'description'},
+    {header: 'Permisos', accessor: (role) => role,   
+        Cell: (supplier) =>(
+            <>
+            <a className='btn btn-warning me-2' onClick={()=>console.log("Editar"+supplier.name)}>
+                <i className='bi bi-pencil-square'/>
+            </a>
+            </>
+        ) 
+    }
+
+  ];
 
   return (
     <>
-    <div className="container-fluid p-4">
+    <Header/>
+    <div className="container">
       {/* Título y botón Nuevo */}
-
-
-      {/* Tabla */}
-      <div className="container ">
         <div className='row'>
-          <div className='card'>
-            <div className="d-flex align-items-center mb-3">
+          <div className='card mt-5 mb-5'>
+            <div className="card-title d-flex justify-content-between align-items-center mt-3">
               <h2 className="flex-grow-1 mt-2">
                 <i className="bi bi-person-badge me-2"></i>
                 Roles Usuario Hogar de Ancianos
@@ -48,52 +52,15 @@ export default function Role_Permissions() {
                 <i className="bi bi-plus-lg me-1"></i> Nuevo
               </button>
             </div>
-            <div className="table-responsive border-success">
-              <table className="table table-striped table-hover align-middle table-success ">
-                <thead className="">
-                  <tr>
-                    <th>Nombre</th>
-                    <th>Descripción</th>
-                    <th>Status</th>
-                    <th className="text-center">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody className="table-group-divider">
-                  {shown.map(r => (
-                    <tr key={r.id}>
-                      <td>{r.name}</td>
-                      <td>{r.description}</td>
-                      <td>
-                        {r.isActive
-                          ? <span className="badge bg-success">Activo</span>
-                          : <span className="badge bg-danger">Inactivo</span>
-                        }
-                      </td>
-                      <td className="text-center">
-                        <button className="btn btn-sm btn-outline-success me-1">
-                          <i className="bi bi-eye"></i>
-                        </button>
-                        <button className="btn btn-sm btn-outline-primary me-1">
-                          <i className="bi bi-pencil"></i>
-                        </button>
-                        <button className="btn btn-sm btn-outline-danger">
-                          <i className="bi bi-trash"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {shown.length === 0 && (
-                    <tr>
-                      <td colSpan={5} className="text-center py-4">No hay resultados</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+            <div className="card-body">
+                <Table<IRole>data={rolesData} columns={rolesColumns} selectedRows={new  Set()} onToggleRow={()=>{}} onSelectAll={()=>{}}/>
             </div>
           </div>
         </div>
       </div>
-    </div>
+      <Footer/>
     </>
   )
 }
+
+export default RolesList;

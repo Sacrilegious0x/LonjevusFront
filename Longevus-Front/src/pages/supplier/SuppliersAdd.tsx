@@ -1,5 +1,7 @@
 
 import React, { useState } from 'react';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
 
 export default function SuppliersAdd() {
@@ -15,7 +17,7 @@ export default function SuppliersAdd() {
 
     return (
         <>
-        
+        <Header/>
             <div className='container mt-5 form-container'>
                 <div className='row'>
                     <div className='col-12'>
@@ -55,7 +57,7 @@ export default function SuppliersAdd() {
                     </div>
                 </div>
             </div>
-        
+        <Footer/>
         </>
     );
 

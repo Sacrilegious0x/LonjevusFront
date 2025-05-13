@@ -1,13 +1,13 @@
 import { type ChangeEvent } from 'react';
 //import type { Shift } from './Common'; // <--- Importa las interfaces
 
- export interface Shift {
+ export interface IShift {
     id: string;
     entryTime: string;
     exitTime: string;
 }
 interface DayScheduleEditorProps {
-    shifts: Shift[]; // El array de turnos comunes
+    shifts: IShift[]; // El array de turnos comunes
     onUpdateShift: (index: number, field: 'entryTime' | 'exitTime', value: string) => void; // Callback para cambiar un campo de un turno
     onAddShift: () => void; // Callback para añadir un nuevo turno
     onRemoveShift: (id: string) => void; // Callback para eliminar un turno

@@ -25,14 +25,12 @@ const supplierData: ISupplier[] = [
 const SuppliersList = () =>{
 
    const supplierColumns: columnDefinition<ISupplier>[] =[
-    {header: '#', accessor: 'id', Cell:(supplier, index)=>{return(index+1)}},
+    {header: '#', accessor: 'id', Cell:(_supplier, index)=>{return(index+1)}},
     {header: 'Nombre', accessor: 'name'},
     {header: 'Teléfono', accessor: 'phoneNumber'},
     {header: 'Correo', accessor: 'email'},
     {header: 'Direccion', accessor: 'address'},
     {header: 'Foto', accessor: 'photo'},
-    {header: 'Activo', accessor: 'isActive'},
-
     {header: 'Acciones', accessor: (supplier) => supplier,   
         Cell: (supplier) =>(
             <>
@@ -42,14 +40,11 @@ const SuppliersList = () =>{
             <a className='btn btn-warning me-2' onClick={()=>console.log("Editar"+supplier.name)}>
                 <i className='bi bi-pencil-square'/>
             </a>
-            
             <a className='btn btn-danger me-2' onClick={()=>console.log("Eliminar"+supplier.id)}>
                 <i className="bi bi-trash"/>
-            </a>
-            
+            </a>  
             </>
-        )
-        
+        ) 
     }
    ];
 

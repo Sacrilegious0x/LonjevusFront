@@ -72,6 +72,9 @@ const handleFormSubmit = (formData: EmployeeFormData, id?: string) => {
         // Después, podrías redirigir al usuario a otra página
         // Ejemplo: navigate('/employees');
     };
+
+    
+
     const handleCancel = () => {
         console.log("Operación de edición cancelada");
         navigate('/mostrar'); // Redirige a la lista de empleados

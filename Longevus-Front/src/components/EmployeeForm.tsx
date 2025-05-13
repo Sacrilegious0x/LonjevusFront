@@ -16,8 +16,8 @@ export interface EmployeeFormData {
     workSchedule: IShift[];
     selectedShifts: string[];
 }
-interface EmployeeInitialData{
-    id?: number,
+export interface EmployeeInitialData{
+    id?: string,
     name: string,
     identification: string,
     email: string,
@@ -30,7 +30,7 @@ interface EmployeeInitialData{
 
 interface EmployeeFormProps{
     initialData?: EmployeeInitialData,
-    onSubmit: (data: EmployeeFormData, employeeId?: number)=>void;
+    onSubmit: (data: EmployeeFormData, employeeId?: string)=>void;
     onCancel: ()=> void;
 }
 
@@ -98,7 +98,7 @@ const EmployeeForm = ({initialData, onSubmit, onCancel}: EmployeeFormProps) => {
             }
         });
     };
-     const handleShiftTypeChange = (shift: string, isChecked: boolean) => {
+    const handleShiftTypeChange = (shift: string, isChecked: boolean) => {
         setFormData(prevForm => {
             const currentDays = prevForm.selectedShifts;
             if (isChecked) {

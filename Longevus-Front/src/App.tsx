@@ -16,6 +16,10 @@ import EditProduct from './pages/product/EditProduct';
 import AddProduct from './pages/product/AddProduct';
 import AddResident from './pages/Residents/AddResident';
 import ShowResidents from './pages/Residents/ShowResidents';
+import SuppliersList from './pages/suppliers/SuppliersList';
+import SuppliersAdd from './pages/suppliers/SuppliersAdd';
+import Role_Permissions from './pages/suppliers/Role_permission';
+import SuppliersEdit from './pages/suppliers/SuppliertsUpdate';
 
 
 function App() {
@@ -39,6 +43,11 @@ function App() {
         <Route path="/productos" element={<ProductPage/>} />
         <Route path="/productos/editar/:id" element={<EditProduct />} />
         <Route path="/productos/agregar" element={<AddProduct />} />
+        <Route path="/proveedores" element={<SuppliersList />} />
+        <Route path="/proveedores/guardar" element={<SuppliersAdd/>} />
+        <Route path="/roles_permisos" element={<Role_Permissions />} />
+        <Route path="/proveedores/editar" element={<SuppliersEdit/>} />
+
       </Routes>
     </BrowserRouter>
   );

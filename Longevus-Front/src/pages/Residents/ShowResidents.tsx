@@ -3,32 +3,46 @@ import Footer from "../../components/Footer";
 import Table from '../../components/TableBasic';
 import type { columnDefinition } from '../../components/TableBasic';
 import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 interface IPerson{
     id: number,
     identification: string,
     name: string,
     age: number,
-    room: number,
+    numberRoom: number,
 }
 
-const userData: IPerson[] = [
+/*const userData: IPerson[] = [
   { id: 1, name: 'Maribel',identification: '3423242', age: 78, room:1},
   { id: 2, name: 'Carlos',identification: '62423534', age: 76, room:1},
   { id: 3, name: 'Jose',identification: '3423242', age: 89, room:2},
   { id: 4, name: 'Sandra',identification: '3423242', age: 98, room:4}
-];
+];*/
 
 const Residents = () => {
 
     const navigate = useNavigate();
+    const [userData, setUserData] = useState<IPerson[]>([]);
+
+    useEffect(() => {
+        axios.get<IPerson[]>('http://localhost:8080/residents')
+        .then((response) => {
+            console.log(response.data);
+            setUserData(response.data);
+        })
+        .catch((error) => {
+            console.error('error al obtener valores', error)
+        })
+    },[]);
 
     const personColumns: columnDefinition<IPerson>[] = [
         { header: '#', accessor: 'id', Cell: (person, index) => { return (index + 1) } },
         { header: 'Identificacion', accessor: 'identification' },
         { header: 'Nombre', accessor: 'name' },
         { header: 'Edad', accessor: 'age' },
-        { header: 'Habitación', accessor: 'room' },
+        { header: 'Habitación', accessor: 'numberRoom' },
         {
             header: 'Acciones', accessor: (person) => person,
             Cell: (person) => (
@@ -36,7 +50,7 @@ const Residents = () => {
                     <a className='btn btn-info me-2' onClick={() => navigate(`/residente/perfil/${person.id}`)}>
                         <i className='bi bi-eye' />
                     </a>
-                    <a className='btn btn-warning me-2' onClick={() => console.log("Editar" + person.name)}>
+                    <a className='btn btn-warning me-2' onClick={() => navigate(`/residente/editar/`)}>
                         <i className='bi bi-pencil-square' />
                     </a>
 

@@ -6,13 +6,13 @@ import { ResidentData } from "../../components/ResidentForm";
 
 const EditResidentPage: React.FC = () => {
     const mockResident: ResidentData = {
+        id: 0,
         identification: '12345',
         name: 'Ana Martínez',
         age: 78,
         healthStatus: 'regular',
         numberRoom: 12,
         photo: null,
-        isActive: true,
     };
 
     const handleUpdateResident = (data: ResidentData) => {

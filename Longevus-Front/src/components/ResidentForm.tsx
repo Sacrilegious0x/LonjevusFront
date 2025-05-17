@@ -1,44 +1,55 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 
-interface ResidentData{
-    identification: string;
-    name: string;
-    age: number;
-    healthStatus: string;
-    numberRoom: number;
-    photo: File | null;
-    isActive:boolean;
+export interface ResidentData {
+  identification: string;
+  name: string;
+  age: number;
+  healthStatus: string;
+  numberRoom: number;
+  photo: File | string | null;
 }
 
-const ResidentForm: React.FC = () => {
-const [data, setData] = useState<ResidentData>({
+interface ResidentProps {
+  onSubmit: (data: ResidentData) => void;
+  initialData?: ResidentData;
+}
+
+const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
+  const [data, setData] = useState<ResidentData>(
+    initialData !== null && initialData !== undefined ? initialData : {
     identification: '',
     name: '',
     age: 0,
     healthStatus: '',
     numberRoom: 0,
     photo: null,
-    isActive: false
-});
+  });
 
-const handleForm = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {name, type, value, checked, files } = e.target;
+  useEffect(() => {
+    if (initialData) {
+      setData(initialData);
+    }
+  }, [initialData]);
+
+  const handleForm = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, type, value, checked, files } = e.target;
 
     setData(prev => ({
-        ...prev, //version anterior del form
-        [name]: type === 'file' && files ? files[0]
-            : type === 'checkbox' ? checked
-            : type === 'number' ? Number(value) : value,
-    })) 
-};
+      ...prev, //version anterior del form
+      [name]: type === 'file' && files ? files[0]
+        : type === 'checkbox' ? checked
+          : type === 'number' ? Number(value) : value,
+    }))
+  };
 
 
-const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    onSubmit(data);
     console.log(data);
   };
 
-return (
+  return (
     <form onSubmit={handleSubmit} className="residentForm p-4 border rounded">
 
       <div className="mb-3">
@@ -75,14 +86,14 @@ return (
       </div>
 
       <div className="mb-3">
-          <label className="form-label">Estado de Salud</label>
-          <select name="healthStatus" value={data.healthStatus}
-                  onChange={handleForm} className="form-select">          
-                  <option value="bueno">Bueno</option>
-                  <option value="regular">Regular</option>
-                  <option value="malo">Malo</option>
-                  
-          </select>
+        <label className="form-label">Estado de Salud</label>
+        <select name="healthStatus" value={data.healthStatus}
+          onChange={handleForm} className="form-select">
+          <option value="bueno">Bueno</option>
+          <option value="regular">Regular</option>
+          <option value="malo">Malo</option>
+
+        </select>
       </div>
 
       <div className="mb-3">
@@ -107,21 +118,7 @@ return (
         />
       </div>
 
-      <div className="form-check mb-3">
-        <input
-          type="checkbox"
-          name="isActive"
-          checked={data.isActive}
-          onChange={handleForm}
-          className="form-check-input"
-          id="active"
-        />
-        <label className="form-check-label" htmlFor="subscribed">
-          ¿Está activo?
-        </label>
-      </div>
-
-      <button type="submit" className="btn">Enviar</button>
+      <button type="submit" className="btnAddResident">Enviar</button>
     </form>
   );
 };

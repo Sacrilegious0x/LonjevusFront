@@ -16,6 +16,8 @@ import EditProduct from './pages/product/EditProduct';
 import AddProduct from './pages/product/AddProduct';
 import AddResident from './pages/Residents/AddResident';
 import ShowResidents from './pages/Residents/ShowResidents';
+import EditResident from './pages/Residents/EditResident';
+import ViewResident from './pages/Residents/ViewResident';
 import SuppliersList from './pages/suppliers/SuppliersList';
 import SuppliersAdd from './pages/suppliers/SuppliersAdd';
 import Role_Permissions from './pages/suppliers/Role_permission';
@@ -35,8 +37,10 @@ function App() {
         <Route path='/mostrar' element={<ShowEmployee/>}/>
         <Route path='/editar/:id' element={<EditEmployee/>}/>
         <Route path='/perfil/:id' element={< ViewEmployee/>}/>
-        <Route path='/mostrarResidentes' element={<ShowResidents/>}/>
-        <Route path='/AgregarResidente' element={<AddResident/>}/>
+        <Route path='/residente/mostrar' element={<ShowResidents/>}/>
+        <Route path='/residente/agregar' element={<AddResident/>}/>
+        <Route path='/residente/editar' element={<EditResident/>}/>
+        <Route path='/residente/perfil/:id' element={<ViewResident/>}/>
         <Route path="/compras" element={<PurchasePage />} />
         <Route path="/compras/editar/:id" element={<EditPurchase />} />    
         <Route path="/compras/agregar" element={<AddPurchase/>} /> 

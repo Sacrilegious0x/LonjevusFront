@@ -1,4 +1,4 @@
-import AddResidentForm from "../../components/AddResidentForm";
+import AddResidentForm from "../../components/ResidentForm";
 import HeaderA from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import { Link } from 'react-router-dom';

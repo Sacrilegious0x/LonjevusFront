@@ -1,0 +1,96 @@
+import { useState } from "react";
+import AddContactModal from "./AddContactModal";
+
+export interface Contact {
+    id: number;
+    idResident: number;
+    name: string;
+    phone_number: string;
+    relationship: string;
+}
+
+interface ContactProps {
+    show: boolean;
+    onClose: () => void;
+    residentName?: string;
+    contactsList: Contact[];
+    onDeleteContact: (id: number) => void; //función para eliminar un contacto
+    onEditContact: (contact: Contact) => void; //función para editar un contacto
+}
+
+const ViewContactModal: React.FC<ContactProps> = ({ show, onClose, residentName, contactsList, onDeleteContact, onEditContact }) => {
+
+    const [showEditContactModal, setEditContactModal] = useState<Contact | null>(null);
+
+    if (!show)
+        return null;
+    return (
+        <div className="modal d-block" tabIndex={-1} style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+            <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-content">
+
+                    <div className="modal-header">
+                        <h5 className="modal-title">
+                            Contactos de {residentName ?? "Residente"}
+                        </h5>
+                        <button type="button" className="btn-close" onClick={onClose}></button>
+                    </div>
+
+                    <div className="modal-body">
+                        {contactsList.length === 0 ? (
+                            <p>No hay contactos registrados.</p>
+                        ) : (
+                            <ul className="list-group">
+                                {contactsList.map((contact) => (
+                                    <li key={contact.id} className="list-group-item">
+                                        <p className="mb-1"><strong>Nombre:</strong> {contact.name}</p>
+                                        <p className="mb-1"><strong>Teléfono:</strong> {contact.phone_number}</p>
+                                        <p className="mb-2"><strong>Relación:</strong> {contact.relationship}</p>
+                                        <div className="d-flex gap-2">
+                                            <button
+                                                className="btn btn-sm btn-primary"
+                                                onClick={() => setEditContactModal(contact)}
+                                            >
+                                                Editar
+                                            </button>
+                                            <button
+                                                className="btn btn-sm btn-danger"
+                                                onClick={() => onDeleteContact(contact.id)}
+                                            >
+                                                Eliminar
+                                            </button>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+
+                    <div className="modal-footer">
+                        <button type="button" className="btn btn-secondary" onClick={onClose}>
+                            Cerrar
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+            {showEditContactModal && (
+                <AddContactModal
+                    show={true}
+                    onClose={() => setEditContactModal(null)}
+                    residentName={residentName}
+                    residentId={showEditContactModal.idResident}
+                    onAddContact={(updatedContact) => {
+                        // Aquí deberías manejar la actualización del contacto:
+                        // Podrías llamar a una función o usar context/props si quieres que el padre sepa.
+                        console.log("Contacto actualizado:", updatedContact);
+                        setEditContactModal(null);
+                    }}
+                    editingContact={showEditContactModal}
+                />
+            )}
+        </div>
+    )
+}
+
+export default ViewContactModal;

@@ -1,9 +1,8 @@
-import Header from "../../components/Header";
 import HeaderA from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import Table from '../../components/TableBasic';
 import type { columnDefinition } from '../../components/TableBasic';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface IPerson{
     id: number,
@@ -15,26 +14,26 @@ interface IPerson{
 
 const userData: IPerson[] = [
   { id: 1, name: 'Maribel',identification: '3423242', age: 78, room:1},
-  { id: 1, name: 'Carlos',identification: '62423534', age: 76, room:1},
-  { id: 1, name: 'Jose',identification: '3423242', age: 89, room:2},
-  { id: 1, name: 'Sandra',identification: '3423242', age: 98, room:4}
-  // ... más usuarios
+  { id: 2, name: 'Carlos',identification: '62423534', age: 76, room:1},
+  { id: 3, name: 'Jose',identification: '3423242', age: 89, room:2},
+  { id: 4, name: 'Sandra',identification: '3423242', age: 98, room:4}
 ];
 
 const Residents = () => {
+
+    const navigate = useNavigate();
 
     const personColumns: columnDefinition<IPerson>[] = [
         { header: '#', accessor: 'id', Cell: (person, index) => { return (index + 1) } },
         { header: 'Identificacion', accessor: 'identification' },
         { header: 'Nombre', accessor: 'name' },
         { header: 'Edad', accessor: 'age' },
-        { header: 'Edad', accessor: 'age' },
         { header: 'Habitación', accessor: 'room' },
         {
             header: 'Acciones', accessor: (person) => person,
             Cell: (person) => (
                 <>
-                    <a className='btn btn-info me-2' onClick={() => console.log("Mostrar" + person.id)}>
+                    <a className='btn btn-info me-2' onClick={() => navigate(`/residente/perfil/${person.id}`)}>
                         <i className='bi bi-eye' />
                     </a>
                     <a className='btn btn-warning me-2' onClick={() => console.log("Editar" + person.name)}>

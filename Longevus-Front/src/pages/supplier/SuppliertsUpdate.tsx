@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import axios from 'axios';
 
 interface SupplierData {
   name: string;
   phoneNumber: string;
   email: string;
   address: string;
-  photo: File | null;
+  photoUrl: string;
   isActive: boolean;
 }
 
@@ -21,25 +22,28 @@ export default function SuppliersEdit() {
     phoneNumber: '',
     email: '',
     address: '',
-    photo: null,
+    photoUrl: '',
     isActive: true,
   });
 
-  // Cargar datos del proveedor al montar
-  useEffect(() => {
+   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // Cargar datos del proveedor al llamar
+useEffect(() => {
     async function fetchSupplier() {
       try {
-        // TODO: Llamar a la API para obtener el proveedor por su ID
-        // const response = await axios.get(`/api/suppliers/${id}`);
-        // const data = response.data;
-        // setFormData({
-        //   name: data.name,
-        //   phoneNumber: data.phoneNumber,
-        //   email: data.email,
-        //   address: data.address,
-        //   photo: null, // o puedes convertir la URL en File si lo deseas
-        //   isActive: data.isActive,
-        // });
+        const response = await axios.get(
+          `http://localhost:8080/suppliers/getById?id=${id}`
+        );
+        const data = response.data;
+        setFormData({
+          name: data.name,
+          phoneNumber: data.phoneNumber,
+          email: data.email,
+          address: data.address,
+          photoUrl: data.photo,        
+          isActive: data.isActive,
+        });
       } catch (error) {
         console.error('Error fetching supplier:', error);
       }
@@ -47,44 +51,44 @@ export default function SuppliersEdit() {
     if (id) fetchSupplier();
   }, [id]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData(f => ({ ...f, [name]: value }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setFormData({
-        ...formData,
-        photo: file,
-      });
-    }
-  };
+const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  if (e.target.files && e.target.files[0]) {
+    const file = e.target.files[0];
+    setSelectedFile(file);
+    setFormData({
+      ...formData,
+      photoUrl: URL.createObjectURL(file), // opcional, para previsualizar
+    });
+  }
+};
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const data = new FormData();
+      data.append('id',id!)
       data.append('name', formData.name);
       data.append('phoneNumber', formData.phoneNumber);
       data.append('email', formData.email);
       data.append('address', formData.address);
-      if (formData.photo) {
-        data.append('photo', formData.photo);
+      if (selectedFile) {
+        data.append('photo', selectedFile);
       }
       data.append('isActive', formData.isActive.toString());
 
-      // TODO: Llamar a la API para actualizar el proveedor
-      // await axios.put(`/api/suppliers/${id}`, data, { headers: { 'Content-Type': 'multipart/form-data' } });
-
-      // Redirigir de vuelta a la lista
+      await axios.post(
+        'http://localhost:8080/suppliers/update',
+        data
+      );
+     
       navigate('/proveedores');
     } catch (error) {
-      console.error('Error updating supplier:', error);
+      console.error('Error updating supplier: ', error);
     }
   };
 

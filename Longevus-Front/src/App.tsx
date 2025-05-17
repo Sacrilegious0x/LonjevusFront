@@ -46,8 +46,8 @@ function App() {
         <Route path="/proveedores" element={<SuppliersList />} />
         <Route path="/proveedores/guardar" element={<SuppliersAdd/>} />
         <Route path="/roles_permisos" element={<RolesList />} />
-        <Route path="/proveedores/editar" element={<SuppliersEdit/>} />
-
+        <Route path="/proveedores/editar/:id" element={<SuppliersEdit />}
+/>
       </Routes>
     </BrowserRouter>
   );

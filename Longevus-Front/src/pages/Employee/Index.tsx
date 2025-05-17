@@ -18,7 +18,6 @@ const [formData, setFormData] = useState({
         }));
     }
 
-   
     const submit = (e: FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
         if (formData.password === "pass"){

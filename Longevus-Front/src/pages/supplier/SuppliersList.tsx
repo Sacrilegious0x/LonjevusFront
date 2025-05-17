@@ -1,10 +1,11 @@
 
-import { href } from "react-router-dom";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import type {columnDefinition} from '../../components/TableBasic';
 import { Link } from 'react-router-dom';
 import Table from '../../components/TableBasic';
+import axios from "axios";
+import { useState, useEffect } from "react";
 
 interface ISupplier{
     id: number,
@@ -13,16 +14,14 @@ interface ISupplier{
     email: string,
     address: string,
     photo: string,
-    isActive: number
+    isActive: boolean
 }
 
-const supplierData: ISupplier[] = [
-  {id: 1, name: 'Tilin',phoneNumber:'86784783' ,email: 'alice@example.com', address:'Ticaban 200 mts norte de la iglesia',photo:'urlexample',isActive:1},
-  {id: 2, name: 'Varela',phoneNumber:'86784783' ,email: 'blabla@example.com', address:'Ticaban 200 mts norte de la iglesia',photo:'urlexample',isActive:1}
-];
-
-
 const SuppliersList = () =>{
+
+  const [supplierData, setSupplierData] = useState<ISupplier[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
    const supplierColumns: columnDefinition<ISupplier>[] =[
     {header: '#', accessor: 'id', Cell:(_supplier, index)=>{return(index+1)}},
@@ -30,18 +29,77 @@ const SuppliersList = () =>{
     {header: 'Teléfono', accessor: 'phoneNumber'},
     {header: 'Correo', accessor: 'email'},
     {header: 'Dirección', accessor: 'address'},
-    {header: 'Foto', accessor: 'photo'},
+    {header: 'Foto', accessor: 'photo',
+      Cell: (_item) =>(<img
+      src={`http://localhost:8080/${_item.photo}`}
+      alt="Foto proveedor"
+      style={{ width: 50, height: 50, objectFit: 'cover' }}
+      />)
+    },
     {header: 'Acciones', accessor: (supplier) => supplier,   
         Cell: (supplier) =>(
             <>
-            <Link className="btn btn-warning me-2" to='/proveedores/editar'><i className='bi bi-pencil-square'/></Link>
-            <a className='btn btn-danger me-2' onClick={()=>console.log("Eliminar"+supplier.id)}>
+            <Link className="btn btn-warning me-2" to={`/proveedores/editar/${supplier.id}`}><i className='bi bi-pencil-square' /></Link>
+            <a className='btn btn-danger me-2' onClick={()=>handleDelete(supplier.id)}>
                 <i className="bi bi-trash"/>
             </a>  
             </>
         ) 
     }
    ];
+
+    useEffect(() => {
+    axios
+      .get("http://localhost:8080/suppliers/list")
+      .then((res) => {
+        console.log("Datos recibidos:", res.data);
+        setSupplierData(res.data.suppliers);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("No se pudo cargar la lista de proveedores");
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <div className="container mt-5">Cargando proveedores…</div>
+        <Footer />
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <Header />
+        <div className="container mt-5 text-danger">{error}</div>
+        <Footer />
+      </>
+    );
+  }
+
+
+  const handleDelete = async (id: number) => {
+  const confirmDelete = window.confirm("¿Seguro que deseas eliminar este proveedor?");
+  if (!confirmDelete) return;
+
+  try {
+    await axios.delete(`http://localhost:8080/suppliers/delete`, {
+      params: { id }
+    });
+
+    setSupplierData((prev) => prev.filter((p) => p.id !== id));
+    alert("Proveedor eliminado correctamente");
+  } catch (err) {
+    console.error(err);
+    alert("Ocurrió un error al eliminar el proveedor");
+  }
+};
 
 return (
 

@@ -2,9 +2,14 @@
 import React, { useState } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function SuppliersAdd() {
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     phoneNumber: '',
@@ -14,24 +19,23 @@ export default function SuppliersAdd() {
     isActive: true,
   });
 
-  const handleChange = (e:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(f => ({ ...f, [name]: value }));
+  };
 
 const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   if (e.target.files && e.target.files[0]) {
     const file = e.target.files[0];
+    setSelectedFile(file);
     setFormData({
       ...formData,
-      photoUrl: URL.createObjectURL(file), // Ahora es un string
+      photoUrl: URL.createObjectURL(file), // opcional, para previsualizar
     });
   }
 };
+
 
   const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,18 +44,26 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       data.append('name', formData.name);
       data.append('phoneNumber', formData.phoneNumber);
       data.append('email', formData.email);
-      data.append('dir', formData.address);
-      data.append('photo', formData.photoUrl);
+      data.append('address', formData.address);
       data.append('isActive', formData.isActive.toString());
 
-      const config = {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      };
+      if (selectedFile) {
+      data.append('photo', selectedFile); //el archivo real
+    }
 
+     const config = {headers: {'Content-Type': 'multipart/form-data',},};
 
-      // Optionally redirect or reset form
+      const res = await axios.post(
+        'http://localhost:8080/suppliers/save', // tu endpoint de POST
+        data,config
+      );
+      console.log('Proveedor guardado:', res.data);
+
+      // 4. Rediriges o limpias el formulario
+      //useNavigate('/proveedores');
+
+      console.log('Guardado:', res.data);
+      navigate('/proveedores');
     } catch (error) {
       console.error('Error saving supplier:', error);
     }
@@ -96,7 +108,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               <div className='mb-3'>
                 <label htmlFor='email' className='form-label'>Correo:<i className="bi bi-envelope-fill"></i></label>
                 <input
-                  type='email'
+                  type='text'
                   id='email'
                   name='email'
                   value={formData.email}
@@ -107,11 +119,11 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               </div>
 
               <div className='mb-3'>
-                <label htmlFor='dir' className='form-label'>Dirección:<i className="bi bi-compass"></i></label>
+                <label htmlFor='address' className='form-label'>Dirección:<i className="bi bi-compass"></i></label>
                 <input
                   type='text'
-                  id='dir'
-                  name='dir'
+                  id='address'
+                  name='address'
                   value={formData.address}
                   onChange={handleChange}
                   className='form-control'

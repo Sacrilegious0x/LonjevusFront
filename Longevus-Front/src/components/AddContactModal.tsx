@@ -21,8 +21,8 @@ const AddContactModal: React.FC<AddContactProps> = ({ show, onClose, residentNam
     useEffect(() =>{
         if(editingContact){
             setName(editingContact.name);
-            setPhone(editingContact.phone_number);
-            setRelationship(editingContact.relationship);
+            setPhone(editingContact.phoneNumber);
+            setRelationship(editingContact.relationShip);
         }else{
             setName("");
             setPhone("");
@@ -37,7 +37,7 @@ const AddContactModal: React.FC<AddContactProps> = ({ show, onClose, residentNam
             id: editingContact.id ?? 0,
             idResident: residentId,
             name,
-            phone_number: phone,
+            phoneNumber: phone,
             relationship,
         };
 

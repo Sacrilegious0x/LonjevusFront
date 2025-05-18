@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-interface IPerson{
+interface Resident{
     id: number,
     identification: string,
     name: string,
@@ -24,10 +24,10 @@ interface IPerson{
 const Residents = () => {
 
     const navigate = useNavigate();
-    const [userData, setUserData] = useState<IPerson[]>([]);
+    const [userData, setUserData] = useState<Resident[]>([]);
 
     useEffect(() => {
-        axios.get<IPerson[]>('http://localhost:8080/residents')
+        axios.get<Resident[]>('http://localhost:8080/residents')
         .then((response) => {
             console.log(response.data);
             setUserData(response.data);
@@ -37,24 +37,35 @@ const Residents = () => {
         })
     },[]);
 
-    const personColumns: columnDefinition<IPerson>[] = [
-        { header: '#', accessor: 'id', Cell: (person, index) => { return (index + 1) } },
+
+    const handleDeleteResident = (resident: Resident) => {
+        if(window.confirm(`¿Estás seguro de eliminar al residente ${resident.name}?`)){
+            axios.delete(`http://localhost:8080/deleteResident?id=${resident.id}`)
+            .then(() => {
+                setUserData((prev) => prev.filter((r) => r.id !== resident.id)); //se actualiza la lista
+            })
+            .catch((error) => {console.error("Error al eliminar el residente", error)})
+        }
+    }
+
+    const personColumns: columnDefinition<Resident>[] = [
+        { header: '#', accessor: 'id', Cell: (resident, index) => { return (index + 1) } },
         { header: 'Identificacion', accessor: 'identification' },
         { header: 'Nombre', accessor: 'name' },
         { header: 'Edad', accessor: 'age' },
         { header: 'Habitación', accessor: 'numberRoom' },
         {
             header: 'Acciones', accessor: (person) => person,
-            Cell: (person) => (
+            Cell: (resident) => (
                 <>
-                    <a className='btn btn-info me-2' onClick={() => navigate(`/residente/perfil/${person.id}`)}>
+                    <a className='btn btn-info me-2' onClick={() => navigate(`/residente/perfil/${resident.id}`)}>
                         <i className='bi bi-eye' />
                     </a>
-                    <a className='btn btn-warning me-2' onClick={() => navigate(`/residente/editar/`)}>
+                    <a className='btn btn-warning me-2' onClick={() => navigate(`/residente/editar/${resident.id}`)}>
                         <i className='bi bi-pencil-square' />
                     </a>
 
-                    <a className='btn btn-danger me-2' onClick={() => console.log("Eliminar" + person.id)}>
+                    <a className='btn btn-danger me-2' onClick={() => handleDeleteResident(resident)}>
                         <i className="bi bi-trash" />
                     </a>
 
@@ -72,13 +83,13 @@ const Residents = () => {
                 <div className='card mt-5 mb-5'>
                     <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                         <h4>Lista de residentes</h4>
-                        <Link className='btn btn-success' to='/agregar'>Agregar</Link>
+                        <Link className='btn btn-success' to='/residente/agregar'>Agregar</Link>
                     </div>
                     <div className='card-body'>
                         <label>Buscar</label>
                         <input type="text" placeholder="Buscar..." id="userSearch"/>
                         <button className="btn btn-secondary" id="btnSearch"><i className='bi bi-search'/></button>
-                        <Table<IPerson> data={userData} columns={personColumns} selectedRows={new Set()} onToggleRow={()=>{}} onSelectAll={()=>{}}/>
+                        <Table<Resident> data={userData} columns={personColumns} selectedRows={new Set()} onToggleRow={()=>{}} onSelectAll={()=>{}}/>
                     </div>
                 </div>
                 

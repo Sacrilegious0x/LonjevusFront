@@ -5,8 +5,8 @@ export interface Contact {
     id: number;
     idResident: number;
     name: string;
-    phone_number: string;
-    relationship: string;
+    phoneNumber: string;
+    relationShip: string;
 }
 
 interface ContactProps {
@@ -44,8 +44,8 @@ const ViewContactModal: React.FC<ContactProps> = ({ show, onClose, residentName,
                                 {contactsList.map((contact) => (
                                     <li key={contact.id} className="list-group-item">
                                         <p className="mb-1"><strong>Nombre:</strong> {contact.name}</p>
-                                        <p className="mb-1"><strong>Teléfono:</strong> {contact.phone_number}</p>
-                                        <p className="mb-2"><strong>Relación:</strong> {contact.relationship}</p>
+                                        <p className="mb-1"><strong>Teléfono:</strong> {contact.phoneNumber}</p>
+                                        <p className="mb-2"><strong>Relación:</strong> {contact.relationShip}</p>
                                         <div className="d-flex gap-2">
                                             <button
                                                 className="btn btn-sm btn-primary"

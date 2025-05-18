@@ -1,12 +1,15 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
 export interface ResidentData {
+  id: number;
   identification: string;
   name: string;
+  birthdate: string,
   age: number;
   healthStatus: string;
   numberRoom: number;
-  photo: File | string | null;
+  photo: File | null;
 }
 
 interface ResidentProps {
@@ -17,8 +20,10 @@ interface ResidentProps {
 const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
   const [data, setData] = useState<ResidentData>(
     initialData !== null && initialData !== undefined ? initialData : {
+    id: 0,
     identification: '',
     name: '',
+    birthdate: '',
     age: 0,
     healthStatus: '',
     numberRoom: 0,
@@ -31,7 +36,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
     }
   }, [initialData]);
 
-  const handleForm = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleForm = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, type, value, checked, files } = e.target;
 
     setData(prev => ({
@@ -75,11 +80,11 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
       </div>
 
       <div className="mb-3">
-        <label className="form-label">Edad</label>
+        <label className="form-label">Fecha de nacimiento</label>
         <input
-          type="number"
-          name="age"
-          value={data.age}
+          type="date"
+          name="birthdate"
+          value={data.birthdate}
           onChange={handleForm}
           className="form-control"
         />
@@ -89,9 +94,9 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
         <label className="form-label">Estado de Salud</label>
         <select name="healthStatus" value={data.healthStatus}
           onChange={handleForm} className="form-select">
-          <option value="bueno">Bueno</option>
-          <option value="regular">Regular</option>
-          <option value="malo">Malo</option>
+          <option value="Bueno">Bueno</option>
+          <option value="Regular">Regular</option>
+          <option value="Malo">Malo</option>
 
         </select>
       </div>
@@ -118,7 +123,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
         />
       </div>
 
-      <button type="submit" className="btnAddResident">Enviar</button>
+      <button type="submit" className="btnAddResident">Guardar</button>
     </form>
   );
 };

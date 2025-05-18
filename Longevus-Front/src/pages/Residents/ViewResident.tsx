@@ -1,42 +1,33 @@
 import { useEffect, useState } from "react";
-import { ResidentData } from "../../components/ResidentForm";
+import type { ResidentData } from "../../components/ResidentForm";
 import ViewContactModal from "../../components/ViewContactModal";
 import AddContactModal from "../../components/AddContactModal";
 import type { Contact } from "../../components/ViewContactModal";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
-const data = {
-    id: 1,
-    identification: "123456789",
-    name: "Jose",
-    age: 80,
-    healthStatus: "Buena",
-    numberRoom: 2,
-    photo: "/residentes/adulto-mayor.png",
-};
-
-const mockContacts: Contact[] = [
-    {
-        id: 1,
-        idResident: 1,
-        name: "Ana Gómez",
-        phone_number: "+50688888888",
-        relationship: "Hija",
-    },
-    {
-        id: 2,
-        idResident: 1,
-        name: "Carlos Pérez",
-        phone_number: "+50699999999",
-        relationship: "Hermano",
-    },
-];
 
 const ViewResident: React.FC = () => {
 
+    const {id} = useParams();
     const [residentData, setResidentData] = useState<ResidentData | null>(null);
+    const [contactsData, setContactsData] = useState<Contact | null>(null);
 
     useEffect(() => {
-        setResidentData(data);
+        if(id){
+            axios.get<ResidentData>(`http://localhost:8080/findResident?id=${id}`)
+            .then(response => setResidentData(response.data))
+            .catch(error => console.error("Error al obtener residente", error))
+        }
+        //setResidentData(data);
+    }, [id]);
+
+    useEffect(() => {
+        if(id){
+            axios.get<Contact>(`http://localhost:8080/getContacts?id=${id}`)
+            .then(response => setContactsData(response.data))
+            .catch(error => console.error("Error al obtener contactos", error))
+        }
     }, []);
 
 
@@ -50,7 +41,7 @@ const ViewResident: React.FC = () => {
                 {residentData?.photo && (
                     <div className=" mb-3">
                         <img
-                            src={data.photo}
+                            src={residentData.photo}
                             alt="Foto del residente"
                             width="150"
                             className="img-thumbnail"
@@ -78,7 +69,7 @@ const ViewResident: React.FC = () => {
                 show={showContactModal}
                 onClose={() => setShowContactModal(false)}
                 residentName={residentData?.name}
-                contactsList={mockContacts}
+                contactsList={contactsData}
                 onDeleteContact={(id) => alert(`Eliminar contacto con ID ${id}`)}
                 onEditContact={(contact) => alert(`Editar contacto ${contact.name}`)}
             />

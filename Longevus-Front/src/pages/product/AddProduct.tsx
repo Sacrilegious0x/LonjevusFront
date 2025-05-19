@@ -1,44 +1,87 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import axios from "axios";
+
 
 interface Product {
-  nombre: string;
-  precio: number;
-  fechaVencimiento: string;
-  categoria: string;
-  unidad: string;
-  proveedor: string;
-  fotoUrl: string;
+  name: string;
+  price: number;
+  expirationDate: string; 
+  category: string;
+  unit: string;
+  supplier: string;
+  photoURL: string;
 }
+
 
 const categorias = ["Salud", "Limpieza", "Alimento", "Otro"];
 const unidades = ["Unitario", "ml", "g", "kg", "Caja"];
 const proveedores = ["Farmacia Central", "Distribuidora Salud", "Proveedor X"];
 
+const getUnitId = (unidad: string): number => {
+  const mapa: { [key: string]: number } = {
+    "Unitario": 1,
+    "ml": 2,
+    "g": 3,
+    "kg": 4,
+    "Caja": 5
+  };
+  return mapa[unidad] || 1; 
+};
+
+const getSupplierId = (proveedor: string): number => {
+  const mapa: { [key: string]: number } = {
+    "Farmacia Central": 1,
+    "Distribuidora Salud": 2,
+    "Proveedor X": 3
+  };
+  return mapa[proveedor] || 1;
+};
+
 const AddProduct = () => {
   const navigate = useNavigate();
 
   const [product, setProduct] = useState<Product>({
-    nombre: "",
-    precio: 0,
-    fechaVencimiento: "",
-    categoria: "",
-    unidad: "",
-    proveedor: "",
-    fotoUrl: "",
+    name: "",
+    price: 0,
+    expirationDate: "",
+    category: "",
+    unit: "",
+    supplier: "",
+    photoURL: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setProduct(prev => ({ ...prev, [name]: value }));
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const newProduct = {
+    name: product.name,
+    price: product.price,
+    expirationDate: product.expirationDate,
+    category: product.category,
+    photoURL: product.photoURL,
+    unit: { id: getUnitId(product.unit) }, 
+    supplier: { id: getSupplierId(product.supplier) },
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Producto agregado:", product);
+  try {
+    await axios.post("http://localhost:8080/api/products/add", newProduct);
+    alert("Producto agregado exitosamente.");
     navigate("/productos");
-  };
+  } catch (error) {
+    console.error("Error al agregar producto:", error);
+    alert("Error al agregar producto.");
+  }
+};
+
+const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const { name, value } = e.target;
+  setProduct(prev => ({ ...prev, [name]: value }));
+};
+
+
+
 
   return (
     <div className="container mt-4">
@@ -52,10 +95,10 @@ const AddProduct = () => {
         <div className="mb-3">
           <label className="form-label">Nombre</label>
           <input
-            name="nombre"
+            name="name"
             type="text"
             className="form-control"
-            value={product.nombre}
+            value={product.name}
             onChange={handleChange}
             required
           />
@@ -64,10 +107,10 @@ const AddProduct = () => {
         <div className="mb-3">
           <label className="form-label">Precio</label>
           <input
-            name="precio"
+            name="price"
             type="number"
             className="form-control"
-            value={product.precio}
+            value={product.price}
             onChange={handleChange}
             required
           />
@@ -76,10 +119,10 @@ const AddProduct = () => {
         <div className="mb-3">
           <label className="form-label">Fecha de Vencimiento</label>
           <input
-            name="fechaVencimiento"
+            name="expirationDate"
             type="date"
             className="form-control"
-            value={product.fechaVencimiento}
+            value={product.expirationDate}
             onChange={handleChange}
             required
           />
@@ -88,9 +131,9 @@ const AddProduct = () => {
         <div className="mb-3">
           <label className="form-label">Categoría</label>
           <select
-            name="categoria"
+            name="category"
             className="form-select"
-            value={product.categoria}
+            value={product.category}
             onChange={handleChange}
             required
           >
@@ -104,9 +147,9 @@ const AddProduct = () => {
         <div className="mb-3">
           <label className="form-label">Unidad de Medida</label>
           <select
-            name="unidad"
+            name="unit"
             className="form-select"
-            value={product.unidad}
+            value={product.unit}
             onChange={handleChange}
             required
           >
@@ -120,9 +163,9 @@ const AddProduct = () => {
         <div className="mb-3">
           <label className="form-label">Proveedor</label>
           <select
-            name="proveedor"
+            name="supplier"
             className="form-select"
-            value={product.proveedor}
+            value={product.supplier}
             onChange={handleChange}
             required
           >
@@ -136,10 +179,10 @@ const AddProduct = () => {
         <div className="mb-3">
           <label className="form-label">URL de la Foto</label>
           <input
-            name="fotoUrl"
+            name="photoURL"
             type="text"
             className="form-control"
-            value={product.fotoUrl}
+            value={product.photoURL}
             onChange={handleChange}
           />
         </div>

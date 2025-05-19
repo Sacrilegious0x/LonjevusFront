@@ -1,53 +1,44 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import StandardTable, { type Column } from "../../components/StandardTable";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 import CategoryFilter from "../../components/CategoryFilter";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 interface Product {
   id: number;
-  nombre: string;
-  precio: number;
-  fechaVencimiento: string;
-  categoria: string;
-  unidad: string;
-  proveedor: string;
-  fotoUrl: string;
+  name: string;
+  price: number;
+  expirationDate: string;
+  category: string;
+  unit: { id: number; unit_type: string };
+  supplier: { id: number; name: string };
+  photoURL: string;
 }
-
-const allProducts: Product[] = [
-  {
-    id: 1,
-    nombre: "Vitamina C",
-    precio: 25,
-    fechaVencimiento: "2024-12-01",
-    categoria: "Salud",
-    unidad: "Unitario",
-    proveedor: "Farmacia Central",
-    fotoUrl: "https://picsum.photos/60/60?1",
-  },
-  {
-    id: 2,
-    nombre: "Alcohol",
-    precio: 15,
-    fechaVencimiento: "2025-01-01",
-    categoria: "Limpieza",
-    unidad: "ml",
-    proveedor: "Distribuidora Salud",
-    fotoUrl: "https://picsum.photos/60/60?2",
-  },
-];
 
 const ProductPage = () => {
   const navigate = useNavigate();
-  const [products, setProducts] = useState<Product[]>(allProducts);
-  const [filter, setFilter] = useState("Todos");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filter, setFilter] = useState<string>("Todos");
 
-  const filteredProducts = filter === "Todos"
-    ? products
-    : products.filter(p => p.categoria === filter);
+  // 🔁 Traer productos directamente usando axios
+  const getAllProducts = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/api/products/all");
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Error al cargar productos:", error);
+    }
+  };
 
-  const uniqueCategories = [...new Set(products.map(p => p.categoria))];
+  useEffect(() => {
+    getAllProducts();
+  }, []);
+
+  const filteredProducts =
+    filter === "Todos" ? products : products.filter((p) => p.category === filter);
+
+  const uniqueCategories = [...new Set(products.map((p) => p.category).filter(Boolean))];
 
   const handleEdit = (product: Product) => {
     navigate(`/productos/editar/${product.id}`);
@@ -56,36 +47,44 @@ const ProductPage = () => {
   const handleDelete = (id: number) => {
     const confirmDelete = window.confirm(`¿Estás seguro de eliminar el producto con ID ${id}?`);
     if (confirmDelete) {
-      setProducts(prev => prev.filter(p => p.id !== id));
+      setProducts((prev) => prev.filter((p) => p.id !== id));
     }
   };
 
   const columns: Column<Product>[] = [
     { header: "#", accessor: "id" },
-    { header: "Nombre", accessor: "nombre" },
+    { header: "Nombre", accessor: "name" },
     {
       header: "Precio",
-      accessor: "precio",
-      render: (item) => `$${item.precio.toFixed(2)}`
+      accessor: "price",
+      render: (item) => `$${item.price.toFixed(2)}`
     },
-    { header: "Fecha Vencimiento", accessor: "fechaVencimiento" },
-    { header: "Categoría", accessor: "categoria" },
-    { header: "Unidad", accessor: "unidad" },
-    { header: "Proveedor", accessor: "proveedor" },
+    { header: "Fecha Vencimiento", accessor: "expirationDate" },
+    { header: "Categoría", accessor: "category" },
+    {
+      header: "Unidad",
+      accessor: "unit",
+      render: (item) => item.unit.unit_type
+    },
+    {
+      header: "Proveedor",
+      accessor: "supplier",
+      render: (item) => item.supplier.name
+    },
     {
       header: "Foto",
-      accessor: "fotoUrl",
+      accessor: "photoURL",
       render: (item) => (
         <img
-          src={item.fotoUrl}
-          alt={item.nombre}
+          src={item.photoURL}
+          alt={item.name}
           className="img-thumbnail"
           width="60"
           height="60"
           style={{ objectFit: "cover" }}
         />
-      ),
-    },
+      )
+    }
   ];
 
   return (
@@ -97,11 +96,7 @@ const ProductPage = () => {
         </button>
       </div>
 
-      <CategoryFilter
-        value={filter}
-        onChange={setFilter}
-        options={uniqueCategories}
-      />
+      <CategoryFilter value={filter} onChange={setFilter} options={uniqueCategories} />
 
       <StandardTable<Product>
         data={filteredProducts}

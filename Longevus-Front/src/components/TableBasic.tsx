@@ -9,7 +9,7 @@ export type columnDefinition<T>={
     }) => React.ReactNode;
     accessor: keyof T | ((data: T) => any);
     Cell?: (data: T, index:number) => React.ReactNode;
-   
+    render?: (item: T, index: number) => React.ReactNode;
 }
 
 export interface GenericTableProps<T>{
@@ -18,9 +18,11 @@ export interface GenericTableProps<T>{
     selectedRows: Set<number>; // Set con los IDs de las filas seleccionadas
     onToggleRow: (rowId: number) => void; // Función para (de)seleccionar una fila individual
     onSelectAll: (isSelected: boolean) => void; // Función para (de)seleccionar todas las filas
+    renderActions?: (item: T) => React.ReactNode;
+
 }
 
-function GenericTable<T extends {id: number}>({data,columns,selectedRows,onSelectAll,}: GenericTableProps<T>) {
+function GenericTable<T extends {id: number}>({data,columns,selectedRows,onSelectAll,renderActions}: GenericTableProps<T>) {
 
     // Calculamos si todas las filas están seleccionadas para pasarlo a la cabecera
     const isSelectedAll = data.length > 0 && selectedRows.size === data.length;

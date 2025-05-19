@@ -18,7 +18,6 @@ const [formData, setFormData] = useState({
         }));
     }
 
-   
     const submit = (e: FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
         if (formData.password === "pass"){
@@ -32,7 +31,6 @@ const [formData, setFormData] = useState({
     
     return(
         <>
-            
                 <div className = 'cardLogin'>
                     <div className='row'>
                         <div className='cardLogin-body text-center'>
@@ -45,13 +43,9 @@ const [formData, setFormData] = useState({
                             <div className='card-footer'>
                                 <a href='#'>Olvide mi contraseña</a>
                             </div>
-                            
                         </div> 
                     </div>
-                    
                 </div>
-            
-        
         </>
     )
 }

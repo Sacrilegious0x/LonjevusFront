@@ -77,7 +77,26 @@ const Header = () => {
                         {menuActive === 'permissions' && (
                             <ul className="sub_ul-actions">
                                 <li className="sub_ul-actions-li">
-                                    <Link className="sub_menu-options" to="/">Mostrar permisos</Link>
+                                    <Link className="sub_menu-options" to="/roles_permisos">Mostrar permisos</Link>
+                                </li>
+                            </ul>
+                        )}
+
+                    </li>
+
+                     <li className="ul-actions-li"
+                        onMouseEnter={() => setMenuActive('suppliers')}
+                        onMouseLeave={() => setMenuActive(null)}>
+
+                        Proveedores
+
+                        {menuActive === 'suppliers' && (
+                            <ul className="sub_ul-actions">
+                                <li className="sub_ul-actions-li">
+                                    <Link className="sub_menu-options" to="/proveedores">Listar Proveedores</Link>
+                                </li>
+                                <li className="sub_ul-actions-li">
+                                    <Link className="sub_menu-options" to="/proveedores/guardar">Agregar Proveedores</Link>
                                 </li>
                             </ul>
                         )}

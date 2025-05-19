@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Header from '../../components/Header';
+import Header from '../../components/HeaderAdmin';
 import Footer from '../../components/Footer';
 import axios from 'axios';
 
@@ -62,7 +62,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedFile(file);
     setFormData({
       ...formData,
-      photoUrl: URL.createObjectURL(file), // opcional, para previsualizar
+      photoUrl: URL.createObjectURL(file), 
     });
   }
 };

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import Header from '../../components/Header';
+import Header from '../../components/HeaderAdmin';
 import Footer from '../../components/Footer';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -54,14 +54,12 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
      const config = {headers: {'Content-Type': 'multipart/form-data',},};
 
       const res = await axios.post(
-        'http://localhost:8080/suppliers/save', // tu endpoint de POST
+        'http://localhost:8080/suppliers/save', //hago el post
         data,config
       );
       console.log('Proveedor guardado:', res.data);
 
-      // 4. Rediriges o limpias el formulario
-      //useNavigate('/proveedores');
-
+      
       console.log('Guardado:', res.data);
       navigate('/proveedores');
     } catch (error) {

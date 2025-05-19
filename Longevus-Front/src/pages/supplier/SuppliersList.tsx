@@ -1,5 +1,5 @@
 
-import Header from "../../components/Header";
+import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import type {columnDefinition} from '../../components/TableBasic';
 import { Link } from 'react-router-dom';
@@ -22,6 +22,18 @@ const SuppliersList = () =>{
   const [supplierData, setSupplierData] = useState<ISupplier[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [searchTerm, setSearchTerm] = useState<string>('');
+
+  const filteredSuppliers = supplierData.filter(supplier => {
+  const term = searchTerm.toLowerCase();
+  return (
+    supplier.name.toLowerCase().includes(term) ||
+    supplier.phoneNumber.toLowerCase().includes(term) ||
+    supplier.email.toLowerCase().includes(term) ||
+    supplier.address.toLowerCase().includes(term)
+  );
+});
 
    const supplierColumns: columnDefinition<ISupplier>[] =[
     {header: '#', accessor: 'id', Cell:(_supplier, index)=>{return(index+1)}},
@@ -114,9 +126,9 @@ return (
                         <Link className='btn btn-success' to='/proveedores/guardar'>Agregar</Link>
                 </div>  
                 <div className='card-body'>
-                        <input className="mb-3" type="text" placeholder="Buscar..." id="supplierSearch"/>
+                        <input className="mb-3" type="text" placeholder="Buscar..." id="supplierSearch" value={searchTerm} onChange={(e)=> setSearchTerm(e.target.value)}/>
                         <button className="btn btn-secondary" id="btnSearch"><i className='bi bi-search'/></button>
-                        <Table<ISupplier> data={supplierData} columns={supplierColumns} selectedRows={new Set()} onToggleRow={()=>{}} onSelectAll={()=>{}}/>
+                        <Table<ISupplier> data={filteredSuppliers} columns={supplierColumns} selectedRows={new Set()} onToggleRow={()=>{}} onSelectAll={()=>{}}/>
                 </div>
             </div>
         </div>

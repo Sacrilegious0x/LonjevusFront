@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react'
 import Footer from '../../components/Footer'
-import Header from '../../components/Header'
+import Header from '../../components/HeaderAdmin'
 import type { columnDefinition } from '../../components/TableBasic'
 import Table from '../../components/TableBasic';
 
@@ -59,7 +59,7 @@ const RolesList = () =>{
   };
 
   const handleSave = () => {
-    // TODO: enviar permisos actualizados a la API...
+    //  enviar permisos actualizados a la API...
     console.log('Guardando permisos para', currentRole, permissions);
     handleCloseModal();
   };

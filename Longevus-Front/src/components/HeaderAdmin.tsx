@@ -11,7 +11,7 @@ const Header = () => {
             <div className="logo">
                 <img src="/img/logo.jpg" alt="Logo del sitio" />
             </div>
-            <nav>
+            <nav className="navbar bg-body-tertiary">
                 <ul className="ul-actions">
 
                     <li className="ul-actions-li"

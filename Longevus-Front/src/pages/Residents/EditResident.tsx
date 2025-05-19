@@ -40,9 +40,12 @@ const EditResidentPage: React.FC = () => {
                 "Content-Type": "multipart/form-data",
             },
         })
-        .then(() => {
-            alert("Residente creado");
+        .then((response) => {
+            alert("Residente editado");
             navigate("/residente/mostrar")
+            console.log("Residente recibido:", response.data);
+            setResidentData(response.data);
+
         })
         .catch((error) => {
             console.error("Error al crear el residente", error);

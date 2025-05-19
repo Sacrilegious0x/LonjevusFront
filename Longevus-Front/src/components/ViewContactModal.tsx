@@ -81,10 +81,7 @@ const ViewContactModal: React.FC<ContactProps> = ({ show, onClose, residentName,
                     residentName={residentName}
                     residentId={showEditContactModal.idResident}
                     onAddContact={(updatedContact) => {
-                        // Aquí deberías manejar la actualización del contacto:
-                        // Podrías llamar a una función o usar context/props si quieres que el padre sepa.
-                        console.log("Contacto actualizado:", updatedContact);
-                        setEditContactModal(null);
+                        onEditContact(updatedContact);
                     }}
                     editingContact={showEditContactModal}
                 />

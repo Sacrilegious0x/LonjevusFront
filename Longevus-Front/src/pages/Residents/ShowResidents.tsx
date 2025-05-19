@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-interface Resident{
+interface Resident {
     id: number,
     identification: string,
     name: string,
@@ -28,25 +28,37 @@ const Residents = () => {
 
     useEffect(() => {
         axios.get<Resident[]>('http://localhost:8080/residents')
-        .then((response) => {
-            console.log(response.data);
-            setUserData(response.data);
-        })
-        .catch((error) => {
-            console.error('error al obtener valores', error)
-        })
-    },[]);
+            .then((response) => {
+                console.log(response.data);
+                setUserData(response.data);
+            })
+            .catch((error) => {
+                console.error('error al obtener valores', error)
+            })
+    }, []);
 
 
     const handleDeleteResident = (resident: Resident) => {
-        if(window.confirm(`¿Estás seguro de eliminar al residente ${resident.name}?`)){
+        if (window.confirm(`¿Estás seguro de eliminar al residente ${resident.name}?`)) {
             axios.delete(`http://localhost:8080/deleteResident?id=${resident.id}`)
-            .then(() => {
-                setUserData((prev) => prev.filter((r) => r.id !== resident.id)); //se actualiza la lista
-            })
-            .catch((error) => {console.error("Error al eliminar el residente", error)})
+                .then(() => {
+                    setUserData((prev) => prev.filter((r) => r.id !== resident.id)); //se actualiza la lista
+                })
+                .catch((error) => { console.error("Error al eliminar el residente", error) })
         }
     }
+
+    const [searchInput, setSearchInput] = useState("");
+
+    const handleSearch = () => {
+        axios.get<Resident[]>(`http://localhost:8080/findResidentByNameorIdentification?value=${searchInput}`)
+            .then((response) => {
+                setUserData(response.data);
+            })
+            .catch((error) => {
+                console.error("Error al buscar residentes", error);
+            });
+    };
 
     const personColumns: columnDefinition<Resident>[] = [
         { header: '#', accessor: 'id', Cell: (resident, index) => { return (index + 1) } },
@@ -75,33 +87,33 @@ const Residents = () => {
         }
     ];
 
-    return(
-    <>
-    <HeaderA/>
-    <div className='container'>
-            <div className='row'>
-                <div className='card mt-5 mb-5'>
-                    <div className='card-title d-flex justify-content-between align-items-center mt-3'>
-                        <h4>Lista de residentes</h4>
-                        <Link className='btn btn-success' to='/residente/agregar'>Agregar</Link>
+    return (
+        <>
+            <HeaderA />
+            <div className='container'>
+                <div className='row'>
+                    <div className='card mt-5 mb-5'>
+                        <div className='card-title d-flex justify-content-between align-items-center mt-3'>
+                            <h4>Lista de residentes</h4>
+                            <Link className='btn btn-success' to='/residente/agregar'>Agregar</Link>
+                        </div>
+                        <div className='card-body'>
+                            <label>Buscar</label>
+                            <input type="text" placeholder="Buscar..." id="userSearch" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
+                            <button className="btn btn-secondary" id="btnSearch"><i className='bi bi-search' onClick={handleSearch} /></button>
+                            <Table<Resident> data={userData} columns={personColumns} selectedRows={new Set()} onToggleRow={() => { }} onSelectAll={() => { }} />
+                        </div>
                     </div>
-                    <div className='card-body'>
-                        <label>Buscar</label>
-                        <input type="text" placeholder="Buscar..." id="userSearch"/>
-                        <button className="btn btn-secondary" id="btnSearch"><i className='bi bi-search'/></button>
-                        <Table<Resident> data={userData} columns={personColumns} selectedRows={new Set()} onToggleRow={()=>{}} onSelectAll={()=>{}}/>
-                    </div>
+
                 </div>
-                
+
             </div>
-            
-        </div>
-        <Footer/>
-    </>
-        
-        
-        
-   )
+            <Footer />
+        </>
+
+
+
+    )
 };
 
 export default Residents;

@@ -32,6 +32,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
 
   useEffect(() => {
     if (initialData) {
+      console.log("📋 Cargando initialData en form:", initialData);
       setData(initialData);
     }
   }, [initialData]);
@@ -117,6 +118,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
         <input
           type="file"
           name="photo"
+          required
           accept="image/*"
           onChange={handleForm}
           className="form-control"

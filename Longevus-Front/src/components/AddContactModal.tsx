@@ -13,10 +13,10 @@ interface AddContactProps {
 const AddContactModal: React.FC<AddContactProps> = ({ show, onClose, residentName, residentId, onAddContact, editingContact }) => {
     if (!show)
         return null
-
+    
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
-    const [relationship, setRelationship] = useState("");
+    const [relationShip, setRelationship] = useState("");
 
     useEffect(() =>{
         if(editingContact){
@@ -31,14 +31,14 @@ const AddContactModal: React.FC<AddContactProps> = ({ show, onClose, residentNam
     }, [editingContact, show])
 
     const handleSubmit = () => {
-        if (!name || !phone || !relationship) return alert("Completa todos los campos");
+        if (!name || !phone || !relationShip) return alert("Completa todos los campos");
 
         const newContact: Contact = {
-            id: editingContact.id ?? 0,
+            id: editingContact?.id ?? 0,
             idResident: residentId,
             name,
             phoneNumber: phone,
-            relationship,
+            relationShip,
         };
 
         onAddContact(newContact);
@@ -84,7 +84,7 @@ const AddContactModal: React.FC<AddContactProps> = ({ show, onClose, residentNam
                             <input
                                 type="text"
                                 className="form-control"
-                                value={relationship}
+                                value={relationShip}
                                 onChange={(e) => setRelationship(e.target.value)}
                             />
                         </div>

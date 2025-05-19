@@ -9,30 +9,69 @@ import axios from "axios";
 
 const ViewResident: React.FC = () => {
 
-    const {id} = useParams();
+    const { id } = useParams();
     const [residentData, setResidentData] = useState<ResidentData | null>(null);
-    const [contactsData, setContactsData] = useState<Contact | null>(null);
+    const [contactsData, setContactsData] = useState<Contact[]>([]);
 
     useEffect(() => {
-        if(id){
+        if (id) {
             axios.get<ResidentData>(`http://localhost:8080/findResident?id=${id}`)
-            .then(response => setResidentData(response.data))
-            .catch(error => console.error("Error al obtener residente", error))
+                .then(response => setResidentData(response.data))
+                .catch(error => console.error("Error al obtener residente", error))
         }
         //setResidentData(data);
     }, [id]);
 
-    useEffect(() => {
-        if(id){
-            axios.get<Contact>(`http://localhost:8080/getContacts?id=${id}`)
-            .then(response => setContactsData(response.data))
-            .catch(error => console.error("Error al obtener contactos", error))
+    const fetchContacts = () => {
+        if (id) {
+            axios.get<Contact[]>(`http://localhost:8080/getContacts?id=${id}`)
+                .then(response => setContactsData(response.data))
+                .catch(error => console.error("Error al obtener contactos", error));
         }
-    }, []);
+    };
+
+    useEffect(() => {
+        fetchContacts();
+    }, [id]);
+
 
 
     const [showContactModal, setShowContactModal] = useState(false);
     const [showAddContactModal, setShowAddContactModal] = useState(false);
+
+    const handleAddContact = (contact: Contact) => {
+        axios.post(`http://localhost:8080/addContact`, contact)
+            .then(() => {
+                alert("Contacto agregado")
+                fetchContacts();
+            })
+            .catch((error) => {
+                console.error("Error al guardar el contacto", error)
+            })
+    }
+
+    const handleEditContact = (updatedContact: Contact) => {
+        console.log("Enviando datos:", updatedContact);
+        axios.post("http://localhost:8080/updateContact", updatedContact)
+            .then(() => {
+                alert("Contacto actualizado con éxito");
+                fetchContacts();
+            })
+            .catch((error) => {
+                console.error("Error al actualizar contacto", error);
+                alert(error.response?.data || "Error al actualizar contacto");
+            });
+    };
+
+    const handleDeleteContact = (contactId: number) => {
+        if(window.confirm(`¿Estás seguro de eliminar el contacto?`)){
+            axios.delete(`http://localhost:8080/deleteContact?id=${contactId}`)
+            .then(() => {
+                alert("Contacto eliminado con exito")
+                fetchContacts();
+            });
+        }    
+    };
 
     return (
         <div className="container mt-5">
@@ -55,14 +94,14 @@ const ViewResident: React.FC = () => {
                 <p><strong>Número de habitación:</strong> {residentData?.numberRoom}</p>
 
                 <center>
-                    <button className="btn btn-primary mt-3" onClick={() =>  setShowAddContactModal(true)}>
+                    <button className="btn btn-primary mt-3" onClick={() => setShowAddContactModal(true)}>
                         Agregar contactos
                     </button>
                     <button className="btn btn-info mt-3" onClick={() => setShowContactModal(true)}>
                         Ver contactos
                     </button>
                 </center>
-                
+
             </div>
 
             <ViewContactModal
@@ -70,8 +109,8 @@ const ViewResident: React.FC = () => {
                 onClose={() => setShowContactModal(false)}
                 residentName={residentData?.name}
                 contactsList={contactsData}
-                onDeleteContact={(id) => alert(`Eliminar contacto con ID ${id}`)}
-                onEditContact={(contact) => alert(`Editar contacto ${contact.name}`)}
+                onDeleteContact={handleDeleteContact}
+                onEditContact={handleEditContact}
             />
 
             <AddContactModal
@@ -79,7 +118,7 @@ const ViewResident: React.FC = () => {
                 onClose={() => setShowAddContactModal(false)}
                 residentName={residentData?.name}
                 residentId={residentData?.id}
-                onAddContact={(id) => alert(`Eliminar contacto con ID ${id}`)}
+                onAddContact={handleAddContact}
             />
         </div>
     );

@@ -22,7 +22,15 @@ const PurchasePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedPurchase, setSelectedPurchase] = useState<Purchase | null>(null);
-  const [purchases, setPurchases] = useState<Purchase[]>([]); 
+  const [purchases, setPurchases] = useState<Purchase[]>([]);
+
+  const mapPurchase = (purchase: any): Purchase => ({
+    id: purchase.id,
+    date: purchase.date,
+    totalAmount: purchase.amount,
+    managerName: purchase.admin?.name || "No asignado",
+    items: purchase.items,
+  });
 
   const getAllPurchases = async () => {
     const response = await axios.get("http://localhost:8080/api/purchases/all");
@@ -38,14 +46,7 @@ const PurchasePage = () => {
   useEffect(() => {
     getAllPurchases()
       .then((data) => {
-        const mappedPurchases = data.map((purchase: any) => ({
-          id: purchase.id,
-          date: purchase.date,
-          totalAmount: purchase.amount,
-          managerName: purchase.admin.name,
-          items: purchase.items,
-        }));
-        setPurchases(mappedPurchases);
+        setPurchases(data.map(mapPurchase));
       })
       .catch((error) => console.error("Error al obtener compras:", error));
   }, [location]);
@@ -62,7 +63,7 @@ const PurchasePage = () => {
       accessor: "totalAmount",
       render: (item) => `$${item.totalAmount.toFixed(2)}`,
     },
-    { header: "Encargado", accessor: "managerName" },
+    { header: "Administrador", accessor: "managerName" },
   ];
 
   const handleEdit = (purchase: Purchase) => {
@@ -74,14 +75,8 @@ const PurchasePage = () => {
     if (confirmDelete) {
       try {
         await deletePurchase(id);
-        const updated = await getAllPurchases();
-        setPurchases(updated.map((purchase: any) => ({
-          id: purchase.id,
-          date: purchase.date,
-          totalAmount: purchase.amount,
-          managerName: purchase.admin.name,
-          items: purchase.items,
-        })));
+        // ✅ Elimina de la vista inmediatamente sin volver a consultar
+        setPurchases(prev => prev.filter(p => p.id !== id));
       } catch (error) {
         console.error("Error al eliminar la compra:", error);
       }

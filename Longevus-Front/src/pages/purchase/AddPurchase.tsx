@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { getAllProducts } from '../../services/productService';
-import { createPurchase } from '../../services/purchaseService';
 import axios from "axios";
-
 
 interface Product {
   id: number;
@@ -13,29 +10,39 @@ interface Product {
 }
 
 const AddPurchase = () => {
-  
   const navigate = useNavigate();
 
   const [products, setProducts] = useState<Product[]>([]);
- const [date, setDate] = useState(() => {
-  const today = new Date();
-  return today.toISOString().split("T")[0]; 
-});
+  const [date, setDate] = useState(() => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  });
   const [managerName, setManagerName] = useState('');
   const [items, setItems] = useState<{ productId: number; quantity: number }[]>([]);
-  
+
+  const getAllProducts = async (): Promise<Product[]> => {
+    const response = await axios.get("http://localhost:8080/api/products/all");
+    return response.data;
+  };
+
   const getAdminName = async (): Promise<string> => {
-  const response = await axios.get("http://localhost:8080/api/admin/name");
-  return response.data;
+    const response = await axios.get("http://localhost:8080/api/admin/name");
+    return response.data;
+  };
+
+  const createPurchase = async (purchase: any) => {
+    await axios.post("http://localhost:8080/api/purchases/add", purchase);
+  };
+
+  const handleRemoveProduct = (index: number) => {
+  setItems(prev => prev.filter((_, i) => i !== index));
 };
 
 
   useEffect(() => {
-    
     getAllProducts()
       .then(data => {
         setProducts(data);
-
         if (data.length > 0) {
           setItems([{ productId: data[0].id, quantity: 1 }]);
         }
@@ -44,13 +51,14 @@ const AddPurchase = () => {
         console.error("Error cargando productos:", error);
       });
   }, []);
-  
-  useEffect(() => {
-  getAdminName()
-    .then(name => setManagerName(name))
-    .catch(err => console.error("Error obteniendo administrador:", err));
-}, []);
 
+  useEffect(() => {
+    getAdminName()
+      .then(name => setManagerName(name))
+      .catch(err => console.error("Error obteniendo administrador:", err));
+  }, []);
+
+  
   const handleAddProduct = () => {
     if (products.length === 0) return;
     setItems([...items, { productId: products[0].id, quantity: 1 }]);
@@ -75,29 +83,28 @@ const AddPurchase = () => {
     }, 0);
   };
 
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const purchasePayload = {
-    date: new Date().toISOString().split("T")[0],
-    amount: getTotal(),
-    admin: { id: 1 },
-    items: items.map(item => ({
-      idProduct: item.productId,
-      quantity: item.quantity
-    }))
+    const purchasePayload = {
+      date,
+      amount: getTotal(),
+      admin: { id: 1 },
+      items: items.map(item => ({
+        idProduct: item.productId,
+        quantity: item.quantity
+      }))
+    };
+
+    try {
+      await createPurchase(purchasePayload);
+      alert("Compra registrada correctamente");
+      navigate("/compras");
+    } catch (error) {
+      console.error("Error al guardar la compra:", error);
+      alert("Ocurrió un error al registrar la compra.");
+    }
   };
-
-  try {
-    await createPurchase(purchasePayload);
-    alert("Compra registrada correctamente");
-    navigate("/compras");
-  } catch (error) {
-    console.error("Error al guardar la compra:", error);
-    alert("Ocurrió un error al registrar la compra.");
-  }
-};
-
 
   return (
     <div className="container mt-4">
@@ -125,9 +132,9 @@ const AddPurchase = () => {
             type="text"
             className="form-control"
             value={managerName}
-    readOnly
-  />
-</div>
+            readOnly
+          />
+        </div>
 
         <h5>Productos</h5>
         <table className="table table-bordered">
@@ -137,12 +144,13 @@ const AddPurchase = () => {
               <th>Precio</th>
               <th>Cantidad</th>
               <th>Subtotal</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {items.map((item, index) => {
               const product = products.find(p => p.id === item.productId);
-              const price = product?.price || 0;
+              const price = product?.price ?? 0;
               return (
                 <tr key={index}>
                   <td>
@@ -152,11 +160,10 @@ const AddPurchase = () => {
                       onChange={e => handleProductChange(index, parseInt(e.target.value))}
                     >
                       {products
-  .filter(p => !items.some(item => item.productId === p.id) || item.productId === p.id)
-  .map(p => (
-    <option key={p.id} value={p.id}>{p.name}</option>
-))}
-
+                        .filter(p => !items.some(it => it.productId === p.id) || item.productId === p.id)
+                        .map(p => (
+                          <option key={p.id} value={p.id}>{p.name}</option>
+                        ))}
                     </select>
                   </td>
                   <td>${price.toFixed(2)}</td>
@@ -170,7 +177,18 @@ const AddPurchase = () => {
                     />
                   </td>
                   <td>${(price * item.quantity).toFixed(2)}</td>
+                <td>
+  <button
+    type="button"
+    className="btn btn-danger btn-sm"
+    onClick={() => handleRemoveProduct(index)}
+  >
+    Eliminar
+  </button>
+</td>
+
                 </tr>
+
               );
             })}
           </tbody>

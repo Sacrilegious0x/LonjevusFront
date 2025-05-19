@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { getPurchaseById, updatePurchase } from '../../services/purchaseService';
-import { getAllProducts } from '../../services/productService';
 
 interface Product {
   id: number;
@@ -37,6 +35,31 @@ const EditPurchase = () => {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [initialData, setInitialData] = useState('');
 
+  const getAllProducts = async (): Promise<Product[]> => {
+  const response = await fetch("http://localhost:8080/api/products/all");
+  return await response.json();
+};
+
+const getPurchaseById = async (id: number): Promise<Purchase> => {
+  const response = await fetch(`http://localhost:8080/api/purchases/${id}`);
+  if (!response.ok) {
+    throw new Error("No se pudo obtener la compra");
+  }
+  return await response.json();
+};
+
+const updatePurchase = async (id: number, data: any): Promise<boolean> => {
+  const response = await fetch(`http://localhost:8080/api/purchases/update/${id}`, {
+    method: 'PUT',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+  return response.ok;
+};
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -47,7 +70,7 @@ const EditPurchase = () => {
           const data: Purchase = await getPurchaseById(parseInt(id));
 
           setDate(data.date);
-          setManagerName(data.admin.name);
+          setManagerName(data.admin?.name ?? "No asignado"); //PARA CUANDO ESTE EL ADMIN
 
           const compraItems = data.items.map((item: PurchaseItem) => ({
             productId: item.idProduct,

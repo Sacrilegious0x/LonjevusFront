@@ -3,7 +3,7 @@ import type { EmployeeFormData } from '../../components/EmployeeForm';
 import { createAdmin } from '../../services/AdminService';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/HeaderAdmin';
-
+import Footer  from '../../components/Footer';
 const AddAdmin = ()=>{
     const navigate = useNavigate();
     const handleFormSubmit = async  (formData: EmployeeFormData) => {
@@ -31,7 +31,8 @@ const AddAdmin = ()=>{
             showDaySelector={true}
             showHourSelector={true}
             showOfficeContactField={true}
-            />   
+            /> 
+            <Footer />  
         </>
         
     )

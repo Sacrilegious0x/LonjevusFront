@@ -1,13 +1,13 @@
 import  { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // Ejemplo con React Router
-import EmployeeForm from '../../components/EmployeeForm'; // Asegúrate de que la ruta sea correcta
-import type { EmployeeFormData, EmployeeInitialData } from '../../components/EmployeeForm'; // Importa los tipos
+import { useParams, useNavigate } from 'react-router-dom'; 
+import EmployeeForm from '../../components/EmployeeForm'; 
+import type { EmployeeFormData, EmployeeInitialData } from '../../components/EmployeeForm'; 
 import { updateCaregiver, getCaregiverById, } from '../../services/CaregiverService';
 import type { CaregiverApiResponse } from '../../services/CaregiverService';
 import type { IShift } from '../../components/HourSelector';
 
 const EditEmployee =()=>{
-    const { id } = useParams<{ id: string }>(); // Obtiene el ID de la URL
+    const { id } = useParams<{ id: string }>(); 
     const navigate = useNavigate();
     const [employeeData, setEmployeeData] = useState<EmployeeInitialData | null>(null);
      const [loading, setLoading] = useState(true);
@@ -18,31 +18,29 @@ const EditEmployee =()=>{
         setLoading(true);
         setError(null);
         getCaregiverById(id)
-            .then((apiData: CaregiverApiResponse) => { // apiData es ahora del tipo CaregiverApiResponse refinado
+            .then((apiData: CaregiverApiResponse) => { 
                 if (apiData) {
-                    const workScheduleTransformed: IShift[] = [];
-                    // Usamos apiData.schedule.id si existe, que es el ID primario del objeto schedule.
-                    // apiData.scheduleId (el FK en Caregiver) debería ser igual si la data es consistente.
+                    const workScheduleTransformed: IShift[] = [];     
                     const dbScheduleId = apiData.schedule?.id;
 
                     if (apiData.schedule) {
                         if (apiData.schedule.entryTime1 || apiData.schedule.exitTime1) {
                             workScheduleTransformed.push({
                                 id: `${dbScheduleId || 'sched'}-0`,
-                                entryTime: apiData.schedule.entryTime1 || "", // Maneja bien el null de la API
-                                exitTime: apiData.schedule.exitTime1 || ""  // Maneja bien el null de la API
+                                entryTime: apiData.schedule.entryTime1 || "", 
+                                exitTime: apiData.schedule.exitTime1 || ""  
                             });
                         }
                         if (apiData.schedule.entryTime2 || apiData.schedule.exitTime2) {
                             workScheduleTransformed.push({
                                 id: `${dbScheduleId || 'sched'}-1`,
-                                entryTime: apiData.schedule.entryTime2 || "", // Maneja bien el null de la API
-                                exitTime: apiData.schedule.exitTime2 || ""  // Maneja bien el null de la API
+                                entryTime: apiData.schedule.entryTime2 || "", 
+                                exitTime: apiData.schedule.exitTime2 || ""  
                             });
                         }
                     }
                     
-                    if (workScheduleTransformed.length === 0) { // Si no hay turnos, agregar uno vacío por defecto
+                    if (workScheduleTransformed.length === 0) {
                         workScheduleTransformed.push({ id: crypto.randomUUID(), entryTime: "", exitTime: "" });
                     }
 
@@ -69,7 +67,6 @@ const EditEmployee =()=>{
                 setLoading(false);
             })
             .catch(err => {
-                // ... manejo de errores ...
                 console.error("Error cargando datos del empleado:", err);
                 let errorMessage = "Error al cargar los datos del empleado.";   
                 setError(errorMessage);
@@ -80,7 +77,6 @@ const EditEmployee =()=>{
         setLoading(false);
     }
 }, [id]);
- // Recarga si el ID de la URL cambia
 
 const handleFormSubmit = async (formData: EmployeeFormData, id?: string) => {
          if (!id) {
@@ -91,7 +87,7 @@ const handleFormSubmit = async (formData: EmployeeFormData, id?: string) => {
               try {
                   const response = await updateCaregiver(id, formData);
                   alert(response.data || "Trabajador actualizado exitosamente!");
-                  navigate('/mostrar');
+                  navigate('/empleado/mostrar');
               } catch (error) {
                   console.error("Error al actualizar Trabajador:", error);
                   alert("Error al actualizar trabajador. Por favor, intente nuevamente.");
@@ -99,7 +95,7 @@ const handleFormSubmit = async (formData: EmployeeFormData, id?: string) => {
     };
     const handleCancel = () => {
         console.log("Operación de edición cancelada");
-        navigate('/mostrar'); // Redirige a la lista de empleados
+        navigate('/empleado/mostrar'); 
     };
     if (loading) {
         return <div className="container mt-5">Cargando...</div>;
@@ -120,7 +116,7 @@ const handleFormSubmit = async (formData: EmployeeFormData, id?: string) => {
         <>
              
             <EmployeeForm
-                initialData={employeeData} // Pasamos los datos cargados
+                initialData={employeeData} 
                 onSubmit={handleFormSubmit}
                 onCancel={handleCancel}
                 showShiftSelector={shiftSelectorVisible}

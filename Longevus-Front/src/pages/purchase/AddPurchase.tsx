@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Header from "../../components/HeaderAdmin";
+import Footer from "../../components/Footer";
 import axios from "axios";
 
 interface Product {
@@ -18,7 +20,7 @@ const AddPurchase = () => {
     return today.toISOString().split("T")[0];
   });
   const [managerName, setManagerName] = useState('');
-  const [items, setItems] = useState<{ productId: number; quantity: number }[]>([]);
+  const [items, setItems] = useState<{ productId: number; quantity: number; expirationDate: string }[]>([]);
 
   const getAllProducts = async (): Promise<Product[]> => {
     const response = await axios.get("http://localhost:8080/api/products/all");
@@ -35,16 +37,21 @@ const AddPurchase = () => {
   };
 
   const handleRemoveProduct = (index: number) => {
-  setItems(prev => prev.filter((_, i) => i !== index));
-};
+    setItems(prev => prev.filter((_, i) => i !== index));
+  };
 
+  const handleExpirationChange = (index: number, value: string) => {
+    setItems(items.map((item, i) =>
+      i === index ? { ...item, expirationDate: value } : item
+    ));
+  };
 
   useEffect(() => {
     getAllProducts()
       .then(data => {
         setProducts(data);
         if (data.length > 0) {
-          setItems([{ productId: data[0].id, quantity: 1 }]);
+          setItems([{ productId: data[0].id, quantity: 1, expirationDate: "" }]);
         }
       })
       .catch(error => {
@@ -58,10 +65,9 @@ const AddPurchase = () => {
       .catch(err => console.error("Error obteniendo administrador:", err));
   }, []);
 
-  
   const handleAddProduct = () => {
     if (products.length === 0) return;
-    setItems([...items, { productId: products[0].id, quantity: 1 }]);
+    setItems([...items, { productId: products[0].id, quantity: 1, expirationDate: "" }]);
   };
 
   const handleProductChange = (index: number, newProductId: number) => {
@@ -92,7 +98,8 @@ const AddPurchase = () => {
       admin: { id: 1 },
       items: items.map(item => ({
         idProduct: item.productId,
-        quantity: item.quantity
+        quantity: item.quantity,
+        expirationDate: item.expirationDate
       }))
     };
 
@@ -107,6 +114,8 @@ const AddPurchase = () => {
   };
 
   return (
+    <>
+  <Header/>
     <div className="container mt-4">
       <h2>Agregar Nueva Compra</h2>
 
@@ -143,6 +152,7 @@ const AddPurchase = () => {
               <th>Producto</th>
               <th>Precio</th>
               <th>Cantidad</th>
+              <th>Fecha de Vencimiento</th>
               <th>Subtotal</th>
               <th>Acciones</th>
             </tr>
@@ -176,19 +186,26 @@ const AddPurchase = () => {
                       onChange={e => handleQuantityChange(index, parseInt(e.target.value))}
                     />
                   </td>
+                  <td>
+                    <input
+                      type="date"
+                      className="form-control"
+                      value={item.expirationDate}
+                      onChange={e => handleExpirationChange(index, e.target.value)}
+                      required
+                    />
+                  </td>
                   <td>${(price * item.quantity).toFixed(2)}</td>
-                <td>
-  <button
-    type="button"
-    className="btn btn-danger btn-sm"
-    onClick={() => handleRemoveProduct(index)}
-  >
-    Eliminar
-  </button>
-</td>
-
+                  <td>
+                    <button
+                      type="button"
+                      className="btn btn-danger btn-sm"
+                      onClick={() => handleRemoveProduct(index)}
+                    >
+                      Eliminar
+                    </button>
+                  </td>
                 </tr>
-
               );
             })}
           </tbody>
@@ -207,6 +224,8 @@ const AddPurchase = () => {
         <button type="submit" className="btn btn-primary">Guardar Compra</button>
       </form>
     </div>
+    <Footer/>
+    </>
   );
 };
 

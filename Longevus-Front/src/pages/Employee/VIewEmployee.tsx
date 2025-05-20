@@ -30,7 +30,7 @@ const ViewEmployee = () => {
                 })
                 .catch(error => {
                     console.error("Error al obtener cuidador:", error);
-                    navigate("/error");
+                    
                 });
         }
     }, [id, navigate]);
@@ -103,7 +103,7 @@ const ViewEmployee = () => {
     const [showAddTaskModal, setShowAddTaskModal] = useState(false);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [editingTaskDescription, setEditingTaskDescription] = useState('');
-    // === Fin Estados Modales ===
+
 
     // === Handlers para Modales ===
     const handleShowViewTasks = () => setShowViewTasksModal(true);
@@ -111,7 +111,7 @@ const ViewEmployee = () => {
 
     const handleShowAddTask = () => setShowAddTaskModal(true);
     const handleCloseAddTask = () => setShowAddTaskModal(false);
-    // === Fin Handlers Modales ===
+
 
     // === Handlers para Agregar Tarea ===
     const handleTaskAdded = () => {
@@ -122,7 +122,7 @@ const ViewEmployee = () => {
                 .catch(error => console.error("Error al recargar tareas:", error));
         }
     };
-    // === Fin Handlers Agregar Tarea ===
+
 
     // === Handlers para Editar Tarea ===
     const handleEditClick = (task: Task) => {
@@ -161,7 +161,7 @@ const ViewEmployee = () => {
     const handleEditInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setEditingTaskDescription(event.target.value);
     };
-    // === Fin Handlers Editar Tarea ===
+
 
     // === Handlers para Eliminar Tarea ===
     const handleDeleteTask = async (taskId: number | string) => {
@@ -182,9 +182,8 @@ const ViewEmployee = () => {
             console.error("Error al eliminar tarea:", error);
         }
     };
-    // === Fin Handlers Eliminar Tarea ===
 
-    // Helper function to check if array exists and has items
+
     const hasItems = (arr?: any[]) => Array.isArray(arr) && arr.length > 0;
 
     return(
@@ -193,7 +192,7 @@ const ViewEmployee = () => {
             <div className="container mt-5">
                 <div className="card m-5">
                     <div className="row g-0">
-                        {/* Columna para la imagen y datos básicos */}
+                     
                         <div className="col-md-4 text-center p-3">
                             <img
                                 src={imageUrl}
@@ -207,11 +206,11 @@ const ViewEmployee = () => {
                             <p className="card-text"><strong>Salario:</strong> ${Number(employeeData?.salary).toFixed(2)}</p>
                         </div>
 
-                        {/* Columna para otros datos y las secciones de tareas */}
+                     
                         <div className="col-md-8">
                             <div className="card-body">
-                                {/* Días de trabajo */}
-                                <Link className='btn btn-secondary float-end' to="/mostrar"><i className="bi bi-reply"/> Volver</Link>
+                               
+                                <Link className='btn btn-secondary float-end' to="/empleado/mostrar"><i className="bi bi-reply"/> Volver</Link>
                                 <div className="card-text">
                                     
                                     <strong>Días de trabajo:</strong>
@@ -226,7 +225,7 @@ const ViewEmployee = () => {
                                     )}
                                 </div>
 
-                                {/* Horario de trabajo */}
+                               
                                 <div className="card-text">
                                     <strong>Horario de trabajo:</strong>
                                     {hasItems(workScheduleData) ? (
@@ -240,7 +239,7 @@ const ViewEmployee = () => {
                                     )}
                                 </div>
 
-                                {/* Turnos seleccionados */}
+                              
                                 <div className="card-text">
                                     <strong>Turnos seleccionados:</strong>
                                     {hasItems(selectedShiftsData) ? (
@@ -285,9 +284,9 @@ const ViewEmployee = () => {
                 </div>
             </div>
 
-            {/* === Modales Separados === */}
+         
 
-            {/* Modal para Mostrar Tareas Pendientes */}
+            
             <ViewTasksModal
                 show={showViewTasksModal}
                 onClose={handleCloseViewTasks}
@@ -302,7 +301,7 @@ const ViewEmployee = () => {
                 onDeleteTask={handleDeleteTask}
             />
 
-            {/* Modal para Agregar Tarea */}
+           
             <AddTaskModal
                 show={showAddTaskModal}
                 onClose={handleCloseAddTask}

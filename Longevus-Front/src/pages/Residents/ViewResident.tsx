@@ -5,6 +5,8 @@ import AddContactModal from "../../components/AddContactModal";
 import type { Contact } from "../../components/ViewContactModal";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import Header from "../../components/HeaderAdmin";
+import Footer from "../../components/Footer";
 
 
 const ViewResident: React.FC = () => {
@@ -19,7 +21,6 @@ const ViewResident: React.FC = () => {
                 .then(response => setResidentData(response.data))
                 .catch(error => console.error("Error al obtener residente", error))
         }
-        //setResidentData(data);
     }, [id]);
 
     const fetchContacts = () => {
@@ -64,63 +65,67 @@ const ViewResident: React.FC = () => {
     };
 
     const handleDeleteContact = (contactId: number) => {
-        if(window.confirm(`¿Estás seguro de eliminar el contacto?`)){
+        if (window.confirm(`¿Estás seguro de eliminar el contacto?`)) {
             axios.delete(`http://localhost:8080/deleteContact?id=${contactId}`)
-            .then(() => {
-                alert("Contacto eliminado con exito")
-                fetchContacts();
-            });
-        }    
+                .then(() => {
+                    alert("Contacto eliminado con exito")
+                    fetchContacts();
+                });
+        }
     };
 
     return (
-        <div className="container mt-5">
-            <h2 className="mb-4">Información del Residente</h2>
-            <div className="card shadow p-4">
-                {residentData?.photo && (
-                    <div className=" mb-3">
-                        <img
-                            src={residentData.photo}
-                            alt="Foto del residente"
-                            width="150"
-                            className="img-thumbnail"
-                        />
-                    </div>
-                )}
-                <p><strong>Identificación:</strong> {residentData?.identification}</p>
-                <p><strong>Nombre:</strong> {residentData?.name}</p>
-                <p><strong>Edad:</strong> {residentData?.age} años</p>
-                <p><strong>Estado de salud:</strong> {residentData?.healthStatus}</p>
-                <p><strong>Número de habitación:</strong> {residentData?.numberRoom}</p>
+        <>
+            <Header/>
+            <div className="container mt-5 mb-5">
+                <h2 className="mb-4">Información del Residente</h2>
+                <div className="card shadow p-4">
+                    {residentData?.photo && (
+                        <div className=" mb-3">
+                            <img
+                                src={`http://localhost:8080/${residentData.photo}`}
+                                alt="Foto del residente"
+                                width="150"
+                                className="img-thumbnail"
+                            />
+                        </div>
+                    )}
+                    <p><strong>Identificación:</strong> {residentData?.identification}</p>
+                    <p><strong>Nombre:</strong> {residentData?.name}</p>
+                    <p><strong>Edad:</strong> {residentData?.age} años</p>
+                    <p><strong>Estado de salud:</strong> {residentData?.healthStatus}</p>
+                    <p><strong>Número de habitación:</strong> {residentData?.numberRoom}</p>
 
-                <center>
-                    <button className="btn btn-primary mt-3" onClick={() => setShowAddContactModal(true)}>
-                        Agregar contactos
-                    </button>
-                    <button className="btn btn-info mt-3" onClick={() => setShowContactModal(true)}>
-                        Ver contactos
-                    </button>
-                </center>
+                    <center>
+                        <button className="btn btn-primary mt-3" onClick={() => setShowAddContactModal(true)}>
+                            Agregar contactos
+                        </button>
+                        <button className="btn btn-info mt-3 ms-2" onClick={() => setShowContactModal(true)}>
+                            Ver contactos
+                        </button>
+                    </center>
 
+                </div>
+
+                <ViewContactModal
+                    show={showContactModal}
+                    onClose={() => setShowContactModal(false)}
+                    residentName={residentData?.name}
+                    contactsList={contactsData}
+                    onDeleteContact={handleDeleteContact}
+                    onEditContact={handleEditContact}
+                />
+
+                <AddContactModal
+                    show={showAddContactModal}
+                    onClose={() => setShowAddContactModal(false)}
+                    residentName={residentData?.name}
+                    residentId={residentData?.id}
+                    onAddContact={handleAddContact}
+                />
             </div>
-
-            <ViewContactModal
-                show={showContactModal}
-                onClose={() => setShowContactModal(false)}
-                residentName={residentData?.name}
-                contactsList={contactsData}
-                onDeleteContact={handleDeleteContact}
-                onEditContact={handleEditContact}
-            />
-
-            <AddContactModal
-                show={showAddContactModal}
-                onClose={() => setShowAddContactModal(false)}
-                residentName={residentData?.name}
-                residentId={residentData?.id}
-                onAddContact={handleAddContact}
-            />
-        </div>
+            <Footer/>
+        </>
     );
 };
 

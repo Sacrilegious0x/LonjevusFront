@@ -27,7 +27,7 @@ interface BackendAdminPayload {
 }
 function mapFrontendScheduleToBackendPayload(
     selectedDays: string[],
-    workSchedule: IShift[] // Asumiendo que IShift es { id?: string, entryTime: string, exitTime: string }
+    workSchedule: IShift[] 
 ): BackendSchedulePayload {
     const backendSchedule: BackendSchedulePayload = {
         days: selectedDays.length > 0 ? selectedDays.join(',') : null, 
@@ -48,7 +48,7 @@ function mapFrontendScheduleToBackendPayload(
 }
 
 export const createAdmin = async (adminFormData: EmployeeFormData): Promise<any> => {
-    // 1. Preparar el objeto Schedule
+
     const backendSchedulePayload = mapFrontendScheduleToBackendPayload(
         adminFormData.selectedDays,
         adminFormData.workSchedule
@@ -103,7 +103,7 @@ export const updateAdmin = async (id: string, adminFormData: EmployeeFormData): 
     const formData = new FormData();
     formData.append('adminData', new Blob([JSON.stringify(adminDataForJson)], { type: 'application/json' }));
     
-    // Solo incluir la foto si hay una nueva
+
     if (adminFormData.photo) {
         formData.append('photo', adminFormData.photo, adminFormData.photo.name);
     }

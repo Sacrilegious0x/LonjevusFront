@@ -20,7 +20,9 @@ import ProductPage from './pages/product/ProductPage';
 import AddProduct from './pages/product/AddProduct';
 import AddAdmin from './pages/Employee/AddAdmin';
 import EditAdmin from './pages/Employee/EditAdmin';
-
+import EditResident from './pages/Residents/EditResident';
+import ViewResident from './pages/Residents/ViewResident';
+import SuppliersEdit from './pages/supplier/SuppliertsUpdate';
 function App() {
   return (
     <BrowserRouter>  
@@ -29,12 +31,12 @@ function App() {
         <Route path="/inventario" element={<InventoryPage />} />
         <Route path="/visita" element={<VisitSchedule />} />
         <Route path='/login' element={<Index/>} />
-        <Route path='/agregar' element={< AddEmployee/>}/>
-        <Route path='/mostrar' element={<ShowEmployee/>}/>
-        <Route path='/editar/:id' element={<EditEmployee/>}/>
-        <Route path='/perfil/:id' element={< ViewEmployee/>}/>
-        <Route path='/mostrarResidentes' element={<ShowResidents/>}/>
-        <Route path='/AgregarResidente' element={<AddResident/>}/>
+        <Route path='/empleado/agregar' element={< AddEmployee/>}/>
+        <Route path='/empleado/mostrar' element={<ShowEmployee/>}/>
+        <Route path='/empleado/editar/:id' element={<EditEmployee/>}/>
+        <Route path='/empleado/perfil/:id' element={< ViewEmployee/>}/>
+        <Route path='/residente/mostrar' element={<ShowResidents/>}/>
+        <Route path='/residente/agregar' element={<AddResident/>}/>
         <Route path="/compras" element={<PurchasePage />} />
         <Route path="/compras/editar/:id" element={<EditPurchase />} />    
         <Route path="/compras/agregar" element={<AddPurchase/>} /> 
@@ -42,10 +44,14 @@ function App() {
         <Route path="/productos/editar/:id" element={<EditProduct />} />
         <Route path="/productos/agregar" element={<AddProduct />} />
         <Route path="/proveedores" element={<SuppliersList />} />
-        <Route path="/proveedores/guardar" element={<SuppliersAdd/>} />
+        <Route path="/proveedores/agregar" element={<SuppliersAdd/>} />
+        <Route path='/proveedores/editar/:id' element={<SuppliersEdit/>} />
         <Route path="/roles_permisos" element={<Role_Permissions />} />
-        <Route path='/agregar/admin' element={<AddAdmin/>}/>
-        <Route path='/editar/admin/:id' element = {<EditAdmin/>}/>
+        <Route path='/admin/agregar' element={<AddAdmin/>}/>
+        <Route path='/admin/editar/:id' element = {<EditAdmin/>}/>
+        <Route path='/residente/editar/:id' element={<EditResident/>}/>
+        <Route path='/residente/perfil/:id' element={<ViewResident/>}/>
+        
          </Routes>
     </BrowserRouter>
   );

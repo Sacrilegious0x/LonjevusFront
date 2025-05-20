@@ -13,7 +13,7 @@ interface BackendSchedulePayload {
     exitTime2: string | null;
 }
 
-// ¡Nueva interfaz que refleja la estructura de la clase Java Caregiver!
+
 interface BackendCaregiverPayload {
     id?: number;
     identification: string;
@@ -69,7 +69,7 @@ function mapFrontendScheduleToBackendPayload(
 
 export const getAllCaregivers = async () => {
     const response = await axios.get(`${URL_BASE}/listCaregiver`);
-    return response.data.data; // accediendo a la propiedad "data" que tu backend retorna
+    return response.data.data; 
 };
 
 export const getCaregiverById = async (id: string): Promise<CaregiverApiResponse> => {
@@ -91,7 +91,7 @@ export const createCaregiver = async (caregiverFormData: EmployeeFormData): Prom
         email: caregiverFormData.email,
         password: caregiverFormData.password || '',
         shift: caregiverFormData.selectedShifts.join(','),
-        schedule: backendSchedulePayload // Schedule como propiedad interna
+        schedule: backendSchedulePayload 
     };
     const formData = new FormData();
     formData.append('caregiverData', new Blob([JSON.stringify(caregiverDataForJson)], { type: 'application/json' }));
@@ -102,6 +102,7 @@ export const createCaregiver = async (caregiverFormData: EmployeeFormData): Prom
 
     return axios.post(`${URL_BASE}/addCaregiver`, formData);
 };
+
 export const deleteCaregiver  = async (id: string | number) => {
     return axios.delete(`${URL_BASE}/deleteCaregiver/${id}`);
 };
@@ -117,7 +118,7 @@ export const updateCaregiver = async (id: string, caregiverFormData: EmployeeFor
         email: caregiverFormData.email,
         password: caregiverFormData.password || '',
         schedule: {
-        id: caregiverFormData.scheduleId || undefined, // <- asegúrate de capturarlo del backend
+        id: caregiverFormData.scheduleId || undefined, 
         ...mapFrontendScheduleToBackendPayload(
             caregiverFormData.selectedDays,
             caregiverFormData.workSchedule
@@ -129,7 +130,7 @@ export const updateCaregiver = async (id: string, caregiverFormData: EmployeeFor
     const formData = new FormData();
     formData.append('caregiverData', new Blob([JSON.stringify(caregiverDataForJson)], { type: 'application/json' }));
     
-    // Solo incluir la foto si hay una nueva
+
     if (caregiverFormData.photo) {
         formData.append('photo', caregiverFormData.photo, caregiverFormData.photo.name);
     }

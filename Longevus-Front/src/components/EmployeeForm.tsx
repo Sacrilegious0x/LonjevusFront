@@ -252,7 +252,7 @@ const EmployeeForm = ({initialData, onSubmit, onCancel, showShiftSelector = fals
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </>
     );
 };

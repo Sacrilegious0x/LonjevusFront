@@ -11,14 +11,14 @@ const AddAdmin = ()=>{
         try{
             const response = await createAdmin(formData);
             alert(response.data || "Administrador creado exitosamente!"); 
-            navigate('/mostrar');
+            navigate('/roles_permisos');
         }catch(error){
              console.error("Error al crear admin:", error);
         }
     };
     const handleCancel = () => {
         console.log("Operación de añadir cancelada");
-        navigate('/mostrar');
+        navigate('/roles_permisos');
     };
 
     return(

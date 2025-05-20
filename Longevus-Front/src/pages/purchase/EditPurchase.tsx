@@ -11,12 +11,13 @@ interface Product {
 interface PurchaseItem {
   idProduct: number;
   quantity: number;
+  expirationDate?: string;
   productName?: string;
   price?: number;
 }
 
 interface Purchase {
-  id: number;
+  id: string;
   date: string;
   admin: {
     id: number;
@@ -31,34 +32,33 @@ const EditPurchase = () => {
 
   const [date, setDate] = useState('');
   const [managerName, setManagerName] = useState('');
-  const [items, setItems] = useState<{ productId: number; quantity: number }[]>([]);
+  const [items, setItems] = useState<{ productId: number; quantity: number; expirationDate: string }[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [initialData, setInitialData] = useState('');
 
   const getAllProducts = async (): Promise<Product[]> => {
-  const response = await fetch("http://localhost:8080/api/products/all");
-  return await response.json();
-};
+    const response = await fetch("http://localhost:8080/api/products/all");
+    return await response.json();
+  };
 
-const getPurchaseById = async (id: number): Promise<Purchase> => {
-  const response = await fetch(`http://localhost:8080/api/purchases/${id}`);
-  if (!response.ok) {
-    throw new Error("No se pudo obtener la compra");
-  }
-  return await response.json();
-};
+  const getPurchaseById = async (id: string): Promise<Purchase> => {
+    const response = await fetch(`http://localhost:8080/api/purchases/${id}`);
+    if (!response.ok) throw new Error("No se pudo obtener la compra");
+    const text = await response.text();
+    if (!text) throw new Error("Respuesta vacía del servidor");
+    return JSON.parse(text);
+  };
 
-const updatePurchase = async (id: number, data: any): Promise<boolean> => {
-  const response = await fetch(`http://localhost:8080/api/purchases/update/${id}`, {
-    method: 'PUT',
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  });
-  return response.ok;
-};
-
+  const updatePurchase = async (id: string, data: any): Promise<boolean> => {
+    const response = await fetch(`http://localhost:8080/api/purchases/update/${id}`, {
+      method: 'PUT',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+    return response.ok;
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,14 +67,14 @@ const updatePurchase = async (id: number, data: any): Promise<boolean> => {
         setAllProducts(products);
 
         if (id) {
-          const data: Purchase = await getPurchaseById(parseInt(id));
-
+          const data: Purchase = await getPurchaseById(id);
           setDate(data.date);
-          setManagerName(data.admin?.name ?? "No asignado"); //PARA CUANDO ESTE EL ADMIN
+          setManagerName(data.admin?.name ?? "No asignado");
 
           const compraItems = data.items.map((item: PurchaseItem) => ({
             productId: item.idProduct,
             quantity: item.quantity,
+            expirationDate: item.expirationDate ?? ""
           }));
 
           const productosFaltantes = data.items
@@ -114,6 +114,14 @@ const updatePurchase = async (id: number, data: any): Promise<boolean> => {
     );
   };
 
+  const handleExpirationChange = (index: number, newDate: string) => {
+    setItems(prev =>
+      prev.map((item, i) =>
+        i === index ? { ...item, expirationDate: newDate } : item
+      )
+    );
+  };
+
   const getTotal = () => {
     return items.reduce((sum, item) => {
       const product = allProducts.find(p => p.id === item.productId);
@@ -129,14 +137,20 @@ const updatePurchase = async (id: number, data: any): Promise<boolean> => {
       return;
     }
 
+    if (items.some(item => !item.expirationDate)) {
+      alert("Todos los productos deben tener una fecha de vencimiento.");
+      return;
+    }
+
     const payload = {
-      id: parseInt(id ?? '0'),
+      id: id ?? '',
       date,
       amount: getTotal(),
-      admin: { id: 1 }, 
+      admin: { id: 1 },
       items: items.map(item => ({
         idProduct: item.productId,
-        quantity: item.quantity
+        quantity: item.quantity,
+        expirationDate: item.expirationDate
       }))
     };
 
@@ -168,11 +182,7 @@ const updatePurchase = async (id: number, data: any): Promise<boolean> => {
       <h2>Editar Compra #{id}</h2>
 
       <div className="mb-3">
-        <button
-          type="button"
-          className="btn btn-secondary"
-          onClick={handleBack}
-        >
+        <button type="button" className="btn btn-secondary" onClick={handleBack}>
           ← Volver a Compras
         </button>
       </div>
@@ -185,6 +195,7 @@ const updatePurchase = async (id: number, data: any): Promise<boolean> => {
             className="form-control"
             value={date}
             onChange={e => setDate(e.target.value)}
+            required
           />
         </div>
 
@@ -205,6 +216,7 @@ const updatePurchase = async (id: number, data: any): Promise<boolean> => {
               <th>Producto</th>
               <th>Precio</th>
               <th>Cantidad</th>
+              <th>Fecha de Vencimiento</th>
               <th>Subtotal</th>
             </tr>
           </thead>
@@ -236,6 +248,15 @@ const updatePurchase = async (id: number, data: any): Promise<boolean> => {
                       value={item.quantity}
                       min={1}
                       onChange={e => handleQuantityChange(index, parseInt(e.target.value) || 1)}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="date"
+                      className="form-control"
+                      value={item.expirationDate}
+                      required
+                      onChange={e => handleExpirationChange(index, e.target.value)}
                     />
                   </td>
                   <td>${(item.quantity * price).toFixed(2)}</td>

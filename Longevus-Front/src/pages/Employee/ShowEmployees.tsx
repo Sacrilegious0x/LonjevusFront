@@ -46,20 +46,19 @@ const ShowEmployee = () =>{
         );
     });
     const handleDeleteCaregiver = async (caregiverId: number) => {
-        // Confirmación antes de eliminar
         if (!window.confirm(`¿Estás seguro de que quieres eliminar al cuidador con ID ${caregiverId}?`)) {
             return;
         }
 
-        setLoading(true); // Podrías tener un loading específico para la fila, o general
+        setLoading(true); 
         setError(null);
 
         try {
             const response = await deleteCaregiver(caregiverId);
-            console.log(response.data); // "Cuidador eliminado exitosamente"
+            console.log(response.data); 
             alert(response.data || "Cuidador eliminado exitosamente");
 
-            // Actualizar la lista de usuarios en el frontend para reflejar la eliminación
+        
             setUserData(prevUsers => prevUsers.filter(user => user.id !== caregiverId));
         } catch (err) {
             console.error(`Error al eliminar el cuidador ${caregiverId}:`, err);
@@ -67,7 +66,7 @@ const ShowEmployee = () =>{
           
             
             setError(errorMessage);
-            alert(errorMessage); // Mostrar el error
+            alert(errorMessage); 
         } finally {
             setLoading(false);
         }
@@ -82,10 +81,10 @@ const ShowEmployee = () =>{
     {header: 'Acciones', accessor: (person) => person,   
         Cell: (person) =>(
             <>
-            <a className='btn btn-info me-2' onClick={()=>navigate(`/perfil/${person.id}`)}>
+            <a className='btn btn-info me-2' onClick={()=>navigate(`/empleado/perfil/${person.id}`)}>
                 <i className='bi bi-eye'/>
             </a>
-            <a className='btn btn-warning me-2' onClick={()=>navigate(`/editar/${person.id}`)}>
+            <a className='btn btn-warning me-2' onClick={()=>navigate(`/empleado/editar/${person.id}`)}>
                 <i className='bi bi-pencil-square'/>
             </a>
             
@@ -107,7 +106,7 @@ const ShowEmployee = () =>{
                 <div className='card mt-5 mb-5'>
                     <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                         <h4>Lista de empleados</h4>
-                        <Link className='btn btn-success' to='/agregar'><i className='bi bi-person-plus-fill'/></Link>
+                        <Link className='btn btn-success' to='/empleado/agregar'><i className='bi bi-person-plus-fill'/></Link>
                     </div>
                     <div className='card-body'>
                         <input type="text" placeholder="Buscar..." id="userSearch" value={searchTerm}

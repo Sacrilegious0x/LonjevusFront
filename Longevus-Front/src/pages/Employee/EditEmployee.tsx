@@ -1,34 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom'; // Ejemplo con React Router
 import EmployeeForm from '../../components/EmployeeForm'; // Asegúrate de que la ruta sea correcta
 import type { EmployeeFormData, EmployeeInitialData } from '../../components/EmployeeForm'; // Importa los tipos
-import Footer from '../../components/Footer';
-
-
-// Simulación de una función para obtener datos del empleado por ID
-const fetchEmployeeById = async (id: string): Promise<EmployeeInitialData | null> => {
-    console.log(`Workspaceing employee with ID: ${id}`);
-    // Aquí harías la llamada a tu API para obtener los datos del empleado
-    // const response = await fetch(`/api/employees/${id}`);
-    // const data = await response.json();
-    // return data as EmployeeInitialData;
-    // Simulación de datos
-    const dummyData: EmployeeInitialData = {
-        id: id,
-        name: "Juan Perez",
-        identification: "123456789",
-        email: "juan.perez@example.com",
-        photoURL: "", 
-        salary: 50000,
-        selectedDays: ["K", "M", "V"],
-        workSchedule: [
-            { id: 'shift-1', entryTime: "08:00", exitTime: "12:00" },
-            { id: 'shift-2', entryTime: "13:00", exitTime: "17:00" },
-        ],
-        selectedShifts: ["M", "T"]
-    };
-    return new Promise(resolve => setTimeout(() => resolve(dummyData), 500)); // Simula retardo de red
-};
+import { updateCaregiver, getCaregiverById, } from '../../services/CaregiverService';
+import type { CaregiverApiResponse } from '../../services/CaregiverService';
+import type { IShift } from '../../components/HourSelector';
 
 const EditEmployee =()=>{
     const { id } = useParams<{ id: string }>(); // Obtiene el ID de la URL
@@ -37,44 +13,90 @@ const EditEmployee =()=>{
      const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (id) {
-            fetchEmployeeById(id)
-                .then(data => {
-                    if (data) {
-                        setEmployeeData(data);
-                    } else {
-                        setError("Empleado no encontrado");
+ useEffect(() => {
+    if (id) {
+        setLoading(true);
+        setError(null);
+        getCaregiverById(id)
+            .then((apiData: CaregiverApiResponse) => { // apiData es ahora del tipo CaregiverApiResponse refinado
+                if (apiData) {
+                    const workScheduleTransformed: IShift[] = [];
+                    // Usamos apiData.schedule.id si existe, que es el ID primario del objeto schedule.
+                    // apiData.scheduleId (el FK en Caregiver) debería ser igual si la data es consistente.
+                    const dbScheduleId = apiData.schedule?.id;
+
+                    if (apiData.schedule) {
+                        if (apiData.schedule.entryTime1 || apiData.schedule.exitTime1) {
+                            workScheduleTransformed.push({
+                                id: `${dbScheduleId || 'sched'}-0`,
+                                entryTime: apiData.schedule.entryTime1 || "", // Maneja bien el null de la API
+                                exitTime: apiData.schedule.exitTime1 || ""  // Maneja bien el null de la API
+                            });
+                        }
+                        if (apiData.schedule.entryTime2 || apiData.schedule.exitTime2) {
+                            workScheduleTransformed.push({
+                                id: `${dbScheduleId || 'sched'}-1`,
+                                entryTime: apiData.schedule.entryTime2 || "", // Maneja bien el null de la API
+                                exitTime: apiData.schedule.exitTime2 || ""  // Maneja bien el null de la API
+                            });
+                        }
                     }
-                    setLoading(false);
-                })
-                .catch(err => {
-                    console.error("Error loading employee:", err);
-                    setError("Error al cargar los datos del empleado.");
-                    setLoading(false);
-                });
-        } else {
-            setError("ID de empleado no proporcionado en la URL.");
-            setLoading(false);
-        }
-    }, [id]); // Recarga si el ID de la URL cambia
+                    
+                    if (workScheduleTransformed.length === 0) { // Si no hay turnos, agregar uno vacío por defecto
+                        workScheduleTransformed.push({ id: crypto.randomUUID(), entryTime: "", exitTime: "" });
+                    }
 
-const handleFormSubmit = (formData: EmployeeFormData, id?: string) => {
-        if (!id) {
-             console.error("Error: Intentando actualizar sin ID de empleado.");
-             return;
-        }
-        console.log(`Datos para actualizar empleado con ID ${id}:`, formData);
-        // Aquí harías la llamada a tu API para actualizar el empleado
-        // Ten en cuenta que si photo es null, no enviaste un nuevo archivo.
-        // Si password es "", no enviaste una nueva contraseña.
-        // api.updateEmployee(id, formData);
-        // Después, podrías redirigir al usuario a otra página
-        // Ejemplo: navigate('/employees');
+                    const initialData: EmployeeInitialData = {
+                        id: String(apiData.id), 
+                        name: apiData.name,
+                        identification: apiData.identification,
+                        email: apiData.email,
+                        photoURL: apiData.photoUrl || "", 
+                        salary: String(apiData.salary), 
+                        selectedDays: apiData.schedule?.days ? apiData.schedule.days.split(',') : [],
+                        workSchedule: workScheduleTransformed,
+                        selectedShifts: apiData.shift ? apiData.shift.split(',') : [],
+                        scheduleId: dbScheduleId, 
+                    };
+
+                    console.log("Datos del cuidador recibidos (crudos API):", apiData);
+                    console.log("Datos iniciales para el formulario (transformados):", initialData);
+
+                    setEmployeeData(initialData)
+                } else {
+                    setError("Empleado no encontrado");
+                }
+                setLoading(false);
+            })
+            .catch(err => {
+                // ... manejo de errores ...
+                console.error("Error cargando datos del empleado:", err);
+                let errorMessage = "Error al cargar los datos del empleado.";   
+                setError(errorMessage);
+                setLoading(false);
+            });
+    } else {
+        setError("ID de empleado no proporcionado en la URL.");
+        setLoading(false);
+    }
+}, [id]);
+ // Recarga si el ID de la URL cambia
+
+const handleFormSubmit = async (formData: EmployeeFormData, id?: string) => {
+         if (!id) {
+                  console.error("Error: Intentando actualizar sin ID de trabajador.");
+                  return;
+              }
+              
+              try {
+                  const response = await updateCaregiver(id, formData);
+                  alert(response.data || "Trabajador actualizado exitosamente!");
+                  navigate('/mostrar');
+              } catch (error) {
+                  console.error("Error al actualizar Trabajador:", error);
+                  alert("Error al actualizar trabajador. Por favor, intente nuevamente.");
+              }
     };
-
-    
-
     const handleCancel = () => {
         console.log("Operación de edición cancelada");
         navigate('/mostrar'); // Redirige a la lista de empleados
@@ -90,7 +112,9 @@ const handleFormSubmit = (formData: EmployeeFormData, id?: string) => {
     if (!employeeData) {
         return <div className="container mt-5">No se encontraron datos para editar.</div>;
     }
-
+    const shiftSelectorVisible = true;
+    const daySelectorVisible = true;
+    const hourSelectorVisible = true;
 
     return (
         <>
@@ -99,9 +123,13 @@ const handleFormSubmit = (formData: EmployeeFormData, id?: string) => {
                 initialData={employeeData} // Pasamos los datos cargados
                 onSubmit={handleFormSubmit}
                 onCancel={handleCancel}
+                showShiftSelector={shiftSelectorVisible}
+                showDaySelector={daySelectorVisible}
+                showHourSelector={hourSelectorVisible}
+                showOfficeContactField={false}
             />
           
-             <Footer /> 
+        
         </>
     );
 

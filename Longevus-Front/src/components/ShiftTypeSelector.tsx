@@ -2,7 +2,7 @@ import {type ChangeEvent} from 'react';
 
 
 interface IShiftType{
-    selectedShiftTypes: String[];
+    selectedShiftTypes: string[];
     onShiftTypeChange: (type: string, isChecked: boolean) => void; 
 }
 
@@ -11,7 +11,7 @@ const ShiftTypeSelector = ({ selectedShiftTypes, onShiftTypeChange }: IShiftType
     const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { value, checked } = e.target;
         // Asegurarse de que el valor sea uno de los tipos esperados
-        if (value === 'M' ||value === 'T'||  value === 'N') {
+        if (value === 'M' || value === 'T' || value === 'N') {
             onShiftTypeChange(value as string, checked);
         }
     };

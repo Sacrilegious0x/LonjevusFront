@@ -1,81 +1,127 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import type { EmployeeInitialData } from "../../components/EmployeeForm";
 import ViewTasksModal from '../../components/ViewTaskModal';
 import AddTaskModal from '../../components/AddTaskModal';
-import type { Task } from '../../components/ViewTaskModal';
+import { getCaregiverById } from '../../services/CaregiverService';
+import type { IShift } from '../../components/HourSelector';
+import Header from '../../components/HeaderAdmin';
+import Footer from '../../components/Footer';
+import type { Task } from '../../services/TaskService';
+import { getCaregiverTask, updateTask, deleteTask, saveTask} from '../../services/TaskService';
 
-const dataTest = {
-        name: "Juan Perez",
-        identification: "123456789",
-        email: "juan.perez@example.com",
-        photoURL: "https://i.blogs.es/7c85c3/las-primeras-dos-temporadas-de-jojo-s-bizarre-adventure-llegaron-a-max-con-doblaje-latino-compressed/1200_800.jpeg", 
-        salary: 50000,
-        selectedDays: ["L","K", "M", "J","V"],
-        workSchedule: [
-            { id: 'shift-1', entryTime: "08:00", exitTime: "12:00" },
-            { id: 'shift-2', entryTime: "13:00", exitTime: "17:00" },
-        ],
-        selectedShifts: ["M", "T"]
-    };
+const BACKEND_URL = 'http://localhost:8080/';
 
 
-const ViewEmployee = ()=>{
-    
-    const [employeeData, setEmployeeData] = useState<EmployeeInitialData | null>(null);
+const ViewEmployee = () => {
+    const [employeeData, setEmployeeData] = useState<any>(null);
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [isLoadingTasks, setIsLoadingTasks] = useState(false);
     const navigate = useNavigate();
-   const { id } = useParams<{ id: string }>();
+    const { id } = useParams<{ id: string }>();
     
-      useEffect(() => {
-        setEmployeeData(dataTest); // <-- ¡Ahora dentro de useEffect!
-        // Si necesitaras hacer algo con el 'id' de la URL aquí con dataTest, podrías
-        // console.log("ID de la URL:", id);
+    // Cargar datos del empleado
+    useEffect(() => {
+        if (id) {
+            getCaregiverById(id)
+                .then(data => {
+                    console.log("Employee Data:", data);
+                    setEmployeeData(data);
+                })
+                .catch(error => {
+                    console.error("Error al obtener cuidador:", error);
+                    navigate("/error");
+                });
+        }
+    }, [id, navigate]);
+    
+    // Cargar tareas del empleado
+    useEffect(() => {
+        if (id) {
+            setIsLoadingTasks(true);
+            getCaregiverTask(id)
+                .then(tasksData => {
+                    console.log("Tasks Data:", tasksData);
+                    setTasks(tasksData || []);
+                })
+                .catch(error => {
+                    console.error("Error al obtener tareas:", error);
+                })
+                .finally(() => {
+                    setIsLoadingTasks(false);
+                });
+        }
+    }, [id]);
+    
+    // Procesar los datos del schedule si existen
+    const workScheduleData = useMemo(() => {
+        if (!employeeData?.schedule) return [];
         
-    }, []);
+        const scheduleInfo: IShift[] = [];
+        
+        if (employeeData.schedule.entryTime1) {
+            scheduleInfo.push({
+                id: '1',
+                entryTime: employeeData.schedule.entryTime1,
+                exitTime: employeeData.schedule.exitTime1
+            });
+        }
+        
+        if (employeeData.schedule.entryTime2) {
+            scheduleInfo.push({
+                id: '2',
+                entryTime: employeeData.schedule.entryTime2,
+                exitTime: employeeData.schedule.exitTime2
+            });
+        }
+        
+        return scheduleInfo.length > 0 ? scheduleInfo : [];
+    }, [employeeData?.schedule]);
+    
+    // Procesar los días seleccionados
+    const selectedDaysData = useMemo(() => {
+        if (!employeeData?.schedule?.days) return [];
+        return employeeData?.schedule.days.split(',').map((day: string) => day.trim());
+    }, [employeeData?.schedule?.days]);
+    
+    // Procesar los turnos seleccionados
+    const selectedShiftsData = useMemo(() => {
+        if (!employeeData?.shift) return [];
+        return employeeData.shift.split(',').map((shift: string) => shift.trim());
+    }, [employeeData?.shift]);
 
-    // === Estados para la gestión de Tareas y Modales ===
-    const [tasks, setTasks] = useState<Task[]>([]); // Estado para la lista de tareas
-    const [showViewTasksModal, setShowViewTasksModal] = useState(false); // Controla visibilidad del modal de ver tareas
-    const [showAddTaskModal, setShowAddTaskModal] = useState(false); // Controla visibilidad del modal de agregar tarea
-    const [newTaskDescription, setNewTaskDescription] = useState(''); // Estado para el input de nueva tarea
-    const [editingTask, setEditingTask] = useState<Task | null>(null); // Estado para saber qué tarea se está editando
-    const [editingTaskDescription, setEditingTaskDescription] = useState(''); // Estado para el input de edición de tarea
-     // === Fin Estados Tareas/Modales ===
+    // Construir la URL completa de la imagen
+    const imageUrl = useMemo(() => {
+        if (employeeData?.photoUrl && typeof employeeData.photoUrl === 'string') {
+            return `${BACKEND_URL}${employeeData.photoUrl}`;
+        }
+        return 'placeholder-image-url.jpg'; // Imagen por defecto
+    }, [employeeData?.photoUrl]);
 
-
+    // === Estados para la gestión de Modales ===
+    const [showViewTasksModal, setShowViewTasksModal] = useState(false);
+    const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+    const [editingTask, setEditingTask] = useState<Task | null>(null);
+    const [editingTaskDescription, setEditingTaskDescription] = useState('');
+    // === Fin Estados Modales ===
 
     // === Handlers para Modales ===
     const handleShowViewTasks = () => setShowViewTasksModal(true);
     const handleCloseViewTasks = () => setShowViewTasksModal(false);
 
     const handleShowAddTask = () => setShowAddTaskModal(true);
-    const handleCloseAddTask = () => {
-        setShowAddTaskModal(false);
-        setNewTaskDescription(''); // Limpiar input al cerrar
-    };
+    const handleCloseAddTask = () => setShowAddTaskModal(false);
     // === Fin Handlers Modales ===
 
-
     // === Handlers para Agregar Tarea ===
-    const handleNewTaskDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setNewTaskDescription(event.target.value);
-    };
-
-    const handleAddTaskSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        if (!newTaskDescription.trim()) return; // No agregar tareas vacías
-
-        const newTask: Task = {
-            id: Date.now().toString(), // Generar un ID simple basado en timestamp
-            description: newTaskDescription.trim(),
-        };
-
-        setTasks([...tasks, newTask]); // Agregar nueva tarea al estado
-        setNewTaskDescription(''); // Limpiar input
-        handleCloseAddTask(); // Cerrar modal
+    const handleTaskAdded = () => {
+        // Recargar las tareas después de agregar una nueva
+        if (id) {
+            getCaregiverTask(id)
+                .then(tasksData => setTasks(tasksData || []))
+                .catch(error => console.error("Error al recargar tareas:", error));
+        }
     };
     // === Fin Handlers Agregar Tarea ===
-
 
     // === Handlers para Editar Tarea ===
     const handleEditClick = (task: Task) => {
@@ -88,14 +134,27 @@ const ViewEmployee = ()=>{
         setEditingTaskDescription('');
     };
 
-    const handleSaveEdit = (taskId: string) => {
-        if (!editingTaskDescription.trim()) return; // No guardar con descripción vacía
+    const handleSaveEdit = async (taskId: number | string) => {
+        if (!editingTaskDescription.trim() || !editingTask) return;
 
-        const updatedTasks = tasks.map(task =>
-            task.id === taskId ? { ...task, description: editingTaskDescription.trim() } : task
-        );
-        setTasks(updatedTasks); // Actualizar la tarea en el estado
-        handleCancelEdit(); // Salir del modo edición
+        try {
+            const updatedTask = {
+                ...editingTask,
+                description: editingTaskDescription.trim()
+            };
+            
+            await updateTask(updatedTask);
+            
+            // Recargar tareas después de actualizar
+            if (id) {
+                const freshTasks = await getCaregiverTask(id);
+                setTasks(freshTasks || []);
+            }
+            
+            handleCancelEdit();
+        } catch (error) {
+            console.error("Error al actualizar tarea:", error);
+        }
     };
 
     const handleEditInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,33 +162,45 @@ const ViewEmployee = ()=>{
     };
     // === Fin Handlers Editar Tarea ===
 
-
     // === Handlers para Eliminar Tarea ===
-    const handleDeleteTask = (taskId: string) => {
-        const filteredTasks = tasks.filter(task => task.id !== taskId);
-        setTasks(filteredTasks); // Eliminar tarea del estado
-         // Si la tarea eliminada era la que se estaba editando, cancelar edición
-         if (editingTask?.id === taskId) {
-             handleCancelEdit();
-         }
+    const handleDeleteTask = async (taskId: number | string) => {
+        try {
+            await deleteTask(Number(taskId));
+            
+            // Recargar tareas después de eliminar
+            if (id) {
+                const freshTasks = await getCaregiverTask(id);
+                setTasks(freshTasks || []);
+            }
+            
+            // Si la tarea eliminada era la que se estaba editando, cancelar edición
+            if (editingTask?.id === taskId) {
+                handleCancelEdit();
+            }
+        } catch (error) {
+            console.error("Error al eliminar tarea:", error);
+        }
     };
     // === Fin Handlers Eliminar Tarea ===
 
-    return(
+    // Helper function to check if array exists and has items
+    const hasItems = (arr?: any[]) => Array.isArray(arr) && arr.length > 0;
 
+    return(
         <>
-             <div className="container mt-5">
+            <Header/>
+            <div className="container mt-5">
                 <div className="card m-5">
                     <div className="row g-0">
                         {/* Columna para la imagen y datos básicos */}
-                        <div className="col-md-4 text-center p-3"> {/* Añadido text-center y padding */}
+                        <div className="col-md-4 text-center p-3">
                             <img
-                                src={employeeData?.photoURL || 'placeholder-image-url.jpg'}
-                                className="img-fluid rounded" // rounded es para esquinas redondeadas
+                                src={imageUrl}
+                                className="img-fluid rounded"
                                 alt={`Foto de ${employeeData?.name || 'Empleado'}`}
-                                style={{ maxWidth: '150px' }} // Estilo para controlar el tamaño de la imagen
+                                style={{ maxWidth: '150px' }}
                             />
-                            <h5 className="card-title mt-3"><strong>Nombre: </strong>{employeeData?.name}</h5> {/* mt-3 para margen */}
+                            <h5 className="card-title mt-3"><strong>Nombre: </strong>{employeeData?.name}</h5>
                             <p className="card-text"><strong>Identificación:</strong> {employeeData?.identification}</p>
                             <p className="card-text"><strong>Email:</strong> {employeeData?.email}</p>
                             <p className="card-text"><strong>Salario:</strong> ${Number(employeeData?.salary).toFixed(2)}</p>
@@ -138,64 +209,80 @@ const ViewEmployee = ()=>{
                         {/* Columna para otros datos y las secciones de tareas */}
                         <div className="col-md-8">
                             <div className="card-body">
-                                {/* Otros datos del empleado */}
-                                <p className="card-text">
+                                {/* Días de trabajo */}
+                                <div className="card-text">
                                     <strong>Días de trabajo:</strong>
-                                    {employeeData?.selectedDays && employeeData.selectedDays.length > 0 &&  (
+                                    {hasItems(selectedDaysData) ? (
                                         <ul>
-                                            {employeeData?.selectedDays.map((day, index) => (
+                                            {selectedDaysData.map((day:string, index: number) => (
                                                 <li key={index}>{day}</li>
                                             ))}
                                         </ul>
-                                    ) }
-                                </p>
+                                    ) : (
+                                        <span className="text-muted"> No hay días seleccionados</span>
+                                    )}
+                                </div>
 
-                                <p className="card-text">
+                                {/* Horario de trabajo */}
+                                <div className="card-text">
                                     <strong>Horario de trabajo:</strong>
-                                    {employeeData?.workSchedule && employeeData.workSchedule.length > 0 && (
+                                    {hasItems(workScheduleData) ? (
                                         <ul>
-                                            {employeeData?.workSchedule.map((shift) => (
+                                            {workScheduleData.map((shift) => (
                                                 <li key={shift.id}>{`De ${shift.entryTime} a ${shift.exitTime}`}</li>
                                             ))}
                                         </ul>
-                                    )
-                                }
-                                </p>
+                                    ) : (
+                                        <span className="text-muted"> No hay horarios configurados</span>
+                                    )}
+                                </div>
 
-                                 <p className="card-text">
-                                     <strong>Turnos seleccionados:</strong>
-                                     {employeeData?.workSchedule && employeeData.workSchedule.length > 0 && (
-                                         <ul>
-                                             {employeeData?.selectedShifts.map((shift, index) => (
-                                                 <li key={index}>{shift}</li>
-                                             ))}
-                                         </ul>
-                                     ) 
-                                         
-                                     }
-                                </p>
-
+                                {/* Turnos seleccionados */}
+                                <div className="card-text">
+                                    <strong>Turnos seleccionados:</strong>
+                                    {hasItems(selectedShiftsData) ? (
+                                        <ul>
+                                            {selectedShiftsData.map((shift:string, index:number) => (
+                                                <li key={index}>{shift}</li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <span className="text-muted"> No hay turnos seleccionados</span>
+                                    )}
+                                </div>
 
                                 <hr/> 
                                 <h6>Gestión de Tareas Pendientes</h6>
                                 <div className="d-flex gap-2"> 
-                                    <button className="btn btn-primary" onClick={handleShowViewTasks}>
-                                        Mostrar  ({tasks.length}) <i className="bi bi-eye-fill"/>
+                                    <button 
+                                        className="btn btn-primary" 
+                                        onClick={handleShowViewTasks}
+                                        disabled={isLoadingTasks}
+                                    >
+                                        {isLoadingTasks ? (
+                                            <>
+                                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                Cargando...
+                                            </>
+                                        ) : (
+                                            <>Mostrar ({tasks.length}) <i className="bi bi-eye-fill"/></>
+                                        )}
                                     </button>
-                                    <button className="btn btn-success" onClick={handleShowAddTask}>
+                                    <button 
+                                        className="btn btn-success" 
+                                        onClick={handleShowAddTask}
+                                        disabled={isLoadingTasks}
+                                    >
                                         Agregar <i className="bi bi-clipboard-plus-fill"/>
                                     </button>
                                 </div>
-                                {/* === Fin Sección de Tareas === */}
-
-                                {/* Puedes mantener o eliminar este párrafo si no lo necesitas */}
-                                {/* <p className="card-text mt-3"><small className="text-body-secondary">Última actualización: ...</small></p> */}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-{/* === Modales Separados === */}
+
+            {/* === Modales Separados === */}
 
             {/* Modal para Mostrar Tareas Pendientes */}
             <ViewTasksModal
@@ -217,15 +304,12 @@ const ViewEmployee = ()=>{
                 show={showAddTaskModal}
                 onClose={handleCloseAddTask}
                 employeeName={employeeData?.name}
-                newTaskDescription={newTaskDescription}
-                onNewTaskDescriptionChange={handleNewTaskDescriptionChange}
-                onAddTaskSubmit={handleAddTaskSubmit}
+                caregiverId={id}
+                onTaskAdded={handleTaskAdded}
             />
-
+            <Footer/>
         </>
-        
-       
     );
-
 }
+
 export default ViewEmployee;

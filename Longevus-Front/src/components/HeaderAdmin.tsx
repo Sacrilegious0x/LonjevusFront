@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Link } from "react-router-dom";
 import '../css/styles.css';
 
@@ -7,11 +7,12 @@ const Header = () => {
     const [menuActive, setMenuActive] = useState<string | null>(null);
 
     return (
-        <header className="header">
+        <header className="navbar navbar-expand-lg">
+            <div className="container-fluid">
             <div className="logo">
                 <img src="/img/logo.jpg" alt="Logo del sitio" />
             </div>
-            <nav className="navbar bg-body-tertiary">
+            <nav >
                 <ul className="ul-actions">
 
                     <li className="ul-actions-li"
@@ -105,6 +106,7 @@ const Header = () => {
                     
                 </ul>
             </nav>
+            </div>
         </header>
     );
 };

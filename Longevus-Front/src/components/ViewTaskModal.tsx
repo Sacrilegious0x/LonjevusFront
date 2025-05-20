@@ -90,11 +90,11 @@ const ViewTasksModal: React.FC<ViewTasksModalProps> = ({
                           ) : (
                             <div className="btn-group btn-group-sm">
                               <button
-                                className="btn btn-primary"
+                                className="btn btn-warning me-2"
                                 onClick={() => onEditClick(task)}
                                 title="Editar tarea"
                               >
-                                <i className="bi bi-pencil-fill"></i>
+                                <i className="bi bi-pencil-square"></i>
                               </button>
                               <button
                                 className="btn btn-danger"

@@ -8,10 +8,9 @@ import ShowEmployee from './pages/Employee/ShowEmployees';
 import EditEmployee from './pages/Employee/EditEmployee';
 import ViewEmployee from './pages/Employee/VIewEmployee';
 import ShowResidents from './pages/Residents/ShowResidents';
-import SuppliersList from './pages/suppliers/SuppliersList';
-import SuppliersAdd from './pages/suppliers/SuppliersAdd';
-import Role_Permissions from './pages/suppliers/Role_permission';
-import SuppliersEdit from './pages/suppliers/SuppliertsUpdate';
+import SuppliersList from './pages/supplier/SuppliersList';
+import SuppliersAdd from './pages/supplier/SuppliersAdd';
+import Role_Permissions from './pages/role_permissions/Role_permission';
 import AddResident from './pages/Residents/AddResident';
 import PurchasePage from './pages/purchase/PurchasePage';
 import EditPurchase from './pages/purchase/EditPurchase';
@@ -21,6 +20,7 @@ import ProductPage from './pages/product/ProductPage';
 import AddProduct from './pages/product/AddProduct';
 import AddAdmin from './pages/Employee/AddAdmin';
 import EditAdmin from './pages/Employee/EditAdmin';
+
 function App() {
   return (
     <BrowserRouter>  
@@ -44,10 +44,9 @@ function App() {
         <Route path="/proveedores" element={<SuppliersList />} />
         <Route path="/proveedores/guardar" element={<SuppliersAdd/>} />
         <Route path="/roles_permisos" element={<Role_Permissions />} />
-        <Route path="/proveedores/editar" element={<SuppliersEdit/>} />
         <Route path='/agregar/admin' element={<AddAdmin/>}/>
         <Route path='/editar/admin/:id' element = {<EditAdmin/>}/>
-      </Routes>
+         </Routes>
     </BrowserRouter>
   );
 }

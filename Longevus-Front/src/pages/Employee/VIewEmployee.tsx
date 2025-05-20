@@ -7,7 +7,8 @@ import type { IShift } from '../../components/HourSelector';
 import Header from '../../components/HeaderAdmin';
 import Footer from '../../components/Footer';
 import type { Task } from '../../services/TaskService';
-import { getCaregiverTask, updateTask, deleteTask, saveTask} from '../../services/TaskService';
+import { getCaregiverTask, updateTask, deleteTask} from '../../services/TaskService';
+import { Link } from 'react-router-dom';
 
 const BACKEND_URL = 'http://localhost:8080/';
 
@@ -210,7 +211,9 @@ const ViewEmployee = () => {
                         <div className="col-md-8">
                             <div className="card-body">
                                 {/* Días de trabajo */}
+                                <Link className='btn btn-secondary float-end' to="/mostrar"><i className="bi bi-reply"/> Volver</Link>
                                 <div className="card-text">
+                                    
                                     <strong>Días de trabajo:</strong>
                                     {hasItems(selectedDaysData) ? (
                                         <ul>

@@ -3,9 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const EditInventoryPage = () => {
-  const { id } = useParams(); 
+  const { id } = useParams(); //Obtiene el id del producto
   const navigate = useNavigate();
 
+  //Ejemplo de inserts
   const initialItem = {
     id: 1,
     name: "Vitamina C",
@@ -17,24 +18,28 @@ const EditInventoryPage = () => {
     category: "Salud"
   };
 
-  const [formData, setFormData] = useState(initialItem); 
-  const [isDirty, setIsDirty] = useState(false); 
+  const [formData, setFormData] = useState(initialItem); //Estado del formulario, para poder detectar cambios y asi dar el warning
+  const [isDirty, setIsDirty] = useState(false); //Este los detecta
 
   useEffect(() => {
     setIsDirty(JSON.stringify(formData) !== JSON.stringify(initialItem));
   }, [formData]);
 
+  //Cambio en los campos del formulario
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  //Enviar el formulario
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Datos actualizados:", formData);
     setIsDirty(false);
+    //Los voy a enviar al back
   };
  
+  //Regresar a Inventario
   const handleBack = () => {
     if (isDirty) {
       const confirmLeave = window.confirm("Tienes cambios sin guardar. ¿Deseas salir sin guardar?");
@@ -43,16 +48,19 @@ const EditInventoryPage = () => {
     navigate('/inventario');
   };
 
+  //De aquí comienza la interfaz
   return (
     <div className="container mt-4">
       <h2>Editar Inventario - ID: {id}</h2>
 
+      {/* Botón Volver */}
       <div className="mb-3">
         <button onClick={handleBack} className="btn btn-secondary">
           ← Volver
         </button>
       </div>
 
+      {/* Foto */}
       <div className="mb-4 text-center">
         <img
           src={formData.photoUrl}

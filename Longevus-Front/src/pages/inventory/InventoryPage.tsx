@@ -8,8 +8,6 @@ import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-
-
 type InventoryItem = {
   id: number;
   quantity: number;
@@ -17,16 +15,15 @@ type InventoryItem = {
   photoURL: string;
   product: {
     name: string;
-    expirationDate: string;
+    expirationDate: string | null;
     supplier: {
       name: string;
     };
   };
   purchase: {
-    id: number;
+    id: string;
   };
 };
-
 
 const InventoryPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("Todos");
@@ -37,26 +34,35 @@ const InventoryPage = () => {
   const navigate = useNavigate();
 
   const getAllInventory = async (): Promise<InventoryItem[]> => {
-  const res = await fetch("http://localhost:8080/api/inventory/all");
-  if (!res.ok) {
-    throw new Error("Error al obtener inventario");
-  }
-  return res.json();
-};
-
+    const res = await fetch("http://localhost:8080/api/inventory/all");
+    if (!res.ok) {
+      throw new Error("Error al obtener inventario");
+    }
+    return res.json();
+  };
 
   useEffect(() => {
     getAllInventory()
-      .then(setInventoryData)
+      .then((data) => {
+        setInventoryData(data);
+      })
       .catch((err) => console.error("Error cargando inventario:", err));
   }, []);
 
-  const handleEdit = (item: InventoryItem) => {
-    navigate(`/inventario/editar/${item.id}`);
-  };
+  const handleDelete = async (id: number) => {
+    const confirmed = window.confirm("¿Estás seguro de que deseas eliminar este ítem del inventario?");
+    if (confirmed) {
+      try {
+        const res = await fetch(`http://localhost:8080/api/inventory/delete/${id}`, {
+          method: "DELETE",
+        });
+        if (!res.ok) throw new Error("Error al eliminar");
 
-  const handleDelete = (id: number) => {
-    console.log("Eliminar inventario con ID:", id);
+        setInventoryData((prev) => prev.filter((item) => item.id !== id));
+      } catch (err) {
+        console.error("Error al eliminar inventario:", err);
+      }
+    }
   };
 
   const toggleRow = (id: number) => {
@@ -78,12 +84,15 @@ const InventoryPage = () => {
   };
 
   const columns: columnDefinition<InventoryItem>[] = [
-    { header: "#", accessor: "id" },
+    {
+      header: "#",
+      accessor: () => "",
+      Cell: (_item, index) => index + 1,
+    },
     { header: "Producto", accessor: (item) => item.product.name },
-    { header: "Cantidad", accessor: "quantity" },
     {
       header: "Fecha de Vencimiento",
-      accessor: (item) => item.product.expirationDate,
+      accessor: (item) => item.product.expirationDate ?? "N/A",
     },
     {
       header: "Proveedor",
@@ -91,7 +100,7 @@ const InventoryPage = () => {
     },
     {
       header: "Id de la compra",
-      accessor: (item) => `COMP-${item.purchase.id.toString().padStart(3, "0")}`,
+      accessor: (item) => item.purchase.id,
     },
     {
       header: "Fotografía",
@@ -105,6 +114,18 @@ const InventoryPage = () => {
           height="60"
           style={{ objectFit: "cover" }}
         />
+      ),
+    },
+    {
+      header: "Acciones",
+      accessor: () => "",
+      Cell: (item) => (
+        <button
+          className="btn btn-danger btn-sm"
+          onClick={() => handleDelete(item.id)}
+        >
+          Eliminar
+        </button>
       ),
     },
   ];
@@ -135,9 +156,27 @@ const InventoryPage = () => {
             />
           </div>
           <div className="col-md-6">
-            <DateFilter value={selectedDate} onChange={setSelectedDate} />
+            <DateFilter
+              value={selectedDate}
+              onChange={(dateStr) => {
+                // Convertir a formato YYYY-MM-DD
+                const isoDate = new Date(dateStr).toISOString().split("T")[0];
+                setSelectedDate(isoDate);
+              }}
+            />
           </div>
         </div>
+        <button
+  className="btn btn-secondary mt-2"
+  onClick={() => setSelectedDate("")}
+>
+  Limpiar búsqueda
+</button>
+
+        <p>
+          Total de unidades en inventario:{" "}
+          <strong>{filteredData.length}</strong>
+        </p>
         <TableBasic<InventoryItem>
           data={filteredData}
           columns={columns}

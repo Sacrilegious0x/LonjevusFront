@@ -5,7 +5,6 @@ import PurchasePage from './pages/purchase/PurchasePage';
 import AddPurchase from './pages/purchase/AddPurchase';
 import EditPurchase from './pages/purchase/EditPurchase';
 
-
 function App() {
   return (
     <BrowserRouter>  

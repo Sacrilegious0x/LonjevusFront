@@ -262,17 +262,14 @@ nav a {
   border-radius: 8px;
   box-shadow: 2px 2px 12px #aaa;
   max-width: 400px;
-  /* Ejemplo: limita el ancho de la tarjeta */
   margin: 12% auto;
-  /* Ejemplo: céntrala en la página */
   padding: 0;
-  /* Elimina el padding por defecto si el card-body lo manejará */
 }
 
 .cardLogin-body {
 
   padding: 20px;
-  /* Espacio interno del cuerpo de la tarjeta */
+
 }
 
 .cardLogin-body h3 {
@@ -281,12 +278,10 @@ nav a {
   color: #333;
 }
 
-/* Estilos básicos para inputs y botón si no usas Bootstrap o para personalizarlos */
+
 .cardLogin-body input {
-  display: block;
-  /* Cada input en una nueva línea */
+  display: block; 
   width: calc(100% - 22px);
-  /* Ancho completo menos padding/border */
   margin-bottom: 15px;
   padding: 10px;
   border: 1px solid #ddd;
@@ -301,7 +296,6 @@ nav a {
   margin-right: 5px;
 }
 
-/* Estilos del headerAdmin */
 .ul-actions {
   list-style: none;
   display: flex;
@@ -317,7 +311,6 @@ nav a {
   font-weight: bold;
 }
 
-/* Submenú desplegable */
 .sub_ul-actions {
   list-style: none;
   display: flex;
@@ -335,12 +328,10 @@ nav a {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Ítems del submenú */
 .sub_ul-actions-li {
   margin-bottom: 0.5rem;
 }
 
-/* Enlaces del submenú */
 .sub_menu-options {
   color: #333;
   text-decoration: none;
@@ -355,7 +346,6 @@ nav a {
   border-radius: 4px;
 }
 
-/* Estilos para el formulario de agregar residentes*/
 .residentForm {
   background-color: #A8C3A0;
   

@@ -1,23 +1,22 @@
 import { type ChangeEvent } from 'react';
-//import type { Shift } from './Common'; // <--- Importa las interfaces
 
  export interface IShift {
     id: string;
     entryTime: string;
     exitTime: string;
 }
-interface DayScheduleEditorProps {
-    shifts: IShift[]; // El array de turnos comunes
-    onUpdateShift: (index: number, field: 'entryTime' | 'exitTime', value: string) => void; // Callback para cambiar un campo de un turno
-    onAddShift: () => void; // Callback para añadir un nuevo turno
-    onRemoveShift: (id: string) => void; // Callback para eliminar un turno
+interface IDayScheduleEditorProps {
+    shifts: IShift[]; // El array de turnos(horarios) comunes
+    onUpdateShift: (index: number, field: 'entryTime' | 'exitTime', value: string) => void; 
+    onAddShift: () => void; 
+    onRemoveShift: (id: string) => void; 
 }
 
 
-const DayScheduleEditor = ({ shifts, onUpdateShift, onAddShift, onRemoveShift }: DayScheduleEditorProps) => {
+const HourSelector = ({ shifts, onUpdateShift, onAddShift, onRemoveShift }: IDayScheduleEditorProps) => {
 
     return (
-        <div className='mb-3 border p-3 rounded bg-light'> {/* Contenedor para los turnos comunes */}
+        <div className='mb-3 border p-3 rounded bg-light'> 
             <h4 className="mb-3">Definir Horario <i className="bi bi-clock-fill"></i></h4>
             {shifts.map((shift, index) => (
                 <div key={shift.id} className="border p-3 mb-3 rounded bg-light">
@@ -47,8 +46,7 @@ const DayScheduleEditor = ({ shifts, onUpdateShift, onAddShift, onRemoveShift }:
                                 required
                             />
                         </div>
-                    </div>
-                    {/* Botón para eliminar turno (si no es el único) */}
+                    </div>                   
                     {shifts.length > 1 && (
                         <button
                             type="button"
@@ -69,4 +67,4 @@ const DayScheduleEditor = ({ shifts, onUpdateShift, onAddShift, onRemoveShift }:
     );
 };
 
-export default DayScheduleEditor;
+export default HourSelector;

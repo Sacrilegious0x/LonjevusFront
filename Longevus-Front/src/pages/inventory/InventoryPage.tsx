@@ -5,7 +5,7 @@ import type { columnDefinition } from "../../components/TableBasic";
 import CategoryFilter from "../../components/CategoryFilter";
 import DateFilter from "../../components/DateFilter";
 import Footer from "../../components/Footer";
-import Header from "../../components/Header";
+import Header from "../../components/HeaderAdmin";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 type InventoryItem = {

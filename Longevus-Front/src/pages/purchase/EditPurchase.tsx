@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Header from "../../components/HeaderAdmin";
+import Footer from "../../components/Footer";
 
 interface Product {
   id: number;

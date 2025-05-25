@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Header from "../../components/HeaderAdmin";
+import Footer from "../../components/Footer";
 import axios from "axios";
 
 interface Product {
@@ -112,6 +114,8 @@ const AddPurchase = () => {
   };
 
   return (
+    <>
+  <Header/>
     <div className="container mt-4">
       <h2>Agregar Nueva Compra</h2>
 
@@ -220,6 +224,8 @@ const AddPurchase = () => {
         <button type="submit" className="btn btn-primary">Guardar Compra</button>
       </form>
     </div>
+    <Footer/>
+    </>
   );
 };
 

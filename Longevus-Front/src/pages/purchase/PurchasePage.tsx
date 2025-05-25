@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import StandardTable, { type Column } from "../../components/StandardTable";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Header from "../../components/HeaderAdmin";
+import Footer from "../../components/Footer";
 import axios from "axios";
+
 
 interface PurchaseItem {
   productName: string;
@@ -74,7 +77,7 @@ const PurchasePage = () => {
     const confirmDelete = window.confirm(`¿Estás seguro de eliminar la compra con ID ${id}?`);
     if (confirmDelete) {
       try {
-        await deletePurchase(id); 
+        await deletePurchase(id);
         setPurchases(prev => prev.filter(p => p.id !== id));
       } catch (error) {
         console.error("Error al eliminar la compra:", error);
@@ -87,6 +90,8 @@ const PurchasePage = () => {
   };
 
   return (
+    <>
+    <Header/>
     <div className="container mt-4">
       <h2>Listado de Compras</h2>
       <div className="d-flex justify-content-end mb-3">
@@ -159,6 +164,8 @@ const PurchasePage = () => {
         </div>
       )}
     </div>
+    <Footer/>
+    </>
   );
 };
 

@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import Header from '../../components/HeaderAdmin';
 import Footer from '../../components/Footer';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { createSupplier } from '../../pages/services/SupplierService'
 
 export default function SuppliersAdd() {
 
@@ -51,16 +51,8 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       data.append('photo', selectedFile); //el archivo real
     }
 
-     const config = {headers: {'Content-Type': 'multipart/form-data',},};
 
-      const res = await axios.post(
-        'http://localhost:8080/suppliers/save', //hago el post
-        data,config
-      );
-      console.log('Proveedor guardado:', res.data);
-
-      
-      console.log('Guardado:', res.data);
+    await createSupplier(data);
       navigate('/proveedores');
     } catch (error) {
       console.error('Error saving supplier:', error);

@@ -4,8 +4,9 @@ import Footer from "../../components/Footer";
 import type {columnDefinition} from '../../components/TableBasic';
 import { Link } from 'react-router-dom';
 import Table from '../../components/TableBasic';
-import axios from "axios";
 import { useState, useEffect } from "react";
+import { deleteSupplier, getSuppliers } from "../services/SupplierService";
+
 
 interface ISupplier{
     id: number,
@@ -60,20 +61,20 @@ const SuppliersList = () =>{
     }
    ];
 
-    useEffect(() => {
-    axios
-      .get("http://localhost:8080/suppliers/list")
-      .then((res) => {
-        console.log("Datos recibidos:", res.data);
-        setSupplierData(res.data.suppliers);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("No se pudo cargar la lista de proveedores");
-        setLoading(false);
-      });
+   useEffect(() => {
+    loadSuppliers();
   }, []);
+
+    const loadSuppliers = async () => {
+    try {
+      const suppliers = await getSuppliers();
+      setSupplierData(suppliers);
+      setLoading(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error desconocido al cargar proveedores");
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -100,18 +101,14 @@ const SuppliersList = () =>{
   const confirmDelete = window.confirm("¿Seguro que deseas eliminar este proveedor?");
   if (!confirmDelete) return;
 
-  try {
-    await axios.delete(`http://localhost:8080/suppliers/delete`, {
-      params: { id }
-    });
-
-    setSupplierData((prev) => prev.filter((p) => p.id !== id));
-    alert("Proveedor eliminado correctamente");
-  } catch (err) {
-    console.error(err);
-    alert("Ocurrió un error al eliminar el proveedor");
-  }
-};
+   try {
+      await deleteSupplier(id);
+      setSupplierData((prev) => prev.filter((p) => p.id !== id));
+      alert("Proveedor eliminado correctamente");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Error desconocido al eliminar proveedor");
+    }
+  };
 
 return (
 

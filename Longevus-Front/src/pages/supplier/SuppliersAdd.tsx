@@ -70,7 +70,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             </center>
             <form onSubmit={handleSubmit}>
               <div className='mb-3'>
-                <label htmlFor='name' className='form-label'>Nombre:<i className="bi bi-person-fill"></i></label>
+                <label htmlFor='name' className='form-label'><i className="bi bi-person-fill"></i>Nombre:</label>
                 <input
                   type='text'
                   id='name'
@@ -83,7 +83,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               </div>
 
               <div className='mb-3'>
-                <label htmlFor='phoneNumber' className='form-label'>Teléfono:<i className="bi bi-telephone-plus-fill"></i></label>
+                <label htmlFor='phoneNumber' className='form-label'><i className="bi bi-telephone-plus-fill"></i>Teléfono:</label>
                 <input
                   type='text'
                   id='phoneNumber'
@@ -96,7 +96,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               </div>
 
               <div className='mb-3'>
-                <label htmlFor='email' className='form-label'>Correo:<i className="bi bi-envelope-fill"></i></label>
+                <label htmlFor='email' className='form-label'><i className="bi bi-envelope-fill"></i>Correo:</label>
                 <input
                   type='text'
                   id='email'
@@ -109,7 +109,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               </div>
 
               <div className='mb-3'>
-                <label htmlFor='address' className='form-label'>Dirección:<i className="bi bi-compass"></i></label>
+                <label htmlFor='address' className='form-label'><i className="bi bi-compass"></i>Dirección:</label>
                 <input
                   type='text'
                   id='address'
@@ -122,7 +122,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               </div>
 
               <div className='mb-3'>
-                <label htmlFor='photo' className='form-label'>Fotografía:<i className="bi bi-image"></i></label>
+                <label htmlFor='photo' className='form-label'><i className="bi bi-image"></i>Fotografía:</label>
                 <input
                   type='file'
                   id='photo'

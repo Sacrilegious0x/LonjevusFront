@@ -98,19 +98,19 @@ export default function SuppliersEdit() {
             </center>
             <form onSubmit={handleSubmit}>
               <div className='mb-3'>
-                <label htmlFor='name' className='form-label'>Nombre:<i className="bi bi-person-fill"></i></label>
+                <label htmlFor='name' className='form-label'><i className="bi bi-person-fill"></i>Nombre:</label>
                 <input type='text' id='name' name='name' value={formData.name} onChange={handleChange} className='form-control' required />
               </div>
               <div className='mb-3'>
-                <label htmlFor='phoneNumber' className='form-label'>Teléfono:<i className="bi bi-telephone-plus-fill"></i></label>
+                <label htmlFor='phoneNumber' className='form-label'><i className="bi bi-telephone-plus-fill"></i>Teléfono:</label>
                 <input type='text' id='phoneNumber' name='phoneNumber' value={formData.phoneNumber} onChange={handleChange} className='form-control' required />
               </div>
               <div className='mb-3'>
-                <label htmlFor='email' className='form-label'>Correo:<i className="bi bi-envelope-fill"></i></label>
+                <label htmlFor='email' className='form-label'><i className="bi bi-envelope-fill"></i>Correo:</label>
                 <input type='email' id='email' name='email' value={formData.email} onChange={handleChange} className='form-control' required />
               </div>
               <div className='mb-3'>
-                <label htmlFor='address' className='form-label'>Dirección:<i className="bi bi-compass"></i></label>
+                <label htmlFor='address' className='form-label'><i className="bi bi-compass"></i>Dirección:</label>
                 <input type='text' id='address' name='address' value={formData.address} onChange={handleChange} className='form-control' required />
               </div>
               <div className='mb-3'>
@@ -121,7 +121,7 @@ export default function SuppliersEdit() {
                     style={{ width: 100, height: 100, objectFit: 'cover' }}
                   />
                 </div>
-                <label htmlFor='photo' className='form-label'>Fotografía:<i className="bi bi-image"></i></label>
+                <label htmlFor='photo' className='form-label'><i className="bi bi-image"></i>Fotografía:</label>
                 <input type='file' id='photo' name='photo' onChange={handleFileChange} className='form-control' accept='image/*' />
               </div>
               <div className='mb-3'>

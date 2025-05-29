@@ -4,7 +4,7 @@ import Footer from '../../components/Footer'
 import Header from '../../components/HeaderAdmin'
 import type { columnDefinition } from '../../components/TableBasic'
 import Table from '../../components/TableBasic';
-import { getAllPermissions, getAllRoles } from '../services/RolePermissionsService';
+import { getAllPermissions, getAllPermissionsById, getAllRoles, updatePermissions } from '../services/RolePermissionsService';
 
 interface IRole{
   id: number
@@ -63,7 +63,7 @@ const handleOpenModal = (role: IRole) => {
   setCurrentRole(role);
   setLoadingPerms(true);
 
-  getAllPermissions()
+  getAllPermissionsById(role.id)
     .then(apiPerms => {
       // mapeo de canX → X
       const mapped = apiPerms.map(p => ({
@@ -96,12 +96,16 @@ const handleOpenModal = (role: IRole) => {
     // 4. Guardar permisos (aquí usarías tu función savePermissions)
   const handleSave = () => {
     if (!currentRole) return;
-    // por ejemplo:
-    // savePermissions(currentRole.id, permissions)
-    //   .then(() => toast.success('Permisos guardados'))
-    //   .catch(err => toast.error('Error al guardar'))
-    console.log('Guardando permisos:', currentRole.id, permissions);
+
+  try {
+     updatePermissions(currentRole.id, permissions);
+    // opcional: toast.success('Permisos actualizados');
+  } catch (e) {
+     console.log(e);
+  } finally {
     handleCloseModal();
+  }
+
   };
 
 

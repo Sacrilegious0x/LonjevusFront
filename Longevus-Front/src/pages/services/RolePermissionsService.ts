@@ -49,5 +49,34 @@ export const getAllPermissions = async (): Promise<IPermissionModule[]> => {
     }
 };
 
+export const getAllPermissionsById = async (roleId:number): Promise<IPermissionModule[]> => {
+
+    try {
+      console.log("rol a buscar: "+roleId);
+      const response = await axios.get<IPermissionModule[]>(`${API_BASE_URL}/permissions/list/${roleId}`);
+      console.log(response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener la lista de Permisos:', error);
+        throw new Error('No se pudo cargar la lista de Permisos');
+    }
+};
+
+export const updatePermissions = async (
+  roleId: number,
+  permissions: IPermissionModule[]
+): Promise<void> => {
+  try {
+    await axios.post(
+      `${API_BASE_URL}/permissions/save/${roleId}`,
+      permissions,
+      
+    );
+  } catch (error) {
+    console.error('Error al actualizar permisos:', error);
+    throw new Error('No se pudo editar el permiso');
+  }
+};
+
 
 

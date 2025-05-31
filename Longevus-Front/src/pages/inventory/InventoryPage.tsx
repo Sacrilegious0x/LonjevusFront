@@ -148,13 +148,7 @@ const InventoryPage = () => {
       <div className="container mt-4">
         <h1>Inventario</h1>
         <div className="row mb-3">
-          <div className="col-md-6">
-            <CategoryFilter
-              value={selectedCategory}
-              onChange={setSelectedCategory}
-              options={categoryOptions}
-            />
-          </div>
+         
           <div className="col-md-6">
             <DateFilter
               value={selectedDate}

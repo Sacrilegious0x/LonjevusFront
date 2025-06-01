@@ -114,7 +114,6 @@ const handleOpenModal = (role: IRole) => {
     <>
     <Header/>
     <div className="container">
-      {/* Título y botón Nuevo */}
         <div className='row'>
           <div className='card mt-5 mb-5'>
             <div className="card-title d-flex justify-content-between align-items-center mt-3">

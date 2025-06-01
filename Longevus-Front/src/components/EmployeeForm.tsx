@@ -15,6 +15,8 @@ export interface EmployeeFormData {
     selectedDays: string[];
     workSchedule: IShift[];
     selectedShifts: string[];
+    scheduleId?: number;
+    officeContact?: string;
 }
 export interface EmployeeInitialData{
     id?: string,
@@ -25,16 +27,32 @@ export interface EmployeeInitialData{
     salary: number | string,
     selectedDays: string [];
     workSchedule: IShift[];
-    selectedShifts: string [];
+    selectedShifts?: string [];
+    officeContact?: string;
+    scheduleId?: number;
 }
 
 interface EmployeeFormProps{
     initialData?: EmployeeInitialData,
     onSubmit: (data: EmployeeFormData, employeeId?: string)=>void;
     onCancel: ()=> void;
+    showShiftSelector?: boolean;
+    showHourSelector?: boolean;
+    showOfficeContactField?: boolean;
+    showDaySelector?: boolean;
 }
 
-const EmployeeForm = ({initialData, onSubmit, onCancel}: EmployeeFormProps) => {
+const EmployeeForm = ({initialData, onSubmit, onCancel, showShiftSelector = false,
+    showHourSelector = false,showOfficeContactField = false,
+    showDaySelector = false}: EmployeeFormProps) => {
+        // !!! AÑADIR ESTOS CONSOLE LOGS !!!
+    console.log("Dentro de EmployeeForm - Props de visibilidad:");
+    console.log("initialData presente:", !!initialData); // Para saber si es modo edición
+    console.log("showShiftSelector:", showShiftSelector, typeof showShiftSelector);
+    console.log("showDaySelector:", showDaySelector, typeof showDaySelector);
+    console.log("showHourSelector:", showHourSelector, typeof showHourSelector);
+    console.log("showOfficeContactField:", showOfficeContactField, typeof showOfficeContactField); // Para comparar
+
     const [formData, setFormData] = useState<EmployeeFormData>(()=>{
         if(initialData){
             return{
@@ -46,12 +64,12 @@ const EmployeeForm = ({initialData, onSubmit, onCancel}: EmployeeFormProps) => {
                 salary: String(initialData.salary) || "", 
                 selectedDays: initialData.selectedDays || [],
                 workSchedule: initialData.workSchedule && initialData.workSchedule.length > 0
-                    ? initialData.workSchedule.map(shift => ({ 
+                    ? initialData.workSchedule.map((shift, index) => ({ 
                         ...shift,
-                        id: shift.id || crypto.randomUUID() // Asigna un ID si no existe
+                        id: `${initialData.scheduleId ?? 'sched'}-${index}`
                       }))
                     : [{ id: crypto.randomUUID(), entryTime: "", exitTime: "" }], // Horario por defecto si no hay o está vacío
-                selectedShifts: initialData.selectedShifts || []
+                selectedShifts: initialData.selectedShifts || [], officeContact:initialData.officeContact || "",
             };
         }else{
             return{
@@ -136,7 +154,11 @@ const EmployeeForm = ({initialData, onSubmit, onCancel}: EmployeeFormProps) => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        onSubmit(formData, initialData?.id);
+        const finalFormData = {
+            ...formData,
+            scheduleId: initialData?.scheduleId ?? formData.scheduleId,
+        };
+        onSubmit(finalFormData, initialData?.id);
         console.log("Form Data Submitted:", JSON.stringify(formData, null, 2));
     };
 
@@ -179,27 +201,49 @@ const EmployeeForm = ({initialData, onSubmit, onCancel}: EmployeeFormProps) => {
                             )}                         
                             <div className='mb-3'>
                                 <label htmlFor='photoInput'>Fotograf&iacute;a: <i className="bi bi-images"></i></label>
-                                <input type='file' name='photo' id='photoInput' onChange={handleForm} className='form-control' required />
+                                <input type='file' name='photo' id='photoInput' onChange={handleForm} className='form-control' required={!isEditing} />
                             </div>
                             <div className='mb-3'>
                                 <label htmlFor='salaryInput'>Sueldo: </label>
                                 <input type='number' name='salary' id='salaryInput' onChange={handleForm} value={formData.salary} className='form-control' required />
                             </div>
 
-                            <DaySelector
-                                selectedDays={formData.selectedDays} 
-                                onDayChange={handleDayChange}
-                            />
-                            <ShiftTypeSelector
-                               selectedShiftTypes={formData.selectedShifts} 
-                               onShiftTypeChange={handleShiftTypeChange}
-                            />
-                            <HourSelector
-                                shifts={formData.workSchedule}
-                                onUpdateShift={handleWorkScheduleChange}
-                                onAddShift={addCommonShift}
-                                onRemoveShift={removeCommonShift}
-                            />
+                            {showShiftSelector && (
+                                <ShiftTypeSelector
+                                selectedShiftTypes={formData.selectedShifts}
+                                onShiftTypeChange={handleShiftTypeChange}
+                             />
+                            )}
+                            {showDaySelector && (
+                                <DaySelector
+                                    selectedDays={formData.selectedDays}
+                                    onDayChange={handleDayChange}  
+                                />
+                            )}
+
+                            {showHourSelector && (                          
+                                <HourSelector
+                                    shifts={formData.workSchedule}
+                                    onUpdateShift={handleWorkScheduleChange}
+                                    onAddShift={addCommonShift}
+                                    onRemoveShift={removeCommonShift}
+                                />
+                            )}
+
+                            {showOfficeContactField && (
+                                <div className='mb-3'>
+                                    <label htmlFor='officeContact'>Contacto de oficina: <i className="bi bi-telephone-fill"></i></label>
+                                    <input
+                                        type='tel'
+                                        name='officeContact'
+                                        id='officeContact'
+                                        onChange={handleForm}
+                                        value={formData.officeContact || ''}
+                                        className='form-control'
+                                    />
+                                </div>
+                            )}
+
                             <div className='mb-3'>
                                 <button type="button" className='btn btn-secondary btn-sm me-3' onClick={onCancel}>Volver</button>
                                 <input type='submit' value={"Guardar"} className='btn btn-primary btn-sm' />
@@ -208,7 +252,7 @@ const EmployeeForm = ({initialData, onSubmit, onCancel}: EmployeeFormProps) => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            
         </>
     );
 };

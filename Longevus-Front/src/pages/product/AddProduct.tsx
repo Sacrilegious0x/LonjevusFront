@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
+
 import { createProduct } from "../services/ProductService";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
@@ -8,6 +9,7 @@ import { getSuppliers, type ISupplier } from "../services/SupplierService";
 
 const categories = ["Salud", "Limpieza", "Alimento", "Otro"];
 const units = ["Unitario", "ml", "g", "kg", "Caja"];
+
 
 const AddProduct = () => {
 

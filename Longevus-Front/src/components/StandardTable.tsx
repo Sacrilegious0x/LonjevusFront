@@ -37,35 +37,35 @@ function StandardTable<T extends { id: number }>({
       <tbody>
         {data.map((item, i) => (
           <tr key={i}>
-          {columns.map((col) => (
-  <td key={col.header}>
-    {col.render
-      ? col.render(item, i)  
-      : (item[col.accessor] as React.ReactNode)}
-  </td>
-))}
+            {columns.map((col) => (
+              <td key={col.header}>
+                {col.render
+                  ? col.render(item, i)
+                  : (item[col.accessor] as React.ReactNode)}
+              </td>
+            ))}
 
             {hasActions && (
-  <td>
-    <div className="d-flex justify-content-center gap-2">
-      {renderActions
-        ? renderActions(item)
-        : <>
-            {onEdit && (
-              <button className="btn btn-sm btn-primary" onClick={() => onEdit(item)}>
-                <i className="bi bi-pencil"></i>
-              </button>
+              <td>
+                <div className="d-flex justify-content-center gap-2">
+                  {renderActions
+                    ? renderActions(item)
+                    : <>
+                      {onEdit && (
+                        <button className="btn btn-sm btn-primary" onClick={() => onEdit(item)}>
+                          <i className="bi bi-pencil"></i>
+                        </button>
+                      )}
+                      {onDelete && (
+                        <button className="btn btn-sm btn-danger" onClick={() => onDelete(item.id)}>
+                          <i className="bi bi-trash"></i>
+                        </button>
+                      )}
+                    </>
+                  }
+                </div>
+              </td>
             )}
-            {onDelete && (
-              <button className="btn btn-sm btn-danger" onClick={() => onDelete(item.id)}>
-                <i className="bi bi-trash"></i>
-              </button>
-            )}
-          </>
-      }
-    </div>
-  </td>
-)}
 
           </tr>
         ))}

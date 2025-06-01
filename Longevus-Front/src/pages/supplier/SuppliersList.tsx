@@ -120,7 +120,7 @@ return (
             <div className='card mt-5 mb-5'>
                 <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                         <h4 className="m-2">Lista de proveedores</h4>
-                        <Link className='btn btn-success' to='/proveedores/guardar'>Agregar</Link>
+                        <Link className='btn btn-success' to='/proveedores/agregar'>Agregar</Link>
                 </div>  
                 <div className='card-body'>
                         <input className="mb-3" type="text" placeholder="Buscar..." id="supplierSearch" value={searchTerm} onChange={(e)=> setSearchTerm(e.target.value)}/>

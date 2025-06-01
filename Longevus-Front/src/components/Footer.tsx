@@ -5,7 +5,6 @@ const Footer = () => {
       <div className="footer-container">
         <div className="footer-content">
           
-          {/* Columna: Dirección */}
           <div className="footer-column">
             <h3>Dirección</h3>
             <p>Hogar de Ancianos de Guápiles</p>
@@ -23,7 +22,6 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Columna: Teléfonos */}
           <div className="footer-column">
             <h3>Teléfonos</h3>
             <p>(+506) 2222-2222</p>
@@ -32,7 +30,6 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Columna: Contacto */}
           <div className="footer-column">
             <h3>Correo Electrónico</h3>
             <p>
@@ -44,7 +41,6 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Parte inferior */}
         <div className="footer-bottom">
           <Link className="btn-footer" to="/login">Uso Interno</Link>
           <p>&copy; 2025 Hogar de Ancianos La Colonia</p>

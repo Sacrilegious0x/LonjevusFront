@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Link } from "react-router-dom";
 import '../css/styles.css';
 
@@ -7,12 +7,13 @@ const Header = () => {
     const [menuActive, setMenuActive] = useState<string | null>(null);
 
     return (
-        <header className="header">
-            <div className="logo">
-                <img src="/img/logo.jpg" alt="Logo del sitio" />
-            </div>
-            <nav>
-                <ul className="ul-actions">
+       <header className="header">
+            <div className="container-fluid d-flex align-items-center justify-content-between flex-wrap py-3">
+                <div className="logo">
+                    <img src="/img/logo.jpg" alt="Logo del sitio" />
+                </div>
+            <nav className="navbar p-0">
+                <ul className="ul-actions d-flex flex-wrap justify-content-end">
 
                     <li className="ul-actions-li"
                         onMouseEnter={() => setMenuActive('residents')}
@@ -23,10 +24,10 @@ const Header = () => {
                         {menuActive === 'residents' && (
                             <ul className="sub_ul-actions">
                                 <li className="sub_ul-actions-li">
-                                    <Link className="sub_menu-options" to="/">Lista de Residentes</Link>
+                                    <Link className="sub_menu-options" to="/residente/mostrar">Lista de Residentes</Link>
                                 </li>
                                 <li className="sub_ul-actions-li">
-                                    <Link className="sub_menu-options" to="#">Agregar Residente</Link>
+                                    <Link className="sub_menu-options" to="/residente/agregar">Agregar Residente</Link>
                                 </li>
                             </ul>
                         )}
@@ -42,10 +43,10 @@ const Header = () => {
                         {menuActive === 'personal' && (
                             <ul className="sub_ul-actions">
                                 <li className="sub_ul-actions-li">
-                                    <Link className="sub_menu-options" to="/mostrar">Lista de Personal</Link>
+                                    <Link className="sub_menu-options" to="/empleado/mostrar">Lista de Personal</Link>
                                 </li>
                                 <li className="sub_ul-actions-li">
-                                    <Link className="sub_menu-options" to="/">Agregar Personal</Link>
+                                    <Link className="sub_menu-options" to="/empleado/agregar">Agregar Personal</Link>
                                 </li>
                             </ul>
                         )}
@@ -56,12 +57,15 @@ const Header = () => {
                         onMouseEnter={() => setMenuActive('inventory')}
                         onMouseLeave={() => setMenuActive(null)}>
 
-                        Inventario
+                        Inventario y Compras
 
                         {menuActive === 'inventory' && (
                             <ul className="sub_ul-actions">
                                 <li className="sub_ul-actions-li">
-                                    <Link className="sub_menu-options" to="/">Lista de Inventario</Link>
+                                    <Link className="sub_menu-options" to="/inventario">Lista de Inventario</Link>
+                                    <Link className="sub_menu-options" to="/compras/agregar">Agregar Compra</Link>
+                                    <Link className="sub_menu-options" to="/compras">Listar Compras</Link>
+                                    
                                 </li>
                             </ul>
                         )}
@@ -96,7 +100,7 @@ const Header = () => {
                                     <Link className="sub_menu-options" to="/proveedores">Listar Proveedores</Link>
                                 </li>
                                 <li className="sub_ul-actions-li">
-                                    <Link className="sub_menu-options" to="/proveedores/guardar">Agregar Proveedores</Link>
+                                    <Link className="sub_menu-options" to="/proveedores/agregar">Agregar Proveedores</Link>
                                 </li>
                             </ul>
                         )}
@@ -105,6 +109,7 @@ const Header = () => {
                     
                 </ul>
             </nav>
+            </div>
         </header>
     );
 };

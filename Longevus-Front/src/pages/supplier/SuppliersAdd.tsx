@@ -10,6 +10,7 @@ export default function SuppliersAdd() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: '',
     phoneNumber: '',
@@ -20,7 +21,7 @@ export default function SuppliersAdd() {
   });
 
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(f => ({ ...f, [name]: value }));
   };

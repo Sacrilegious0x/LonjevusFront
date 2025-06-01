@@ -3,16 +3,21 @@ import SuppliersList from './pages/supplier/SuppliersList';
 import SuppliersAdd from './pages/supplier/SuppliersAdd';
 import SuppliersEdit from './pages/supplier/SuppliertsUpdate';
 import RolesList from './pages/role_permissions/Role_permission';
+import ProductsList from './pages/product/ProductList';
+import AddProduct from './pages/product/AddProduct';
+
+
 function App() {
   return (
     <BrowserRouter>  
       <Routes>
 
       <Route path="/proveedores" element={<SuppliersList />} />
-        <Route path="/proveedores/guardar" element={<SuppliersAdd/>} />
-        <Route path="/roles_permisos" element={<RolesList />} />
+      <Route path="/proveedores/guardar" element={<SuppliersAdd/>} />
+      <Route path="/roles_permisos" element={<RolesList />} />
       <Route path="/proveedores/editar/:id" element={<SuppliersEdit />} />
-      
+      <Route path="/productos" element={<ProductsList/>} />
+      <Route path="/productos/agregar" element={<AddProduct/>}/>
 
       </Routes>
     </BrowserRouter>

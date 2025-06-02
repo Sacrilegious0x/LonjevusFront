@@ -2,19 +2,23 @@ import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8080';
 
-interface RawProductFromAPI {
+export interface IUnit{
+  id:number
+  unitType:string
+  isActive:boolean
+}
+
+export interface ISupplier {
   id: number;
   name: string;
-  price: number;
-  expirationDate: string; 
-  category: string;
-  unit: { id: number; unitType: string; isActive: boolean };
-  supplier: { id: number; name: string; phoneNumber: string; email: string; address: string; isActive: boolean; photo?: string };
-  photoURL: string;
+  phoneNumber: string;
+  email: string;
+  address: string;
+  photo: string;
   isActive: boolean;
 }
 
-interface IProduct {
+export interface IProduct {
   id:number,
   name: string,
   price: number,
@@ -22,12 +26,29 @@ interface IProduct {
   category: string,
   unit: string,
   supplier: string,
-  photoUrl: string,
+  photoURL: string,
   isActive:boolean
 }
 
+
+export interface RawProduct {
+  id: number;
+  name: string;
+  price: number;
+  category: string;
+  expirationDate: string;  // "yyyy-MM-dd"
+  photoURL: string;
+  isActive: boolean;
+  unit: IUnit;
+  supplier: ISupplier;
+}
+
 interface ProductListResponse{
-    products: RawProductFromAPI[];
+    products: RawProduct[];
+}
+
+interface IUnitListResponse{
+  units: IUnit[];
 }
 
 export const getProducts = async (): Promise<IProduct[]> => {
@@ -43,7 +64,7 @@ export const getProducts = async (): Promise<IProduct[]> => {
       category: p.category,
       unit: p.unit.unitType,            
       supplier: p.supplier.name,        
-      photoUrl: p.photoURL,
+      photoURL: p.photoURL,
       isActive: p.isActive,
     }));
     console.log(flattened);
@@ -68,3 +89,58 @@ export const createProduct = async (data: FormData): Promise<IProduct> => {
     throw new Error('No se pudo agregar un producto');
   }
 };
+
+export const deleteProduct = async (id:number): Promise<void> => {
+    try{
+      await axios.delete(`${API_BASE_URL}/products/delete`,{
+        params: {id}
+      });
+    }catch(error){
+      console.error('Error del eliminar un producto', error);
+      throw new Error('Ocurrio un error al eliminar el producto');
+    }
+
+
+}
+
+export const getUnits = async (): Promise<IUnit[]> =>{
+  try{
+
+    const response = await axios.get<IUnitListResponse>(`${API_BASE_URL}/products/units/list`);
+    console.log(response.data.units);
+    return response.data.units;
+
+  }catch(error){
+
+    console.log('Error al obtener la unidades');
+    throw new Error('No se pudo cargar las unidades');
+  }
+
+}
+
+export const getProductById = async (id:any): Promise<RawProduct> => {
+    try {
+        const response = await axios.get<RawProduct>(`${API_BASE_URL}/products/getById?id=${id}`, {
+        });
+        console.log(response.data)
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener el proveedor:', error);
+        throw new Error('No se pudo cargar el proveedor');
+    }
+};
+
+export const updateProduct = async (data: FormData): Promise<void> => {
+  try {
+    await axios.post(`${API_BASE_URL}/products/update`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  } catch (error) {
+    console.error('Error actualizando proveedor:', error);
+    throw new Error('No se pudo actualizar el proveedor');
+  }
+};
+
+

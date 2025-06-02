@@ -1,21 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useAsyncError, useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { createProduct } from "../services/ProductService";
+import { createProduct, getUnits, type IUnit } from "../services/ProductService";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import { getSuppliers, type ISupplier } from "../services/SupplierService";
+import { minDate } from "../services/DateService";
 
 const categories = ["Salud", "Limpieza", "Alimento", "Otro"];
-const units = ["Unitario", "ml", "g", "kg", "Caja"];
-
 
 const AddProduct = () => {
 
   const [suppliers, setSuppliers] = useState<ISupplier[]>([]);
+  const [units,setUnits] = useState<IUnit[]>([]);
+
   const [loadingSuppliers, setLoadingSuppliers] = useState<boolean>(true);
   const [errorSuppliers, setErrorSuppliers] = useState<string | null>(null);
+
+  const [loadingUnits, setLoadingUnits] = useState<boolean>(true);
+  const [errorUnits, setErrorUnits] = useState<string | null>(null);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -26,8 +30,8 @@ const AddProduct = () => {
     price: '',
     expirationDate: '',
     category: '',
-    unit: '',
-    supplier: '',
+    unitId: '',
+    supplierId: '',
     photoUrl: '',
     isActive: true,
   });
@@ -44,6 +48,21 @@ const AddProduct = () => {
       }
     };
     fetchSuppliers();
+  }, []);
+
+      useEffect(() => {
+    const fetchUnits = async () => {
+      try {
+        const units = await getUnits();
+        setUnits(units);
+      } catch (err) {
+        setErrorUnits(err instanceof Error ? err.message : "Error desconocido al cargar proveedores");
+      } finally {
+        setLoadingUnits(false);
+      }
+    };
+    fetchUnits();
+    
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -70,8 +89,8 @@ const AddProduct = () => {
       data.append('price', formData.price);
       data.append('expirationDate', formData.expirationDate);
       data.append('category', formData.category);
-      data.append('unit', formData.unit);
-      data.append('supplier', formData.supplier);
+      data.append('unitId', formData.unitId);
+      data.append('supplierId', formData.supplierId);
       data.append('isActive', formData.isActive.toString());
 
       if (selectedFile) {
@@ -80,7 +99,7 @@ const AddProduct = () => {
 
 
       await createProduct(data);
-      navigate('/proveedores');
+      navigate('/productos');
     } catch (error) {
       console.error('Error saving product:', error);
     }
@@ -107,19 +126,21 @@ const AddProduct = () => {
                   value={formData.name}
                   onChange={handleChange}
                   required
+                  
                 />
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Precio</label>
+                <label className="form-label">Precio en ₡ </label>
                 <input
                   name="price"
                   id="price"
                   type="number"
                   className="form-control"
-                  value={formData.price}
+                  value= {formData.price}
                   onChange={handleChange}
                   required
+                  
                 />
               </div>
 
@@ -156,16 +177,16 @@ const AddProduct = () => {
               <div className="mb-3">
                 <label className="form-label">Unidad de Medida</label>
                 <select
-                  id="unit"
-                  name="unit"
+                  id="unitId"
+                  name="unitId"
                   className="form-select"
-                  value={formData.unit}
+                  value={parseInt(formData.unitId)}
                   onChange={handleChange}
                   required
                 >
                   <option value="">Seleccione una unidad</option>
-                  {units.map(unit => (
-                    <option key={unit} value={unit}>{unit}</option>
+                  {units.map((unit) => (
+                    <option key={unit.id} value={unit.id}>{unit.unitType}</option>
                   ))}
                 </select>
               </div>
@@ -175,10 +196,10 @@ const AddProduct = () => {
                   Proveedor
                 </label>
                 <select
-                  id="supplier"
-                  name="supplier"
+                  id="supplierId"
+                  name="supplierId"
                   className="form-select"
-                  value={formData.supplier}
+                  value={parseInt(formData.supplierId)}
                   onChange={handleChange}
                   required
                 >
@@ -217,8 +238,8 @@ const AddProduct = () => {
                 */}
               </div>
               <div className="mb-3">
-                  <button type="submit" className="btn btn-success">Agregar Producto</button>
-                  <a href='/productos' className='btn btn-light m-1'>Volver</a>
+                  <button type="submit" className="btn btn-primary">Agregar</button>
+                  <a href='/productos' className="btn btn-secondary m-1">Cancelar</a>
               </div> 
             </form>
           </div>

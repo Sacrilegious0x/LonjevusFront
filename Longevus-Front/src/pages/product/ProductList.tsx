@@ -6,7 +6,7 @@ import type { columnDefinition } from "../../components/TableBasic";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import Table from '../../components/TableBasic';
-import { getProducts } from "../services/ProductService";
+import { deleteProduct, getProducts } from "../services/ProductService";
 
 interface IProduct {
   id:number,
@@ -16,9 +16,14 @@ interface IProduct {
   category: string,
   unit: string,
   supplier: string,
-  photoUrl: string,
+  photoURL: string,
   isActive:boolean
 }
+
+const dateES = (dateStr: string): string => {
+  const [year, month, day] = dateStr.split('-');
+  return `${day}-${month}-${year}`;
+};
 
 const ProductsList=() => {
 
@@ -45,9 +50,13 @@ const productColumns: columnDefinition<IProduct>[]=[
     {header: 'Nombre', accessor: 'name'},
     {header: 'Precio', accessor: 'price'},
     {header: 'Categoria', accessor: 'category'},
-    {header: 'Fecha de Vencimiento', accessor: 'expirationDate'},
-    {header: 'Foto', accessor: 'photoUrl',Cell: (_item) =>(<img
-      src={`http://localhost:8080/${_item.photoUrl}`}
+    {header: 'Fecha de Vencimiento',accessor: 'expirationDate',
+    Cell: (product) => {
+      return dateES(product.expirationDate);
+    }
+    },
+    {header: 'Foto', accessor: 'photoURL',Cell: (_item) =>(<img
+      src={`http://localhost:8080/${_item.photoURL}`}
       alt="Foto producto"
       style={{ width: 50, height: 50, objectFit: 'cover' }}
       />)
@@ -111,7 +120,7 @@ useEffect(() => {
     if (!confirmDelete) return;
   
      try {
-        //await deleteProduct(id);
+        await deleteProduct(id);
         setProductData((prev) => prev.filter((p) => p.id !== id));
         alert("Proveedor eliminado correctamente");
       } catch (err) {

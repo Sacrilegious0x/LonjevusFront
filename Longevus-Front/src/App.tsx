@@ -11,6 +11,7 @@ import ShowResidents from './pages/Residents/ShowResidents';
 import AddResident from './pages/Residents/AddResident';
 import PurchasePage from './pages/purchase/PurchasePage';
 import EditPurchase from './pages/purchase/EditPurchase';
+import AddPurchase from './pages/purchase/AddPurchase';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path='/residente/agregar' element={<AddResident/>}/>
         <Route path="/compras" element={<PurchasePage />} />
         <Route path="/compras/editar/:id" element={<EditPurchase />} /> 
+        <Route path="/compras/agregar" element={<AddPurchase />} />
         
          </Routes>
     </BrowserRouter>

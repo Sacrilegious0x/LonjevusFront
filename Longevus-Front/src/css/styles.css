@@ -367,3 +367,37 @@ nav a {
 .btnAddResident {
   background: #422C20;
 }
+
+.btn-time-selected{
+  background-color: #422C20;
+  color: #FFFFFF;
+  border-color: #422C20;
+}
+
+.btn-time-outline{
+  background-color: transparent;
+  color: #422C20;
+  border-color: #422C20;
+}
+.btn-time-outline:hover{
+  background-color: #422C20;
+  color: #FFFFFF;
+  border-color: #422C20;
+}
+
+.btn-date-selected{
+  background-color: #202042;
+  color: #FFFFFF;
+  border-color: #202042;
+}
+
+.btn-date-outline{
+  background-color: transparent;
+  color: #202042;
+  border-color: #202042;
+}
+.btn-date-outline:hover{
+  background-color: #202042;
+  color: #FFFFFF;
+  border-color: #202042;
+}

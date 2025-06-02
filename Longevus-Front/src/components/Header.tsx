@@ -1,8 +1,12 @@
+import { Link } from "react-router-dom";
+
 const Header = () => {
     return (
       <header className="header">
         <div className="logo">
+          <Link to={"/"}>
           <img src="/img/logo.jpg" alt="Logo del sitio" />
+          </Link>
         </div>
         <nav>
           <ul>

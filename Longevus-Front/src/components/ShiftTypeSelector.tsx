@@ -19,7 +19,7 @@ const ShiftTypeSelector = ({ selectedShiftTypes, onShiftTypeChange }: IShiftType
 
     return (
         <div className='mb-3'>
-            <h6>Tipo de Turno <i className="bi bi-calendar-week-fill"></i></h6> 
+            <h6><i className="bi bi-calendar-week-fill">Tipo de Turno</i></h6> 
             <div className="d-flex flex-wrap gap-3">
                 {['M', 'T', 'N'].map(type => (
                     <div className="form-check form-check-inline" key={type}>

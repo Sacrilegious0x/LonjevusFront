@@ -172,35 +172,35 @@ const EmployeeForm = ({initialData, onSubmit, onCancel, showShiftSelector = fals
                 <div className='row'>
                     <div className='col-12'>
                         <h1>
-                            {formTitle} 
+                            
                             {isEditing ? (
                                 <i className="bi bi-pencil-square"></i> // Icono para editar
                             ) : (
                                 <i className="bi bi-person-plus-fill"></i> // Icono para agregar
                             )}
-                            
+                            {formTitle} 
                             </h1>
                         <form onSubmit={handleSubmit}>
                             <div className='mb-3'>
-                                <label htmlFor='nameInput' className='form-label'>Nombre: <i className="bi bi-person-fill"></i></label>
+                                <label htmlFor='nameInput' className='form-label'><i className="bi bi-person-fill">Nombre: </i></label>
                                 <input type='text' name='name' id='nameInput' onChange={handleForm} value={formData.name} className='form-control' required />
                             </div>
                             <div className='mb-3'>
-                                <label htmlFor='identificationInput'>Identificaci&oacute;n: <i className="bi bi-person-vcard-fill"></i></label>
+                                <label htmlFor='identificationInput'><i className="bi bi-person-vcard-fill">Identificaci&oacute;n: </i></label>
                                 <input type='text' name='identification' id='identificationInput' onChange={handleForm} value={formData.identification} className='form-control' required />
                             </div>
                             <div className='mb-3'>
-                                <label htmlFor='emailInput'>Correo: <i className="bi bi-envelope-fill"></i></label>
+                                <label htmlFor='emailInput'> <i className="bi bi-envelope-fill">Correo:</i></label>
                                 <input type='email' name='email' id='emailInput' onChange={handleForm} value={formData.email} className='form-control' required />
                             </div>
                            {!isEditing && (
                                 <div className='mb-3'>
-                                    <label htmlFor='passwordInput'>Contrase&ntilde;a: <i className="bi bi-key-fill"></i></label>
+                                    <label htmlFor='passwordInput'><i className="bi bi-key-fill"></i>Contrase&ntilde;a: </label>
                                     <input type='password' name='password' id='passwordInput' onChange={handleForm} value={formData.password} className='form-control' required={!isEditing} />
                                 </div>
                             )}                         
                             <div className='mb-3'>
-                                <label htmlFor='photoInput'>Fotograf&iacute;a: <i className="bi bi-images"></i></label>
+                                <label htmlFor='photoInput'><i className="bi bi-images">Fotograf&iacute;a:</i></label>
                                 <input type='file' name='photo' id='photoInput' onChange={handleForm} className='form-control' required={!isEditing} />
                             </div>
                             <div className='mb-3'>

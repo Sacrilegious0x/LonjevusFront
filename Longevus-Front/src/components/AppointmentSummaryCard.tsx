@@ -1,0 +1,67 @@
+import type { FormData } from "./VisitorForms"
+import { RESIDENTS } from "./AppoitmentResidentSelector"
+
+interface AppointmentSummaryProps {
+    selectedDate: string
+    selectedTime: string
+    formData: FormData
+    onSubmit: () => void
+    isFormValid: boolean
+}
+
+const AppointmentSummary = ({
+    selectedDate,
+    selectedTime,
+    formData,
+    onSubmit,
+    isFormValid,
+}: AppointmentSummaryProps) => {
+    if (!selectedDate || !selectedTime || !formData.resident) {
+        return null
+    }
+
+    const selectedResident = RESIDENTS.find((r) => r.value === formData.resident)
+
+    return (
+        <>
+            <div className="card shadow-sm border-dark-subtle">
+                <div className="card-header bg-dark text-white">
+                    <h5 className="card-title mb-0">Resumen de la Cita</h5>
+                </div>
+                <div className="card-body">
+                    <div className="d-flex flex-wrap gap-2 mb-4">
+                        <span className="badge bg-primary fs-6">
+                            <i className="bi bi-person-fill me-1"></i>
+                            {selectedResident?.label}
+                        </span>
+                        <span className="badge fs-6" style={{background: '#202042'}}>
+                            <i className="bi bi-calendar-event-fill me-1"></i>
+                            {new Date(selectedDate).toLocaleDateString("es-ES", {
+                                weekday: "long",
+                                day: "numeric",
+                                month: "long",
+                            })}
+                        </span>
+                        <span className="badge fs-6" style={{background: '#422C20'}}>
+                            <i className="bi bi-clock-fill me-1"></i>
+                            {selectedTime}
+                        </span>
+                        {formData.relationship && (
+                            <span className="badge text-dark fs-6" style={{background: '#A8C3A0'}}>
+                                <i className="bi bi-people-fill me-1"></i>
+                                {formData.relationship}
+                            </span>
+                        )}
+                    </div>
+
+                    <button type="button" className="btn btn-success btn-lg w-100" disabled={!isFormValid} onClick={onSubmit}>
+                        <i className="bi bi-check-circle-fill me-2"></i>
+                        Confirmar Cita
+                    </button>
+                    {!isFormValid && <p className="text-muted small mt-2 mb-0">Complete todos los campos</p>}
+                </div>
+            </div>
+        </>
+    )
+}
+export default AppointmentSummary;

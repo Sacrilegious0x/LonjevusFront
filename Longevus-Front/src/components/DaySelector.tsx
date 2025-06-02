@@ -14,7 +14,7 @@ const DaySelector = ({ selectedDays, onDayChange }: DaySelectorProps) => {
 
     return (
         <div className='mb-3'>
-            <h6>Días de Trabajo: <i className="bi bi-calendar-week-fill"></i></h6>
+            <h6> <i className="bi bi-calendar-week-fill">Días de Trabajo:</i></h6>
             <div className="d-flex flex-wrap gap-3">
                 {['L', 'K', 'M', 'J', 'V', 'S', 'D'].map(dayLetter => (
                     <div className="form-check form-check-inline" key={dayLetter}>

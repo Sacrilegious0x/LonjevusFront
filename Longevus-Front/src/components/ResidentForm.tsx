@@ -66,7 +66,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           type="text"
           name="identification"
           value={data.identification}
-          readOnly={isEditing}
+          
           onChange={handleForm}
           className="form-control"
         />
@@ -78,7 +78,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           type="text"
           name="name"
           value={data.name}
-          readOnly={isEditing}
+         
           onChange={handleForm}
           className="form-control"
         />
@@ -90,7 +90,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           type="date"
           name="birthdate"
           value={data.birthdate}
-          readOnly={isEditing}
+          
           onChange={handleForm}
           className="form-control"
         />

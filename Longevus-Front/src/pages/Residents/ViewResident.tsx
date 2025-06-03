@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
+import { Link } from 'react-router-dom';
 
 
 const ViewResident: React.FC = () => {
@@ -80,6 +81,7 @@ const ViewResident: React.FC = () => {
             <div className="container mt-5 mb-5">
                 <h2 className="mb-4">Información del Residente</h2>
                 <div className="card shadow p-4">
+                    
                     {residentData?.photo && (
                         <div className=" mb-3">
                             <img
@@ -103,6 +105,7 @@ const ViewResident: React.FC = () => {
                         <button className="btn btn-info mt-3 ms-2" onClick={() => setShowContactModal(true)}>
                             Ver contactos
                         </button>
+                        <Link className='btn btn-secondary float-end' to="/residente/mostrar"><i className="bi bi-reply"/> Volver</Link>
                     </center>
 
                 </div>

@@ -16,7 +16,7 @@ import PurchasePage from './pages/purchase/PurchasePage';
 import EditPurchase from './pages/purchase/EditPurchase';
 import AddPurchase from './pages/purchase/AddPurchase';
 import EditProduct from './pages/product/EditProduct';
-import ProductPage from './pages/product/ProductPage';
+import ProductPage from './pages/product/ProductList';
 import AddProduct from './pages/product/AddProduct';
 import AddAdmin from './pages/Employee/AddAdmin';
 import EditAdmin from './pages/Employee/EditAdmin';

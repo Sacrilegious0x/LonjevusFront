@@ -2,14 +2,15 @@
 import React, { useState } from 'react';
 import Header from '../../components/HeaderAdmin';
 import Footer from '../../components/Footer';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { createSupplier } from '../../services/SupplierService'
 
 export default function SuppliersAdd() {
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: '',
     phoneNumber: '',
@@ -20,7 +21,7 @@ export default function SuppliersAdd() {
   });
 
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(f => ({ ...f, [name]: value }));
   };
@@ -51,16 +52,8 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       data.append('photo', selectedFile); //el archivo real
     }
 
-     const config = {headers: {'Content-Type': 'multipart/form-data',},};
 
-      const res = await axios.post(
-        'http://localhost:8080/suppliers/save', //hago el post
-        data,config
-      );
-      console.log('Proveedor guardado:', res.data);
-
-      
-      console.log('Guardado:', res.data);
+    await createSupplier(data);
       navigate('/proveedores');
     } catch (error) {
       console.error('Error saving supplier:', error);
@@ -78,7 +71,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             </center>
             <form onSubmit={handleSubmit}>
               <div className='mb-3'>
-                <label htmlFor='name' className='form-label'>Nombre:<i className="bi bi-person-fill"></i></label>
+                <label htmlFor='name' className='form-label'><i className="bi bi-person-fill"></i>Nombre:</label>
                 <input
                   type='text'
                   id='name'
@@ -91,7 +84,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               </div>
 
               <div className='mb-3'>
-                <label htmlFor='phoneNumber' className='form-label'>Teléfono:<i className="bi bi-telephone-plus-fill"></i></label>
+                <label htmlFor='phoneNumber' className='form-label'><i className="bi bi-telephone-plus-fill"></i>Teléfono:</label>
                 <input
                   type='text'
                   id='phoneNumber'
@@ -104,7 +97,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               </div>
 
               <div className='mb-3'>
-                <label htmlFor='email' className='form-label'>Correo:<i className="bi bi-envelope-fill"></i></label>
+                <label htmlFor='email' className='form-label'><i className="bi bi-envelope-fill"></i>Correo:</label>
                 <input
                   type='text'
                   id='email'
@@ -117,7 +110,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               </div>
 
               <div className='mb-3'>
-                <label htmlFor='address' className='form-label'>Dirección:<i className="bi bi-compass"></i></label>
+                <label htmlFor='address' className='form-label'><i className="bi bi-compass"></i>Dirección:</label>
                 <input
                   type='text'
                   id='address'
@@ -130,7 +123,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               </div>
 
               <div className='mb-3'>
-                <label htmlFor='photo' className='form-label'>Fotografía:<i className="bi bi-image"></i></label>
+                <label htmlFor='photo' className='form-label'><i className="bi bi-image"></i>Fotografía:</label>
                 <input
                   type='file'
                   id='photo'

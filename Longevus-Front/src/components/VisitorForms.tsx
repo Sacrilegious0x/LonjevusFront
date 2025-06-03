@@ -4,7 +4,6 @@ export interface FormData {
     email: string
     phone: string
     relationship: string
-    notes: string
 }
 
 interface VisitorFormProps {

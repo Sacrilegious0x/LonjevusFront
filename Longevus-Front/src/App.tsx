@@ -23,6 +23,7 @@ import EditAdmin from './pages/Employee/EditAdmin';
 import EditResident from './pages/Residents/EditResident';
 import ViewResident from './pages/Residents/ViewResident';
 import SuppliersEdit from './pages/supplier/SuppliertsUpdate';
+
 function App() {
   return (
     <BrowserRouter>  

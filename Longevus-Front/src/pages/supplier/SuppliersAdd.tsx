@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Header from '../../components/HeaderAdmin';
 import Footer from '../../components/Footer';
 import { useNavigate } from 'react-router-dom';
-import { createSupplier } from '../../pages/services/SupplierService'
+import { createSupplier } from '../../services/SupplierService'
 
 export default function SuppliersAdd() {
 

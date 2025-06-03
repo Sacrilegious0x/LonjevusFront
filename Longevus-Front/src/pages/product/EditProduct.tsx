@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { getSuppliers, type ISupplier } from "../services/SupplierService";
+import { getSuppliers, type ISupplier } from "../../services/SupplierService";
 
-import { getProductById, getUnits, updateProduct, type IProduct, type IUnit, type RawProduct } from "../services/ProductService";
+import { getProductById, getUnits, updateProduct, type IUnit, type RawProduct } from "../../services/ProductService";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 getProductById
@@ -14,8 +14,8 @@ interface FormState {
   price: string;
   expirationDate: string; // "yyyy-MM-dd"
   category: string;
-  unitId: string;      // guardamos el id como string para “value” del <select>
-  supplierId: string;  // idem
+  unitId: string;      
+  supplierId: string;  
   isActive: boolean;
   // photoUrl lo usamos solo para previsualizar o para mostrar un string vacío.
   // No es lo mismo que el archivo real, que guardamos en selectedFile.
@@ -57,7 +57,7 @@ const EditProduct: React.FC = () => {
   // Para manejar el archivo .jpg/.png nuevo (si el usuario reemprueba foto)
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  // ─── 1) Traer la lista de proveedores ───────────────────────────────────
+  //  Traer la lista de proveedores 
   useEffect(() => {
     const fetchSuppliers = async () => {
       try {
@@ -72,7 +72,7 @@ const EditProduct: React.FC = () => {
     fetchSuppliers();
   }, []);
 
-  // ─── 2) Traer la lista de unidades ─────────────────────────────────────
+  // Traer la lista de unidades
   useEffect(() => {
     const fetchUnits = async () => {
       try {
@@ -87,7 +87,7 @@ const EditProduct: React.FC = () => {
     fetchUnits();
   }, []);
 
-  // ─── 3) Traer el producto por ID y rellenar el formulario 
+  //Traer el producto por ID y rellenar el formulario 
   useEffect(() => {
     if (!id) return;
 
@@ -100,7 +100,7 @@ const EditProduct: React.FC = () => {
       const unitIdString = prod.unit.id.toString();
       const supplierIdString = prod.supplier.id.toString();
 
-      // Rellenamos el formulario con valores planos:
+      // Rellenamos el formulario con valores planos
       setFormData({
         name: prod.name,
         price: prod.price.toString(),
@@ -121,7 +121,7 @@ const EditProduct: React.FC = () => {
     fetchProduct();
   }, [id]);
 
-  // ─── 4) Manejo de inputs ────────────────────────────────────────────────
+  //Manejo de inputs 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -143,13 +143,13 @@ const EditProduct: React.FC = () => {
     }
   };
 
-  // ─── 5) Submit de la actualización ─────────────────────────────────────
+  //  Submit de la actualización
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
       const data = new FormData();
-      // Siempre incluimos el ID (en tu backend lo defines como @RequestParam("id") o similar)
+      // Siempre incluimos el ID 
       data.append("id", id!);
       data.append("name", formData.name);
       data.append("price", formData.price);
@@ -159,8 +159,8 @@ const EditProduct: React.FC = () => {
       data.append("supplierId", formData.supplierId);
       data.append("isActive", formData.isActive.toString());
 
-      // Si seleccionó un archivo nuevo, lo enviamos; 
-      // si no, no incluimos “photo” y el backend debe mantener la foto antigua:
+      // Si selecciono una foto nueva lo enviamos; 
+      // si no no incluimos “photo” y el backend debe mantener la foto antigua
       if (selectedFile) {
         data.append("photo", selectedFile);
       }
@@ -172,7 +172,7 @@ const EditProduct: React.FC = () => {
     }
   };
 
-  // ─── 6) Manejo de estados de carga/error ───────────────────────────────
+  //  6) Manejo de estados de carga/error 
   if (loadingSuppliers || loadingUnits || loadingProduct) {
     return (
       <>
@@ -195,7 +195,7 @@ const EditProduct: React.FC = () => {
     );
   }
 
-  // ─── 7) Formulario ya listo para editar ────────────────────────────────
+  // Formulario ya listo para editar
   return (
     <>
       <Header />
@@ -336,7 +336,6 @@ const EditProduct: React.FC = () => {
                 </small>
               </div>
 
-              {/* Botones */}
               <div className="mb-3">
                 <button type="submit" className="btn btn-primary">
                   Guardar 

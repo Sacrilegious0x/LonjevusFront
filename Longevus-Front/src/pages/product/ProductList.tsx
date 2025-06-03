@@ -6,7 +6,7 @@ import type { columnDefinition } from "../../components/TableBasic";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import Table from '../../components/TableBasic';
-import { deleteProduct, getProducts } from "../services/ProductService";
+import { deleteProduct, getProducts } from "../../services/ProductService";
 
 interface IProduct {
   id:number,

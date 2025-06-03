@@ -5,7 +5,7 @@ import type {columnDefinition} from '../../components/TableBasic';
 import { Link } from 'react-router-dom';
 import Table from '../../components/TableBasic';
 import { useState, useEffect } from "react";
-import { deleteSupplier, getSuppliers } from "../services/SupplierService";
+import { deleteSupplier, getSuppliers } from "../../services/SupplierService";
 
 
 interface ISupplier{

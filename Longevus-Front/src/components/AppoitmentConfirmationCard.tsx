@@ -1,4 +1,4 @@
-import { RESIDENTS } from "./AppoitmentResidentSelector"
+import type { Resident } from "./AppoitmentResidentSelector"
 import type { FormData } from "./VisitorForms"
 import Header from "./Header"
 import Footer from "./Footer"
@@ -8,6 +8,7 @@ interface ConfirmationScreenProps {
     selectedTime: string
     formData: FormData
     onNewAppointment: () => void
+    residentOptions: Resident[];
 }
 
 const ConfirmationScreen = ({
@@ -15,8 +16,11 @@ const ConfirmationScreen = ({
     selectedTime,
     formData,
     onNewAppointment,
+    residentOptions
 }: ConfirmationScreenProps) => {
-    const selectedResident = RESIDENTS.find((r) => r.value === formData.resident)
+    const selectedResidentObject = residentOptions.find(
+        (r) => r.value === formData.resident
+    );
 
     return (
         <>
@@ -44,7 +48,7 @@ const ConfirmationScreen = ({
                                                 <div className="d-flex align-items-center">
                                                     <i className="bi bi-person-fill  me-2"></i>
                                                     <strong>Residente:</strong>
-                                                    <span className="ms-2">{selectedResident?.label}</span>
+                                                    <span className="ms-2">{selectedResidentObject?.label}</span>
                                                 </div>
                                             </div>
                                             <div className="col-12">

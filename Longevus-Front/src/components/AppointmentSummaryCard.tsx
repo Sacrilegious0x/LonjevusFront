@@ -1,5 +1,5 @@
 import type { FormData } from "./VisitorForms"
-import { RESIDENTS } from "./AppoitmentResidentSelector"
+import type { Resident } from "./AppoitmentResidentSelector"
 
 interface AppointmentSummaryProps {
     selectedDate: string
@@ -7,6 +7,7 @@ interface AppointmentSummaryProps {
     formData: FormData
     onSubmit: () => void
     isFormValid: boolean
+    residentOptions: Resident[];
 }
 
 const AppointmentSummary = ({
@@ -15,12 +16,15 @@ const AppointmentSummary = ({
     formData,
     onSubmit,
     isFormValid,
+    residentOptions,
 }: AppointmentSummaryProps) => {
     if (!selectedDate || !selectedTime || !formData.resident) {
         return null
     }
 
-    const selectedResident = RESIDENTS.find((r) => r.value === formData.resident)
+    const selectedResidentObject = residentOptions.find(
+        (r) => r.value === formData.resident
+    );
 
     return (
         <>
@@ -32,7 +36,7 @@ const AppointmentSummary = ({
                     <div className="d-flex flex-wrap gap-2 mb-4">
                         <span className="badge bg-primary fs-6">
                             <i className="bi bi-person-fill me-1"></i>
-                            {selectedResident?.label}
+                            {selectedResidentObject?.label}
                         </span>
                         <span className="badge fs-6" style={{background: '#202042'}}>
                             <i className="bi bi-calendar-event-fill me-1"></i>

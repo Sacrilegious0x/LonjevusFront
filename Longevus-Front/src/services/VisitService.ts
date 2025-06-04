@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 
 const URL_BASE = 'http://localhost:8080/visit';
 
-interface Resident {
+export interface ApiResident {
     id: number,
     name: string,
     numberRoom: number,
@@ -19,9 +19,9 @@ export interface VisitPayload {
         id: number;
     };
 }
-export const getResidents = async (): Promise<Resident[]> => {
+export const getResidents = async (): Promise<ApiResident[]> => {
     try{
-        const response = await axios.get<Resident[]>('http://localhost:8080/residents')
+        const response = await axios.get<ApiResident[]>('http://localhost:8080/residents')
         return response.data
     }catch(error){
         console.error(`Error al obtener residentes`, error);
@@ -40,6 +40,11 @@ export const addVisit = async (visitData: VisitPayload): Promise<string> => {
         }
         throw new Error("No se pudo conectar con el servidor para agendar la visita.");
     }
+
+}
+
+export const getAllVisits = async()=>{
+    const response = await axios.get(`{URL_BASE}/listVisitors`)
 }
 
 

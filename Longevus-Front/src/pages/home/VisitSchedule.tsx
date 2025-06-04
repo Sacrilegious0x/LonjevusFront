@@ -9,14 +9,8 @@ import ConfirmationScreen from "../../components/AppoitmentConfirmationCard"
 import DateSelector from "../../components/AppoitmentDateSelector"
 import Footer from "../../components/Footer"
 import Header from "../../components/Header"
-import { getResidents, addVisit, type VisitPayload } from "../../services/VisitService"
+import { getResidents, addVisit, type VisitPayload, type ApiResident } from "../../services/VisitService"
 
-
-interface ApiResident {
-  id: number;
-  name: string;
-  numberRoom: number;
-}
 
 const AppointmentScheduler = () => {
   const [selectedDate, setSelectedDate] = useState<string>("")
@@ -35,13 +29,15 @@ const AppointmentScheduler = () => {
   useEffect(() => {
     const loadResidents = async () => {
       try {
-        setIsLoadingResidents(true); // Ya lo haces, ¡bien!
+        setIsLoadingResidents(true); 
         setErrorResidents(null);
-        const apiData: ApiResident[] = await getResidents(); // Llama al servicio
+        const data: ApiResident[] = await getResidents(); 
+         
+        //console.log("Residentes obtenidos:", data);
 
-        // Transforma los datos de la API al formato { value, label }
-        const formattedOptions: Resident[] = apiData.map(resident => ({
-          value: `hab${resident.numberRoom}-${resident.id}`, // Lógica de transformación
+        //Transforma los datos de la API al formato { value, label }
+        const formattedOptions: Resident[] = data.map(resident => ({
+          value: `hab${resident.numberRoom}-${resident.id}`, 
           label: `Hab: ${resident.numberRoom} - ${resident.name}`
         }));
 

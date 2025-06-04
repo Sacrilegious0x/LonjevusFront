@@ -4,7 +4,7 @@ const URL_BASE = 'http://localhost:8080/task';
 
 export interface Task {
   id?: number;
-  caregiver?: number;
+  caregiver?: { id: number };
   description: string;
 }
 

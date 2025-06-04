@@ -47,7 +47,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
     try {
       // Crear objeto de tarea para enviar al servidor
       const taskData = {
-        caregiver: Number(caregiverId),
+        caregiver: { id: Number(caregiverId) },
         description: newTaskDescription.trim()
       };
 
@@ -71,7 +71,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
   };
 
   return (
-    <div className="modal show" style={{ display: 'block' }} tabIndex={-1}>
+    <div className="modal show" style={{ display: 'block', backgroundColor: "rgba(0,0,0,0.5)" }} tabIndex={-1}>
       <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
@@ -91,10 +91,11 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
                             required 
                             />
                         </div>
-                        <button type="submit" className="btn btn-primary">Guardar <i className="bi bi-clipboard-check-fill"/></button>
+                        
                     </form>
                 </div>
                 <div className="modal-footer">
+                  <button type="submit" className="btn btn-primary"><i className="bi bi-clipboard-check-fill"/>Guardar </button>
                     <button type="button" className="btn btn-secondary" onClick={onClose}>Cancelar</button>
                 </div>
           </div>

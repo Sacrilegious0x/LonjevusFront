@@ -16,13 +16,17 @@ export interface VisitPayload {
     email: string;      
     relationship: string;       
     resident: {               
-        id: number;
+         id: number,
+        name: string,
+        numberRoom: number
     };
 }
 export const getResidents = async (): Promise<ApiResident[]> => {
     try{
         const response = await axios.get<ApiResident[]>('http://localhost:8080/residents')
-        return response.data
+       
+        return response.data;
+        
     }catch(error){
         console.error(`Error al obtener residentes`, error);
         throw error;
@@ -44,7 +48,9 @@ export const addVisit = async (visitData: VisitPayload): Promise<string> => {
 }
 
 export const getAllVisits = async()=>{
-    const response = await axios.get(`{URL_BASE}/listVisitors`)
+    const response = await axios.get(`${URL_BASE}/listVisitors`)
+     console.log("INFORMACION DE VISITAS ", response.data.data)
+    return response.data.data
 }
 
 

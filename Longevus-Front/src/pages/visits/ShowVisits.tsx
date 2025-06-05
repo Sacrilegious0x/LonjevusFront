@@ -1,26 +1,27 @@
-import Table  from '../../components/TableBasic'
-import type {columnDefinition} from '../../components/TableBasic';
+import Table from '../../components/TableBasic'
+import type { columnDefinition } from '../../components/TableBasic';
 import Footer from '../../components/Footer';
 import Header from '../../components/HeaderAdmin';
 import { getAllVisits } from '../../services/VisitService';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-interface IVisitData{
+
+interface IVisitData {
     id: number,
     name: string,
-    visitDate: string, 
+    visitDate: string,
     visitHour: string,
-    phoneNumer: string,
+    phoneNumber: string,
     email: string,
     relationship: string,
-    resident:{
-        id:number,
-        name:string,
-        numberRoom:number
+    resident: {
+        id: number,
+        name: string,
+        numberRoom: number
     }
 }
 
-const showVisits = ()=>{
+const showVisits = () => {
     const navigate = useNavigate();
     const [visitData, setVisitData] = useState<IVisitData[]>([]);
     const [loading, setLoading] = useState(true);
@@ -28,68 +29,117 @@ const showVisits = ()=>{
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-            const fetchData = async () => {
-                try {
-                    const caregivers = await getAllVisits();
-                    setVisitData(caregivers);
-                } catch (error) {
-                    console.error("Error al cargar los cuidadores:", error);
-                } finally {
-                    setLoading(false);
-                }
-            };
-    
-            fetchData();
-        }, []);
+        const fetchData = async () => {
+            try {
+                const caregivers = await getAllVisits();
+                setVisitData(caregivers);
+            } catch (error) {
+                console.error("Error al cargar los cuidadores:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        const filteredVisits = visitData.filter(visit => {
+        fetchData();
+    }, []);
+
+    const filteredVisits = visitData.filter(visit => {
         const term = searchTerm.toLowerCase();
         return (
             visit.name.toLowerCase().includes(term) ||
-            visit.visitDate.includes(term)||
+            visit.visitDate.includes(term) ||
             visit.email.toLowerCase().includes(term) ||
             visit.resident.name.toLowerCase().includes(term) ||
             visit.resident.numberRoom.toString().toLowerCase().includes(term)
         );
+    });
+    const handleDeleteVisit = async () => {
 
-        const handleDeleteVisit = async () =>{
+    }
+
+    const visitColumns: columnDefinition<IVisitData>[] = [
+        { header: '#', accessor: 'id', Cell: (visit, index) => { return (index + 1) } },
+        { header: 'Nombre', accessor: 'name' },
+        {
+            header: 'Fecha Visita', accessor: 'visitDate',
+            Cell: (row: IVisitData) => {
+                const dateString = row.visitDate;
+                if (!dateString) return '';
+                try {
+                    const parts = dateString.split('-');
+                    if (parts.length === 3) {
+                        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+                    }
+                } catch (e) {
+                    console.error("Error formateando fecha:", e);
+                    return dateString;
+                }
+                return dateString;
+            }
+        },
+
+        {
+            header: 'Hora visita', accessor: 'visitHour',
+            Cell: (row: IVisitData) => {
+                const timeString = row.visitHour;
+                if (!timeString) return '';
+                try {
+                    return timeString.substring(0, 5); 
+                } catch (e) {
+                    console.error("Error formateando hora:", e);
+                    return timeString;
+                }
+            }
+        },
+        { header: 'Contacto', accessor: 'phoneNumber' },
+        { header: 'Correo', accessor: 'email' },
+        { header: 'Parentesco', accessor: 'relationship' },
+        { header: 'Residente', accessor: (row: IVisitData) => row.resident.name },
+        { header: 'Habitacion', accessor: (row: IVisitData) => row.resident.numberRoom },
+        {
+            header: 'Acciones', accessor: (visit) => visit,
+            Cell: (visit) => (
+                <>
+                    <a className='btn btn-warning me-2' onClick={() => navigate(`/`)}>
+                        <i className='bi bi-pencil-square' />
+                    </a>
+
+                    <a className='btn btn-danger me-2' onClick={() => handleDeleteVisit(/*visit.id*/)}>
+                        <i className="bi bi-trash" />
+                    </a>
+
+                </>
+            )
 
         }
 
-        const visitColumns: columnDefinition<IVisitData>[]=[
-            {header: '#', accessor: 'id', Cell:(visit, index)=>{return(index+1)}},
-            {header: 'Nombre', accessor: 'name'},
-            {header: 'Fecha Visita', accessor: 'visitDate'},
-            {header: 'Hora visita', accessor: 'visitHour'},
-            {header: 'Correo', accessor: 'email'},
-            {header: 'Contacto', accessor: 'phoneNumer'},
-             {header: 'Parentesco', accessor: 'relationship'},
-            {header: 'Residente', accessor: (row: IVisitData) =>row.resident.name},
-            {header: 'Habitacion', accessor: (row: IVisitData) =>row.resident.numberRoom},
-            {header: 'Acciones', accessor: (visit) => visit,   
-            Cell: (visit) =>(
-            <>
-            <a className='btn btn-warning me-2' onClick={()=>navigate(`/`)}>
-                <i className='bi bi-pencil-square'/>
-            </a>
-            
-            <a className='btn btn-danger me-2' onClick={() => handleDeleteVisit(/*visit.id*/)}>
-                <i className="bi bi-trash"/>
-            </a>
-            
-            </>
-        )
-        
-    }
 
+    ]
 
-        ]
-    });
-    return(
+    if (loading) return <div className="container mt-5">Cargando visitas...</div>;
+    return (
         <>
-        
+            <Header />
+            <div className='container'>
+                <div className='row'>
+                    <div className='card mt-5 mb-5'>
+                        <div className='card-title  mt-3'><h4>Visitas registradas</h4></div>
+                        <div className='card-body'>
+                            <input type="text" placeholder="Buscar..." id="visitSearch" value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)} />
+                            <Table<IVisitData> data={filteredVisits}
+                                columns={visitColumns} selectedRows={new Set()}
+                                onToggleRow={() => { }} onSelectAll={() => { }}></Table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <Footer />
         </>
     )
 
 }
+export default showVisits;
 

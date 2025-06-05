@@ -144,7 +144,9 @@ nav a {
   max-width: 1000px;
   margin: auto;
 }
-
+.footer-bottom p{
+  margin-top: 15px;
+}
 .btn-footer {
   background-color: #FFFFFF;
   color: #202042;

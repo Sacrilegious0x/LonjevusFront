@@ -20,7 +20,7 @@ const ShowEmployee = () => {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
 
-    const formateadorCRC = new Intl.NumberFormat('es-CR', { // 'es-CR' es el locale para español de Costa Rica
+    const formateadorCRC = new Intl.NumberFormat('es-CR', { 
         style: 'currency',
         currency: 'CRC',
     });

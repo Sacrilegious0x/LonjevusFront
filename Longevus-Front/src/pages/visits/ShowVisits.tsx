@@ -2,10 +2,10 @@ import Table from '../../components/TableBasic'
 import type { columnDefinition } from '../../components/TableBasic';
 import Footer from '../../components/Footer';
 import Header from '../../components/HeaderAdmin';
-import { getAllVisits } from '../../services/VisitService';
+import { getAllVisits, deleteVisit } from '../../services/VisitService';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { confirmDeleteAlert, succesAlert, errorAlert } from '../../js/alerts';
 interface IVisitData {
     id: number,
     name: string,
@@ -53,7 +53,31 @@ const showVisits = () => {
             visit.resident.numberRoom.toString().toLowerCase().includes(term)
         );
     });
-    const handleDeleteVisit = async () => {
+    const handleDeleteVisit = async (visitId: number, visitorName: string) => {
+        const result = await confirmDeleteAlert(visitorName)
+
+        if (result.isConfirmed) {
+            setLoading(true)
+            setError(null)
+
+            try {
+                 await deleteVisit(visitId);
+                 let message = `Visita de ${visitorName} ha sido eliminada`
+                succesAlert('Eliminado',message )
+                setVisitData(prevVisits => prevVisits.filter(visit => visit.id !== visitId))
+            } catch (error) {
+                console.log('Error al eliminar la visita', error);
+                let errorMessage = 'Error al intentar eliminar la visita'
+                setError(errorMessage);
+                errorAlert(errorMessage);
+            } finally {
+                setLoading(false);
+            }
+        }else{
+            return;
+        }
+
+
 
     }
 
@@ -84,7 +108,7 @@ const showVisits = () => {
                 const timeString = row.visitHour;
                 if (!timeString) return '';
                 try {
-                    return timeString.substring(0, 5); 
+                    return timeString.substring(0, 5);
                 } catch (e) {
                     console.error("Error formateando hora:", e);
                     return timeString;
@@ -104,7 +128,7 @@ const showVisits = () => {
                         <i className='bi bi-pencil-square' />
                     </a>
 
-                    <a className='btn btn-danger me-2' onClick={() => handleDeleteVisit(/*visit.id*/)}>
+                    <a className='btn btn-danger me-2' onClick={() => handleDeleteVisit(visit.id, visit.name)}>
                         <i className="bi bi-trash" />
                     </a>
 

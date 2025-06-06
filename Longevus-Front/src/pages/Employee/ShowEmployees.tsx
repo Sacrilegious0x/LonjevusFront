@@ -5,6 +5,7 @@ import Header from '../../components/HeaderAdmin';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { getAllCaregivers, deleteCaregiver } from '../../services/CaregiverService';
+import { confirmDeleteAlert, succesAlert, errorAlert } from '../../js/alerts';
 
 interface IPerson {
     id: number;
@@ -50,30 +51,28 @@ const ShowEmployee = () => {
             user.salary.toString().toLowerCase().includes(term)
         );
     });
-    const handleDeleteCaregiver = async (caregiverId: number) => {
-        if (!window.confirm(`¿Estás seguro de que quieres eliminar al cuidador con ID ${caregiverId}?`)) {
-            return;
-        }
+    const handleDeleteCaregiver = async (caregiverId: number, caregiverName:string) => {
+        const response = await confirmDeleteAlert(caregiverName);
 
-        setLoading(true);
-        setError(null);
+        if(response.isConfirmed){
+            setLoading(true);
+            setError(null);
 
         try {
-            const response = await deleteCaregiver(caregiverId);
-            console.log(response.data);
-            alert(response.data || "Cuidador eliminado exitosamente");
-
-
+            await deleteCaregiver(caregiverId);
+            let message = `Cuidador ${caregiverName} eliminado exitosamente`;
+            succesAlert("Eliminado", message);
             setUserData(prevUsers => prevUsers.filter(user => user.id !== caregiverId));
         } catch (err) {
             console.error(`Error al eliminar el cuidador ${caregiverId}:`, err);
-            let errorMessage = "Error al eliminar el cuidador.";
-
-
+            let errorMessage = "Error al intentar eliminar el cuidador.";
             setError(errorMessage);
-            alert(errorMessage);
+            errorAlert(errorMessage);
         } finally {
             setLoading(false);
+        }
+        }else{
+            return;
         }
     };
 
@@ -105,7 +104,7 @@ const ShowEmployee = () => {
                         <i className='bi bi-pencil-square' />
                     </a>
 
-                    <a className='btn btn-danger me-2' onClick={() => handleDeleteCaregiver(person.id)}>
+                    <a className='btn btn-danger me-2' onClick={() => handleDeleteCaregiver(person.id,person.name)}>
                         <i className="bi bi-trash" />
                     </a>
 

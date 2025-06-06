@@ -64,6 +64,7 @@ const AppointmentScheduler = () => {
 
     const residentIdString = formData.resident.split('-')[1];
     const residentId = parseInt(residentIdString, 10);
+    
     const visitToSave: VisitPayload = {
       name: formData.name,
       visitDate: selectedDate,

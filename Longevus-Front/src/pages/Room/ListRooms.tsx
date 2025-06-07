@@ -13,7 +13,7 @@ interface IRoom{
     statusRoom:string,
     roomType:string,
     bedCount:number,
-    isActive:number,
+    isActive:boolean,
     roomNumber:number
 }
 
@@ -113,10 +113,10 @@ const RoomList=() => {
             <div className='card mt-5 mb-5'>
                 <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                         <h4 className="m-2">Lista de productos</h4>
-                        <Link className='btn btn-success' to='/productos/agregar'>Agregar</Link>
+                        <Link className='btn btn-success' to='/habitaciones/agregar'>Agregar</Link>
                 </div>  
                 <div className='card-body'>
-                        <input className="mb-3" type="text" placeholder="Buscar..." id="supplierSearch" value={searchTerm} onChange={(e)=> setSearchTerm(e.target.value)}/>
+                        <input className="mb-3" type="text" placeholder="Buscar..." id="RoomSearch" value={searchTerm} onChange={(e)=> setSearchTerm(e.target.value)}/>
                         <button className="btn btn-secondary" id="btnSearch"><i className='bi bi-search'/></button>
                         <Table<IRoom> data={filteredRooms} columns={roomColumns} selectedRows={new Set()} onToggleRow={()=>{}} onSelectAll={()=>{}}/>
                 </div>

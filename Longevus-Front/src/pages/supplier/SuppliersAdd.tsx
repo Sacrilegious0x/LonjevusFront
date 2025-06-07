@@ -136,8 +136,8 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               </div>
 
               <div className='mb-3'>
-                <button type='submit' className='btn btn-success'>Guardar</button>
-                <a href='/proveedores' className='btn btn-light m-1'>Volver</a>
+                <button type='submit' className='btn btn-primary'>Guardar</button>
+                <a href='/proveedores' className='btn btn-secondary m-1'>Volver</a>
               </div>
             </form>
           </div>

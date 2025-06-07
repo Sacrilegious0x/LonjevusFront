@@ -125,8 +125,8 @@ export default function SuppliersEdit() {
                 <input type='file' id='photo' name='photo' onChange={handleFileChange} className='form-control' accept='image/*' />
               </div>
               <div className='mb-3'>
-                <button type='submit' className='btn btn-success'>Guardar cambios</button>
-                <button type='button' className='btn btn-light m-1' onClick={() => navigate('/proveedores')}>Cancelar</button>
+                <button type='submit' className='btn btn-primary'>Guardar</button>
+                <button type='button' className='btn btn-secondary m-1' onClick={() => navigate('/proveedores')}>Cancelar</button>
               </div>
             </form>
           </div>

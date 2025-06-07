@@ -1,13 +1,13 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080'; // Ajusta el puerto y URL según tu configuración
+const API_BASE_URL = 'http://localhost:8080';
 
 export interface IRoom {
     id: number;
     statusRoom: string;
     roomType: string;
     bedCount: number;
-    isActive: number;
+    isActive: boolean;
     roomNumber: number;
 }
 
@@ -59,8 +59,7 @@ export const getRoomById = async (id: number): Promise<IRoom> => {
 export const createRoom = async (room: Omit<IRoom, 'id'>): Promise<IRoom> => {
     try {
         const response = await axios.post<IRoom>(
-            `${API_BASE_URL}/rooms/save`,
-            room
+            `${API_BASE_URL}/rooms/save`,room
         );
         return response.data;
     } catch (error) {

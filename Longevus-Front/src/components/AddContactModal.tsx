@@ -5,9 +5,9 @@ interface AddContactProps {
     show: boolean;
     onClose: () => void;
     residentName?: string;
-    residentId: number;
+    residentId: number | undefined;
     onAddContact: (contact: Contact) => void; //para agregar un contacto
-    editingContact: Contact;
+    editingContact?: Contact;
 }
 
 const AddContactModal: React.FC<AddContactProps> = ({ show, onClose, residentName, residentId, onAddContact, editingContact }) => {
@@ -38,7 +38,7 @@ const AddContactModal: React.FC<AddContactProps> = ({ show, onClose, residentNam
             name,
             phoneNumber: phone,
             relationShip,
-            resident: editingContact?.resident ?? { id: residentId }
+            resident: editingContact?.resident ?? { id: residentId! }
         };
 
           console.log("Enviando contacto al backend:", JSON.stringify(newContact, null, 2));

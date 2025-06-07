@@ -1,6 +1,6 @@
 import { useState } from "react";
 import AddContactModal from "./AddContactModal";
-import type { Resident } from "../pages/Residents/ShowResidents";
+import type { Resident } from "../services/ResidentService";
 
 export interface Contact {
     id: number;

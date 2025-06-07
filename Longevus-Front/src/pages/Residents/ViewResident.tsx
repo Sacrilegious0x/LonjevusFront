@@ -4,10 +4,11 @@ import ViewContactModal from "../../components/ViewContactModal";
 import AddContactModal from "../../components/AddContactModal";
 import type { Contact } from "../../components/ViewContactModal";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import { Link } from 'react-router-dom';
+import { getResidentById } from "../../services/ResidentService";
+import { getContactsByResidentId, addContact, updateContact, deleteContact } from "../../services/ContactService";
 
 
 const ViewResident: React.FC = () => {
@@ -18,70 +19,70 @@ const ViewResident: React.FC = () => {
 
     useEffect(() => {
         if (id) {
-            axios.get<ResidentData>(`http://localhost:8080/findResident?id=${id}`)
-                .then(response => setResidentData(response.data))
-                .catch(error => console.error("Error al obtener residente", error))
+            getResidentById(Number(id))
+                .then(res => setResidentData(res))
+                .catch(err => console.error("Error al obtener el residente", err));
         }
     }, [id]);
-
-    const fetchContacts = () => {
-        if (id) {
-            axios.get<Contact[]>(`http://localhost:8080/getContacts?id=${id}`)
-                .then(response => setContactsData(response.data))
-                .catch(error => console.error("Error al obtener contactos", error));
-        }
-    };
 
     useEffect(() => {
-        fetchContacts();
+        if (id) {
+            getContactsByResidentId(Number(id))
+                .then(res => setContactsData(res))
+                .catch(err => console.error("Error al obtener contactos", err));
+        }
     }, [id]);
-
 
 
     const [showContactModal, setShowContactModal] = useState(false);
     const [showAddContactModal, setShowAddContactModal] = useState(false);
 
     const handleAddContact = (contact: Contact) => {
-        axios.post(`http://localhost:8080/addContact`, contact)
+        addContact(contact)
             .then(() => {
-                alert("Contacto agregado")
-                fetchContacts();
+                console.log("Contacto agregado");
+                setContactsData(prev => [...prev, contact]);
             })
             .catch((error) => {
-                console.error("Error al guardar el contacto", error)
-            })
+                console.error("Error al guardar el contacto", error);
+            });
     }
 
     const handleEditContact = (updatedContact: Contact) => {
-        console.log("Enviando datos:", updatedContact);
-        axios.post("http://localhost:8080/updateContact", updatedContact)
+        updateContact(updatedContact)
             .then(() => {
-                alert("Contacto actualizado con éxito");
-                fetchContacts();
+                console.log("Contacto actualizado");
+                setContactsData(prev =>
+                    prev.map(contact =>
+                        contact.id === updatedContact.id ? updatedContact : contact
+                    )
+                );
             })
             .catch((error) => {
                 console.error("Error al actualizar contacto", error);
-                alert(error.response?.data || "Error al actualizar contacto");
             });
     };
 
     const handleDeleteContact = (contactId: number) => {
         if (window.confirm(`¿Estás seguro de eliminar el contacto?`)) {
-            axios.delete(`http://localhost:8080/deleteContact?id=${contactId}`)
-                .then(() => {
-                    alert("Contacto eliminado con exito")
-                    fetchContacts();
+            deleteContact(contactId).then(() => {
+                    console.log("Contacto eliminado");
+                    setContactsData(prev =>
+                        prev.filter(contact => contact.id !== contactId)
+                    );
+                }).catch((error) => {
+                    console.error("Error al eliminar contacto", error);
                 });
         }
     };
 
     return (
         <>
-            <Header/>
+            <Header />
             <div className="container mt-5 mb-5">
                 <h2 className="mb-4">Información del Residente</h2>
                 <div className="card shadow p-4">
-                    
+
                     {residentData?.photo && (
                         <div className=" mb-3">
                             <img
@@ -105,7 +106,7 @@ const ViewResident: React.FC = () => {
                         <button className="btn btn-info mt-3 ms-2" onClick={() => setShowContactModal(true)}>
                             Ver contactos
                         </button>
-                        <Link className='btn btn-secondary float-end' to="/residente/mostrar"><i className="bi bi-reply"/> Volver</Link>
+                        <Link className='btn btn-secondary float-end' to="/residente/mostrar"><i className="bi bi-reply" /> Volver</Link>
                     </center>
 
                 </div>
@@ -127,7 +128,7 @@ const ViewResident: React.FC = () => {
                     onAddContact={handleAddContact}
                 />
             </div>
-            <Footer/>
+            <Footer />
         </>
     );
 };

@@ -4,53 +4,46 @@ import Table from '../../components/TableBasic';
 import type { columnDefinition } from '../../components/TableBasic';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import axios from "axios";
-
-export interface Resident {
-    id: number,
-    identification?: string,
-    name?: string,
-    age?: number,
-    numberRoom?: number,
-}
+import { getResidents, deleteResident } from "../../services/ResidentService";
+import type { Resident } from "../../services/ResidentService";
 
 const Residents = () => {
 
     const navigate = useNavigate();
-    const [userData, setUserData] = useState<Resident[]>([]);
+    const [residentData, setResidentData] = useState<Resident[]>([]);
 
     useEffect(() => {
-        axios.get<Resident[]>('http://localhost:8080/residents')
-            .then((response) => {
-                console.log(response.data);
-                setUserData(response.data);
-            })
-            .catch((error) => {
-                console.error('error al obtener valores', error)
-            })
+        getResidents().then((data) => {
+            console.log(data);
+            setResidentData(data);
+        }).catch((error) => {
+            console.error('Error al obtener residentes', error)
+        })
     }, []);
 
 
     const handleDeleteResident = (resident: Resident) => {
         if (window.confirm(`¿Estás seguro de eliminar al residente ${resident.name}?`)) {
-            axios.delete(`http://localhost:8080/deleteResident?id=${resident.id}`)
-                .then(() => {
-                    setUserData((prev) => prev.filter((r) => r.id !== resident.id)); //se actualiza la lista
-                })
-                .catch((error) => { console.error("Error al eliminar el residente", error) })
+            deleteResident(resident.id)
+            .then(() => {
+                setResidentData(prev => prev.filter(r => r.id !== resident.id));
+            })
+            .catch(error => {
+                console.error("Error al eliminar el residente", error);
+            });
         }
     }
 
     const [searchInput, setSearchInput] = useState("");
 
-    const handleSearch = () => {
-        axios.get<Resident[]>(`http://localhost:8080/findResidentByNameorIdentification?value=${searchInput}`)
+  const handleSearch = () => {
+        {/* axios.get<Resident[]>(`http://localhost:8080/findResidentByNameorIdentification?value=${searchInput}`)
             .then((response) => {
-                setUserData(response.data);
+                setResidentData(response.data);
             })
             .catch((error) => {
                 console.error("Error al buscar residentes", error);
-            });
+            });*/}
     };
 
     const personColumns: columnDefinition<Resident>[] = [
@@ -94,7 +87,7 @@ const Residents = () => {
                             <label>Buscar</label>
                             <input type="text" placeholder="Buscar..." id="userSearch" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
                             <button className="btn btn-secondary" id="btnSearch"><i className='bi bi-search' onClick={handleSearch} /></button>
-                            <Table<Resident> data={userData} columns={personColumns} selectedRows={new Set()} onToggleRow={() => { }} onSelectAll={() => { }} />
+                            <Table<Resident> data={residentData} columns={personColumns} selectedRows={new Set()} onToggleRow={() => { }} onSelectAll={() => { }} />
                         </div>
                     </div>
 

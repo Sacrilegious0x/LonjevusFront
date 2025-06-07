@@ -16,6 +16,7 @@ import AddResident from './pages/Residents/AddResident';
 import ShowResidents from './pages/Residents/ShowResidents';
 import EditResident from './pages/Residents/EditResident';
 import ViewResident from './pages/Residents/ViewResident';
+import ShowActivity from './pages/Activity/ShowActivities';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
         <Route path="/compras/agregar" element={<AddPurchase/>} /> 
         <Route path="/productos/editar/:id" element={<EditProduct />} />
         <Route path="/productos/agregar" element={<AddProduct />} />
+        <Route path="/actividades/mostrar" element={<ShowActivity />} />
       </Routes>
     </BrowserRouter>
   );

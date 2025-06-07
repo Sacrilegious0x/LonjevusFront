@@ -1,24 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Header from "../../components/HeaderAdmin";
+import Footer from "../../components/Footer";
 
-// Simulación de productos disponibles
-const allProducts = [
-  { id: 1, name: 'Vitamina C', price: 25 },
-  { id: 2, name: 'Alcohol', price: 100 },
-  { id: 3, name: 'Café', price: 30 },
-];
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+}
 
-// Simulación de compra existente
-const mockPurchase = {
-  id: 1,
-  date: '2024-05-01',
-  managerName: 'Carlos Pérez',
-  items: [
-    { productId: 1, quantity: 2 },
-    { productId: 2, quantity: 1 },
-  ],
-};
+interface PurchaseItem {
+  idProduct: number;
+  quantity: number;
+  expirationDate?: string;
+  productName?: string;
+  price?: number;
+}
+
+interface Purchase {
+  id: string;
+  date: string;
+  admin: {
+    id: number;
+    name: string;
+  };
+  items: PurchaseItem[];
+}
 
 const EditPurchase = () => {
   const { id } = useParams();
@@ -26,19 +34,71 @@ const EditPurchase = () => {
 
   const [date, setDate] = useState('');
   const [managerName, setManagerName] = useState('');
-  const [items, setItems] = useState<{ productId: number; quantity: number }[]>([]);
+  const [items, setItems] = useState<{ productId: number; quantity: number; expirationDate: string }[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [initialData, setInitialData] = useState('');
 
+  const getAllProducts = async (): Promise<Product[]> => {
+    const response = await fetch("http://localhost:8080/api/products/all");
+    return await response.json();
+  };
+
+  const getPurchaseById = async (id: string): Promise<Purchase> => {
+    const response = await fetch(`http://localhost:8080/api/purchases/${id}`);
+    if (!response.ok) throw new Error("No se pudo obtener la compra");
+    const text = await response.text();
+    if (!text) throw new Error("Respuesta vacía del servidor");
+    return JSON.parse(text);
+  };
+
+  const updatePurchase = async (id: string, data: any): Promise<boolean> => {
+    const response = await fetch(`http://localhost:8080/api/purchases/update/${id}`, {
+      method: 'PUT',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+    return response.ok;
+  };
+
   useEffect(() => {
-    setDate(mockPurchase.date);
-    setManagerName(mockPurchase.managerName);
-    setItems(mockPurchase.items);
-    setInitialData(JSON.stringify({
-      date: mockPurchase.date,
-      managerName: mockPurchase.managerName,
-      items: mockPurchase.items,
-    }));
-  }, []);
+    const fetchData = async () => {
+      try {
+        const products = await getAllProducts();
+        setAllProducts(products);
+
+        if (id) {
+          const data: Purchase = await getPurchaseById(id);
+          setDate(data.date);
+          setManagerName(data.admin?.name ?? "No asignado");
+
+          const compraItems = data.items.map((item: PurchaseItem) => ({
+            productId: item.idProduct,
+            quantity: item.quantity,
+            expirationDate: item.expirationDate ?? ""
+          }));
+
+          const productosFaltantes = data.items
+            .filter((item: PurchaseItem) => !products.some((p: Product) => p.id === item.idProduct))
+            .map((item: PurchaseItem) => ({
+              id: item.idProduct,
+              name: `Producto eliminado (#${item.idProduct})`,
+              price: 0,
+            }));
+
+          setAllProducts(prev => [...prev, ...productosFaltantes]);
+          setItems(compraItems);
+          setInitialData(JSON.stringify({ date: data.date, items: compraItems }));
+        }
+      } catch (error) {
+        console.error("Error cargando productos o compra:", error);
+        alert("Error cargando productos o compra");
+      }
+    };
+
+    fetchData();
+  }, [id]);
 
   const handleProductChange = (index: number, newProductId: number) => {
     setItems(prev =>
@@ -56,6 +116,14 @@ const EditPurchase = () => {
     );
   };
 
+  const handleExpirationChange = (index: number, newDate: string) => {
+    setItems(prev =>
+      prev.map((item, i) =>
+        i === index ? { ...item, expirationDate: newDate } : item
+      )
+    );
+  };
+
   const getTotal = () => {
     return items.reduce((sum, item) => {
       const product = allProducts.find(p => p.id === item.productId);
@@ -63,19 +131,47 @@ const EditPurchase = () => {
     }, 0);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Datos guardados:", {
-      id,
+
+    if (items.length === 0) {
+      alert("Debe seleccionar al menos un producto.");
+      return;
+    }
+
+    if (items.some(item => !item.expirationDate)) {
+      alert("Todos los productos deben tener una fecha de vencimiento.");
+      return;
+    }
+
+    const payload = {
+      id: id ?? '',
       date,
-      managerName,
-      items
-    });
-    setInitialData(JSON.stringify({ date, managerName, items }));
+      amount: getTotal(),
+      admin: { id: 1 },
+      items: items.map(item => ({
+        idProduct: item.productId,
+        quantity: item.quantity,
+        expirationDate: item.expirationDate
+      }))
+    };
+
+    try {
+      const success = await updatePurchase(payload.id, payload);
+      if (success) {
+        alert("Compra actualizada correctamente");
+        navigate('/compras');
+      } else {
+        alert("Error al actualizar");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Ocurrió un error al actualizar");
+    }
   };
 
   const handleBack = () => {
-    const currentData = JSON.stringify({ date, managerName, items });
+    const currentData = JSON.stringify({ date, items });
     if (currentData !== initialData) {
       const confirmExit = window.confirm("Tienes cambios sin guardar. ¿Deseas salir sin guardar?");
       if (!confirmExit) return;
@@ -88,11 +184,7 @@ const EditPurchase = () => {
       <h2>Editar Compra #{id}</h2>
 
       <div className="mb-3">
-        <button
-          type="button"
-          className="btn btn-secondary"
-          onClick={handleBack}
-        >
+        <button type="button" className="btn btn-secondary" onClick={handleBack}>
           ← Volver a Compras
         </button>
       </div>
@@ -105,6 +197,7 @@ const EditPurchase = () => {
             className="form-control"
             value={date}
             onChange={e => setDate(e.target.value)}
+            required
           />
         </div>
 
@@ -114,7 +207,7 @@ const EditPurchase = () => {
             type="text"
             className="form-control"
             value={managerName}
-            onChange={e => setManagerName(e.target.value)}
+            readOnly
           />
         </div>
 
@@ -125,6 +218,7 @@ const EditPurchase = () => {
               <th>Producto</th>
               <th>Precio</th>
               <th>Cantidad</th>
+              <th>Fecha de Vencimiento</th>
               <th>Subtotal</th>
             </tr>
           </thead>
@@ -156,6 +250,15 @@ const EditPurchase = () => {
                       value={item.quantity}
                       min={1}
                       onChange={e => handleQuantityChange(index, parseInt(e.target.value) || 1)}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="date"
+                      className="form-control"
+                      value={item.expirationDate}
+                      required
+                      onChange={e => handleExpirationChange(index, e.target.value)}
                     />
                   </td>
                   <td>${(item.quantity * price).toFixed(2)}</td>

@@ -5,7 +5,7 @@ export type columnDefinition<T>={
      allRows: T[]; // Todos los datos de la tabla
      selectedRows: Set<number>; // Set con los IDs de las filas seleccionadas (asumiendo que T tiene 'id')
      isSelectedAll: boolean; // Si todas las filas están seleccionadas actualmente
-     onSelectAll: (isSelected: boolean) => void; // Función para (de)seleccionar todas
+     onSelectAll: (isSelected: boolean) => void; // Función para (des)seleccionar todas
     }) => React.ReactNode;
     accessor: keyof T | ((data: T) => any);
     Cell?: (data: T, index:number) => React.ReactNode;

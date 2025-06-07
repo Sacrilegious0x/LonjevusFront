@@ -88,7 +88,7 @@ const Residents = () => {
                     <div className='card mt-5 mb-5'>
                         <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                             <h4>Lista de residentes</h4>
-                            <Link className='btn btn-success' to='/residente/agregar'>Agregar</Link>
+                            <Link className='btn btn-success' to='/residente/agregar'><i className='bi bi-person-plus-fill'/></Link>
                         </div>
                         <div className='card-body'>
                             <label>Buscar</label>

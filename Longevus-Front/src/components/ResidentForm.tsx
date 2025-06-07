@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
 export interface ResidentData {
@@ -66,7 +66,11 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           type="text"
           name="identification"
           value={data.identification}
+<<<<<<< HEAD
           readOnly={isEditing}
+=======
+          
+>>>>>>> developer
           onChange={handleForm}
           className="form-control"
         />
@@ -78,7 +82,11 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           type="text"
           name="name"
           value={data.name}
+<<<<<<< HEAD
           readOnly={isEditing}
+=======
+         
+>>>>>>> developer
           onChange={handleForm}
           className="form-control"
         />
@@ -90,7 +98,11 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           type="date"
           name="birthdate"
           value={data.birthdate}
+<<<<<<< HEAD
           readOnly={isEditing}
+=======
+          
+>>>>>>> developer
           onChange={handleForm}
           className="form-control"
         />
@@ -138,5 +150,3 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
 };
 
 export default ResidentForm;
-
-

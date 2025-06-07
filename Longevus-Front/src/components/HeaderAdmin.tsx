@@ -10,7 +10,9 @@ const Header = () => {
        <header className="header">
             <div className="container-fluid d-flex align-items-center justify-content-between flex-wrap py-3">
                 <div className="logo">
-                    <img src="/img/logo.jpg" alt="Logo del sitio" />
+                    <Link to={"/roles_permisos"}><img src="/img/logo.jpg" alt="Logo del sitio" />
+                    </Link>
+                   
                 </div>
             <nav className="navbar p-0">
                 <ul className="ul-actions d-flex flex-wrap justify-content-end">
@@ -28,6 +30,9 @@ const Header = () => {
                                 </li>
                                 <li className="sub_ul-actions-li">
                                     <Link className="sub_menu-options" to="/residente/agregar">Agregar Residente</Link>
+                                </li>
+                                <li className="sub_ul-actions-li">
+                                    <Link className="sub_menu-options" to="/visitas">Registro Visitas</Link>
                                 </li>
                                     <li className="sub_ul-actions-li">
                                     <Link className="sub_menu-options" to="/habitaciones">Habitaciones</Link>

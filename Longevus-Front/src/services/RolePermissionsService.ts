@@ -30,6 +30,7 @@ interface PermissionListResponse {
 export const getAllRoles = async (): Promise<IRole[]> => {
     try {
         const response = await axios.get<RoleListResponse>(`${API_BASE_URL}/roles/list`);
+        console.log("ROLES Y PERMISOS " , response.data)
         return response.data.roles;
     } catch (error) {
         console.error('Error al obtener la lista de Roles errorp');

@@ -26,6 +26,8 @@ import SuppliersEdit from './pages/supplier/SuppliertsUpdate';
 import RoomList from './pages/Room/ListRooms';
 import AddRoom from './pages/Room/AddRoom';
 import EditRoom from './pages/Room/EditRoom';
+import ShowVisits from './pages/visits/ShowVisits';
+
 function App() {
   return (
     <BrowserRouter>  
@@ -57,6 +59,7 @@ function App() {
         <Route path='/habitaciones' element={<RoomList/>}/>
         <Route path='/habitaciones/agregar' element={<AddRoom/>}/>
         <Route path='/habitaciones/editar/:id' element={<EditRoom/>}/>
+        <Route path='/visitas' element={<ShowVisits/>}/>
          </Routes>
     </BrowserRouter>
   );

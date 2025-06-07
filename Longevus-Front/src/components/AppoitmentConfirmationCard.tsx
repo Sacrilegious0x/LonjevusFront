@@ -22,6 +22,14 @@ const ConfirmationScreen = ({
         (r) => r.value === formData.resident
     );
 
+    const parts = selectedDate.split('-').map(part => parseInt(part, 10));
+    const correctedDate = new Date(parts[0], parts[1] - 1, parts[2]);
+    const displayDate = correctedDate.toLocaleDateString("es-ES", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+    });
+
     return (
         <>
             <Header/>
@@ -56,12 +64,7 @@ const ConfirmationScreen = ({
                                                     <i className="bi bi-calendar-fill  me-2"></i>
                                                     <strong>Fecha:</strong>
                                                     <span className="ms-2">
-                                                        {new Date(selectedDate).toLocaleDateString("es-ES", {
-                                                            weekday: "long",
-                                                            year: "numeric",
-                                                            month: "long",
-                                                            day: "numeric",
-                                                        })}
+                                                        {displayDate}
                                                     </span>
                                                 </div>
                                             </div>

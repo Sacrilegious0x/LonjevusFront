@@ -7,6 +7,7 @@ export interface DateOption {
 export const generateDates = (): DateOption[] => {
     const dates = []
     const today = new Date()
+    today.setHours(0, 0, 0, 0)
     for (let i = 1; i <= 14; i++) {
         const date = new Date(today)
         date.setDate(today.getDate() + i)

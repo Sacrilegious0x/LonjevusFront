@@ -32,7 +32,7 @@ const Header = () => {
                                     <Link className="sub_menu-options" to="/residente/agregar">Agregar Residente</Link>
                                 </li>
                                 <li className="sub_ul-actions-li">
-                                    <Link className="sub_menu-options" to="/visitas">Registro Visitas</Link>
+                                    <Link className="sub_menu-options" to="/residente/visitas">Registro Visitas</Link>
                                 </li>
                             </ul>
                         )}

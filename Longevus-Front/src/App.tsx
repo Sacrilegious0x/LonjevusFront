@@ -24,6 +24,7 @@ import EditResident from './pages/Residents/EditResident';
 import ViewResident from './pages/Residents/ViewResident';
 import SuppliersEdit from './pages/supplier/SuppliertsUpdate';
 import ShowVisits from './pages/visits/ShowVisits';
+import EditVisit from './pages/visits/EditVisit';
 
 function App() {
   return (
@@ -53,7 +54,8 @@ function App() {
         <Route path='/admin/editar/:id' element = {<EditAdmin/>}/>
         <Route path='/residente/editar/:id' element={<EditResident/>}/>
         <Route path='/residente/perfil/:id' element={<ViewResident/>}/>
-        <Route path='/visitas' element={<ShowVisits/>}/>
+        <Route path='/residente/visitas' element={<ShowVisits/>}/>
+        <Route path='/residente/visitas/editar/:id' element={<EditVisit/>}/>
          </Routes>
     </BrowserRouter>
   );

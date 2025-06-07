@@ -124,7 +124,7 @@ const showVisits = () => {
             header: 'Acciones', accessor: (visit) => visit,
             Cell: (visit) => (
                 <>
-                    <a className='btn btn-warning me-2' onClick={() => navigate(`/`)}>
+                    <a className='btn btn-warning me-2' onClick={() => navigate(`/residente/visitas/editar/${visit.id}`)}>
                         <i className='bi bi-pencil-square' />
                     </a>
 

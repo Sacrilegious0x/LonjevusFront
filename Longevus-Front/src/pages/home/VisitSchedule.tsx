@@ -10,9 +10,11 @@ import DateSelector from "../../components/AppoitmentDateSelector"
 import Footer from "../../components/Footer"
 import Header from "../../components/Header"
 import { getResidents, addVisit, type VisitPayload, type ApiResident } from "../../services/VisitService"
-
+import { succesAlert } from "../../js/alerts"
+import { useNavigate } from "react-router-dom"
 
 const AppointmentScheduler = () => {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<string>("")
   const [selectedTime, setSelectedTime] = useState<string>("")
   const [allResidentOptions, setAllResidentOptions] = useState<Resident[]>([]);
@@ -78,42 +80,34 @@ const AppointmentScheduler = () => {
     };
 
     try {
-
+      console.log("Informacion que se manda " , visitToSave);
       const successMessage = await addVisit(visitToSave);
-      console.log(successMessage); 
+      succesAlert("Visita Agendada", successMessage);
       setIsSubmitted(true); 
     } catch (error) {
       console.error("Fallo al enviar la visita:", error);
     }
   }
 
-  const handleNewAppointment = () => {
-    setIsSubmitted(false)
-    setSelectedDate("")
-    setSelectedTime("")
-    setFormData({
-      resident: "",
-      name: "",
-      email: "",
-      phone: "",
-      relationship: "",
-    })
-  }
+  // const handleNewAppointment = () => {
+  //   setIsSubmitted(false)
+  //   setSelectedDate("")
+  //   setSelectedTime("")
+  //   setFormData({
+  //     resident: "",
+  //     name: "",
+  //     email: "",
+  //     phone: "",
+  //     relationship: "",
+  //   })
+  // }
 
   const isFormValid =
     selectedDate && selectedTime && formData.resident &&
     formData.name && formData.email && formData.relationship
 
   if (isSubmitted) {
-    return (
-      <ConfirmationScreen
-        selectedDate={selectedDate}
-        selectedTime={selectedTime}
-        formData={formData}
-        onNewAppointment={handleNewAppointment}
-        residentOptions={allResidentOptions}
-      />
-    )
+    navigate("/")
   }
 
   return (

@@ -9,6 +9,7 @@ export interface ApiResident {
     numberRoom: number,
 }
 export interface VisitPayload {
+    id?:number | string;
     name: string;
     visitDate: string;        
     visitHour: string;           
@@ -16,9 +17,9 @@ export interface VisitPayload {
     email: string;      
     relationship: string;       
     resident: {               
-         id: number,
+        id?: number | string,
         name?: string,
-        numberRoom?: number
+        numberRoom?: number | string
     };
 }
 export const getResidents = async (): Promise<ApiResident[]> => {
@@ -57,4 +58,23 @@ export const deleteVisit = async(id:number | string)=>{
     return axios.delete(`${URL_BASE}/deleteVisit/${id}`)
 }
 
+export const getVisitById = async (id: number | string)=>{
+        try {
+            const response = await axios.get(`${URL_BASE}/getVisitById/${id}`)
+            return response.data
+        } catch (error) {
+            console.log("ERROR AL OBTENER LOS DATOS DE LA VISTA")
+            throw error;
+        }
+}
+
+export const updateVisit = async (visit: VisitPayload)=>{
+    try {
+        const response = await axios.post(`${URL_BASE}/updateVisit/${visit.id}`, visit);
+        return response.data
+    } catch (error) {
+        console.log("Error al intentar actualizar la visita")
+        throw error;
+    }
+}
 

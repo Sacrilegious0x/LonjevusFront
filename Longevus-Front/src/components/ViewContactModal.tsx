@@ -1,9 +1,10 @@
 import { useState } from "react";
 import AddContactModal from "./AddContactModal";
+import type { Resident } from "../pages/Residents/ShowResidents";
 
 export interface Contact {
     id: number;
-    idResident: number;
+    resident: Resident;
     name: string;
     phoneNumber: string;
     relationShip: string;
@@ -49,7 +50,12 @@ const ViewContactModal: React.FC<ContactProps> = ({ show, onClose, residentName,
                                         <div className="d-flex gap-2">
                                             <button
                                                 className="btn btn-sm btn-primary"
-                                                onClick={() => setEditContactModal(contact)}
+                                                onClick={() => {
+                                                    console.log("Editing contact:", contact);
+                                                    console.log("Resident exists:", !!contact.resident);
+                                                    console.log("Contacto a editar:", contact);
+                                                    setEditContactModal(contact)
+                                                }}
                                             >
                                                 Editar
                                             </button>
@@ -79,7 +85,7 @@ const ViewContactModal: React.FC<ContactProps> = ({ show, onClose, residentName,
                     show={true}
                     onClose={() => setEditContactModal(null)}
                     residentName={residentName}
-                    residentId={showEditContactModal.idResident}
+                    residentId={showEditContactModal.resident.id}
                     onAddContact={(updatedContact) => {
                         onEditContact(updatedContact);
                     }}

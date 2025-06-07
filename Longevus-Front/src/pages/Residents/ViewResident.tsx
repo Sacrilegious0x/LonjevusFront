@@ -80,7 +80,7 @@ const ViewResident: React.FC = () => {
                 {residentData?.photo && (
                     <div className=" mb-3">
                         <img
-                            src={residentData.photo}
+                            src={`http://localhost:8080/${residentData.photo}`}
                             alt="Foto del residente"
                             width="150"
                             className="img-thumbnail"
@@ -97,7 +97,8 @@ const ViewResident: React.FC = () => {
                     <button className="btn btn-primary mt-3" onClick={() => setShowAddContactModal(true)}>
                         Agregar contactos
                     </button>
-                    <button className="btn btn-info mt-3" onClick={() => setShowContactModal(true)}>
+                    <button className="btn btn-info mt-3 ms-2" onClick={() => { console.log(contactsData)
+                        setShowContactModal(true)}}>
                         Ver contactos
                     </button>
                 </center>

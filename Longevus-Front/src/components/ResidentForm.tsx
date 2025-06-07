@@ -30,9 +30,11 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
     photo: null,
   });
 
+  const isEditing = !!initialData;
+
   useEffect(() => {
     if (initialData) {
-      console.log("📋 Cargando initialData en form:", initialData);
+      console.log("Cargando initialData en form:", initialData);
       setData(initialData);
     }
   }, [initialData]);
@@ -64,6 +66,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           type="text"
           name="identification"
           value={data.identification}
+          readOnly={isEditing}
           onChange={handleForm}
           className="form-control"
         />
@@ -75,6 +78,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           type="text"
           name="name"
           value={data.name}
+          readOnly={isEditing}
           onChange={handleForm}
           className="form-control"
         />
@@ -86,6 +90,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           type="date"
           name="birthdate"
           value={data.birthdate}
+          readOnly={isEditing}
           onChange={handleForm}
           className="form-control"
         />
@@ -109,6 +114,8 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           name="numberRoom"
           value={data.numberRoom}
           onChange={handleForm}
+          min={1}
+          max={15}
           className="form-control"
         />
       </div>

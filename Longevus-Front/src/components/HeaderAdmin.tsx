@@ -8,11 +8,12 @@ const Header = () => {
 
     return (
         <header className="header">
-            <div className="logo">
-                <img src="/img/logo.jpg" alt="Logo del sitio" />
-            </div>
-            <nav className="navbar bg-body-tertiary">
-                <ul className="ul-actions">
+            <div className="container-fluid d-flex align-items-center justify-content-between flex-wrap py-3">
+                <div className="logo">
+                    <img src="/img/logo.jpg" alt="Logo del sitio" />
+                </div>
+            <nav className="navbar p-0">
+                <ul className="ul-actions d-flex flex-wrap justify-content-end">
 
                     <li className="ul-actions-li"
                         onMouseEnter={() => setMenuActive('residents')}
@@ -105,6 +106,8 @@ const Header = () => {
                     
                 </ul>
             </nav>
+            </div>
+            
         </header>
     );
 };

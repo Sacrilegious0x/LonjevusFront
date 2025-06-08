@@ -12,6 +12,8 @@ import AddResident from './pages/Residents/AddResident';
 import PurchasePage from './pages/purchase/PurchasePage';
 import EditPurchase from './pages/purchase/EditPurchase';
 import AddPurchase from './pages/purchase/AddPurchase';
+import ProductsList from './pages/product/ProductList';
+import BillingPage from './pages/billing/BillingPage';
 
 function App() {
   return (
@@ -30,7 +32,8 @@ function App() {
         <Route path="/compras" element={<PurchasePage />} />
         <Route path="/compras/editar/:id" element={<EditPurchase />} /> 
         <Route path="/compras/agregar" element={<AddPurchase />} />
-        
+        <Route path="/productos" element={<ProductsList />} />
+        <Route path="/facturas" element={<BillingPage />} />
          </Routes>
     </BrowserRouter>
   );

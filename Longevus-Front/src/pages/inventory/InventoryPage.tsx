@@ -1,51 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 import TableBasic from "../../components/TableBasic";
 import type { columnDefinition } from "../../components/TableBasic";
-import CategoryFilter from "../../components/CategoryFilter";
 import DateFilter from "../../components/DateFilter";
 import Footer from "../../components/Footer";
 import Header from "../../components/HeaderAdmin";
 import "bootstrap/dist/css/bootstrap.min.css";
-
-type InventoryItem = {
-  id: number;
-  quantity: number;
-  category: string;
-  photoURL: string;
-  product: {
-    name: string;
-    expirationDate: string | null;
-    supplier: {
-      name: string;
-    };
-  };
-  purchase: {
-    id: string;
-  };
-};
+import {
+  getAllInventory,
+  deleteInventory,
+  type InventoryItem,
+} from "../../services/InventoryService";
 
 const InventoryPage = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("Todos");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [inventoryData, setInventoryData] = useState<InventoryItem[]>([]);
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
 
-  const navigate = useNavigate();
-
-  const getAllInventory = async (): Promise<InventoryItem[]> => {
-    const res = await fetch("http://localhost:8080/api/inventory/all");
-    if (!res.ok) {
-      throw new Error("Error al obtener inventario");
-    }
-    return res.json();
-  };
+  //const navigate = useNavigate();
 
   useEffect(() => {
     getAllInventory()
-      .then((data) => {
-        setInventoryData(data);
-      })
+      .then((data) => setInventoryData(data))
       .catch((err) => console.error("Error cargando inventario:", err));
   }, []);
 
@@ -53,11 +29,7 @@ const InventoryPage = () => {
     const confirmed = window.confirm("¿Estás seguro de que deseas eliminar este ítem del inventario?");
     if (confirmed) {
       try {
-        const res = await fetch(`http://localhost:8080/api/inventory/delete/${id}`, {
-          method: "DELETE",
-        });
-        if (!res.ok) throw new Error("Error al eliminar");
-
+        await deleteInventory(id);
         setInventoryData((prev) => prev.filter((item) => item.id !== id));
       } catch (err) {
         console.error("Error al eliminar inventario:", err);
@@ -67,20 +39,17 @@ const InventoryPage = () => {
 
   const toggleRow = (id: number) => {
     const newSelection = new Set(selectedRows);
-    if (newSelection.has(id)) {
-      newSelection.delete(id);
-    } else {
-      newSelection.add(id);
-    }
+if (newSelection.has(id)) {
+  newSelection.delete(id);
+} else {
+  newSelection.add(id);
+}
+
     setSelectedRows(newSelection);
   };
 
   const selectAll = (isSelected: boolean) => {
-    if (isSelected) {
-      setSelectedRows(new Set(inventoryData.map((item) => item.id)));
-    } else {
-      setSelectedRows(new Set());
-    }
+    setSelectedRows(isSelected ? new Set(inventoryData.map((i) => i.id)) : new Set());
   };
 
   const columns: columnDefinition<InventoryItem>[] = [
@@ -99,11 +68,11 @@ const InventoryPage = () => {
       accessor: (item) => item.product.supplier.name,
     },
     {
-      header: "Id de la compra",
+      header: "ID de Compra",
       accessor: (item) => item.purchase.id,
     },
     {
-      header: "Fotografía",
+      header: "Foto",
       accessor: () => "",
       Cell: (item) => (
         <img
@@ -120,27 +89,16 @@ const InventoryPage = () => {
       header: "Acciones",
       accessor: () => "",
       Cell: (item) => (
-        <button
-          className="btn btn-danger btn-sm"
-          onClick={() => handleDelete(item.id)}
-        >
+        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(item.id)}>
           Eliminar
         </button>
       ),
     },
   ];
 
-  const categoryOptions = Array.from(
-    new Set(inventoryData.map((item) => item.category).filter(Boolean))
+  const filteredData = inventoryData.filter((item) =>
+    selectedDate ? item.product.expirationDate === selectedDate : true
   );
-
-  const filteredData = inventoryData.filter((item) => {
-    const categoryMatch =
-      selectedCategory === "Todos" || item.category === selectedCategory;
-    const dateMatch =
-      !selectedDate || item.product.expirationDate === selectedDate;
-    return categoryMatch && dateMatch;
-  });
 
   return (
     <>
@@ -148,29 +106,25 @@ const InventoryPage = () => {
       <div className="container mt-4">
         <h1>Inventario</h1>
         <div className="row mb-3">
-         
           <div className="col-md-6">
             <DateFilter
               value={selectedDate}
               onChange={(dateStr) => {
-                // Convertir a formato YYYY-MM-DD
                 const isoDate = new Date(dateStr).toISOString().split("T")[0];
                 setSelectedDate(isoDate);
               }}
             />
           </div>
         </div>
-        <button
-  className="btn btn-secondary mt-2"
-  onClick={() => setSelectedDate("")}
->
-  Limpiar búsqueda
-</button>
+
+        <button className="btn btn-secondary mb-3" onClick={() => setSelectedDate("")}>
+          Limpiar búsqueda
+        </button>
 
         <p>
-          Total de unidades en inventario:{" "}
-          <strong>{filteredData.length}</strong>
+          Total de productos: <strong>{filteredData.length}</strong>
         </p>
+
         <TableBasic<InventoryItem>
           data={filteredData}
           columns={columns}

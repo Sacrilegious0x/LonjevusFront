@@ -23,6 +23,7 @@ import EditAdmin from './pages/Employee/EditAdmin';
 import EditResident from './pages/Residents/EditResident';
 import ViewResident from './pages/Residents/ViewResident';
 import SuppliersEdit from './pages/supplier/SuppliertsUpdate';
+import ShowVisits from './pages/visits/ShowVisits';
 
 function App() {
   return (
@@ -52,7 +53,7 @@ function App() {
         <Route path='/admin/editar/:id' element = {<EditAdmin/>}/>
         <Route path='/residente/editar/:id' element={<EditResident/>}/>
         <Route path='/residente/perfil/:id' element={<ViewResident/>}/>
-        
+        <Route path='/visitas' element={<ShowVisits/>}/>
          </Routes>
     </BrowserRouter>
   );

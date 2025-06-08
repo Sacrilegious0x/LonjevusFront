@@ -14,6 +14,8 @@ import EditPurchase from './pages/purchase/EditPurchase';
 import AddPurchase from './pages/purchase/AddPurchase';
 import ProductsList from './pages/product/ProductList';
 import BillingPage from './pages/billing/BillingPage';
+import EditBilling from './pages/billing/EditBilling';
+import AddBilling from './pages/billing/AddBilling';
 
 function App() {
   return (
@@ -34,6 +36,8 @@ function App() {
         <Route path="/compras/agregar" element={<AddPurchase />} />
         <Route path="/productos" element={<ProductsList />} />
         <Route path="/facturas" element={<BillingPage />} />
+        <Route path="/facturas/editar/:id" element={<EditBilling />} />
+        <Route path="/facturas/nueva" element={<AddBilling />} />
          </Routes>
     </BrowserRouter>
   );

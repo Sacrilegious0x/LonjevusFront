@@ -14,6 +14,7 @@ const BillingPage = () => {
   const [billings, setBillings] = useState<Billing[]>([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedPeriod, setSelectedPeriod] = useState("");
+  const [selectedBilling, setSelectedBilling] = useState<Billing | null>(null);
   const navigate = useNavigate();
 
   const loadBillings = async () => {
@@ -96,8 +97,6 @@ const BillingPage = () => {
               <th>Consecutivo</th>
               <th>Fecha</th>
               <th>Monto</th>
-              <th>Método de Pago</th>
-              <th>Periodo</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -108,20 +107,15 @@ const BillingPage = () => {
                 <td>{billing.consecutive}</td>
                 <td>{billing.date}</td>
                 <td>₡{billing.amount.toFixed(2)}</td>
-                <td>{billing.paymentMethod}</td>
-                <td>{billing.period}</td>
-                <td>
-                  <button
-                    className="btn btn-sm btn-primary me-2"
-                    onClick={() => navigate(`/facturas/editar/${billing.id}`)}
-                  >
-                    Editar
+                <td className="d-flex flex-row justify-content-center gap-1">
+                  <button className="btn btn-info p-2" onClick={() => setSelectedBilling(billing)} title="Ver">
+                    <i className="bi bi-eye"></i>
                   </button>
-                  <button
-                    className="btn btn-sm btn-danger"
-                    onClick={() => billing.id && handleDelete(billing.id)}
-                  >
-                    Eliminar
+                  <button className="btn btn-warning p-2" onClick={() => navigate(`/facturas/editar/${billing.id}`)} title="Editar">
+                    <i className="bi bi-pencil-square"></i>
+                  </button>
+                  <button className="btn btn-danger p-2" onClick={() => handleDelete(billing.id!)} title="Eliminar">
+                    <i className="bi bi-trash"></i>
                   </button>
                 </td>
               </tr>
@@ -133,6 +127,34 @@ const BillingPage = () => {
             )}
           </tbody>
         </table>
+
+        {selectedBilling && (
+          <div className="modal show d-block" tabIndex={-1} role="dialog">
+            <div className="modal-dialog modal-lg" role="document">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Detalle de Factura</h5>
+                  <button type="button" className="btn-close" onClick={() => setSelectedBilling(null)} />
+                </div>
+                <div className="modal-body">
+                  <p><strong>Consecutivo:</strong> {selectedBilling.consecutive}</p>
+                  <p><strong>Fecha:</strong> {selectedBilling.date}</p>
+                  <p><strong>Monto:</strong> ₡{selectedBilling.amount.toFixed(2)}</p>
+                  <p><strong>Método de Pago:</strong> {selectedBilling.paymentMethod}</p>
+                  <p><strong>Periodo:</strong> {selectedBilling.period}</p>
+                  <hr />
+                  <p><strong>Administrador:</strong> {selectedBilling.administrator?.name}</p>
+                  <p><strong>Residente:</strong> {selectedBilling.resident?.name}</p>
+                </div>
+                <div className="modal-footer">
+                  <button className="btn btn-secondary" onClick={() => setSelectedBilling(null)}>
+                    Cerrar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <Footer />
     </>

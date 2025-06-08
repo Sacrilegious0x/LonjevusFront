@@ -8,8 +8,8 @@ export interface Billing {
   period: string;
   paymentMethod: string;
   isActive?: boolean;
-  administrator: { id: number };
-  resident: { id: number };
+  administrator: { id: number; name?: string };
+  resident: { id: number; name?: string };
 }
 
 const BASE_URL = "http://localhost:8080/api/billing";

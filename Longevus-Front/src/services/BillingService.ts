@@ -1,5 +1,19 @@
 import axios from "axios";
 
+
+
+
+export interface Administrator {
+  id: number;
+  name?: string;
+}
+
+export interface Resident {
+  id: number;
+  name?: string;
+  active?: boolean;
+}
+
 export interface Billing {
   id?: number;
   consecutive?: string;
@@ -8,9 +22,10 @@ export interface Billing {
   period: string;
   paymentMethod: string;
   isActive?: boolean;
-  administrator: { id: number; name?: string };
-  resident: { id: number; name?: string };
+  administrator: Administrator;
+  resident: Resident;
 }
+
 
 const BASE_URL = "http://localhost:8080/api/billing";
 
@@ -45,3 +60,37 @@ export const getBillingsByPeriod = async (period: string): Promise<Billing[]> =>
   const res = await axios.get(`${BASE_URL}/period/${period}`);
   return res.data;
 };
+
+// Obtener todos los residentes
+export const getAllResidents = async (): Promise<Resident[]> => {
+  const res = await axios.get("http://localhost:8080/residents");
+  return res.data;
+};
+
+
+// Obtener facturas por residente
+export const getBillingsByResident = async (residentId: number): Promise<Billing[]> => {
+  const res = await axios.get(`${BASE_URL}/resident/${residentId}`);
+  return res.data;
+};
+
+// Obtener facturas por residente y fecha
+export const getBillingsByResidentAndDate = async (
+  residentId: number,
+  date: string
+): Promise<Billing[]> => {
+  const res = await axios.get(`${BASE_URL}/resident/${residentId}/date/${date}`);
+  return res.data;
+};
+
+export const getBillingsByInactiveResidents = async (): Promise<Billing[]> => {
+  const res = await axios.get(`${BASE_URL}/resident/inactive`);
+  return res.data;
+};
+
+export const getInactiveBillings = async (): Promise<Billing[]> => {
+  const res = await axios.get("http://localhost:8080/api/billing/inactive");
+  return res.data;
+};
+
+

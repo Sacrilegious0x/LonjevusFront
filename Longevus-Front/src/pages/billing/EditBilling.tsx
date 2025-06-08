@@ -3,7 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   getBillingById,
   updateBilling,
+  getAllResidents,
   type Billing,
+  type Resident,
 } from "../../services/BillingService";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
@@ -13,28 +15,71 @@ const EditBilling = () => {
   const navigate = useNavigate();
   const [billing, setBilling] = useState<Billing | null>(null);
   const [loading, setLoading] = useState(true);
+  const [residents, setResidents] = useState<Resident[]>([]);
+  const [startMonth, setStartMonth] = useState("");
+  const [endMonth, setEndMonth] = useState("");
+
+  const months = [
+    "Ene",
+    "Feb",
+    "Mar",
+    "Abr",
+    "May",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dic",
+  ];
 
   useEffect(() => {
-    if (id) {
-      getBillingById(parseInt(id)).then((data) => {
+    const fetchData = async () => {
+      if (id) {
+        const data = await getBillingById(parseInt(id));
         setBilling(data);
+        const [start, end] = data.period.split("-");
+        setStartMonth(start);
+        setEndMonth(end);
         setLoading(false);
-      });
-    }
+      }
+
+      const res = await getAllResidents();
+      setResidents(res);
+    };
+
+    fetchData();
   }, [id]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setBilling((prev) =>
-      prev ? { ...prev, [name]: name === "amount" ? parseFloat(value) : value } : null
+      prev
+        ? { ...prev, [name]: name === "amount" ? parseFloat(value) : value }
+        : null
     );
+  };
+
+  const handleResidentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = parseInt(e.target.value);
+    const selectedResident = residents.find((r) => r.id === selectedId);
+    if (selectedResident && billing) {
+      setBilling({ ...billing, resident: selectedResident });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (billing && billing.id) {
       try {
-        await updateBilling(billing.id, billing);
+        const updatedBilling = {
+          ...billing,
+          period: `${startMonth}-${endMonth}`,
+        };
+        await updateBilling(billing.id, updatedBilling);
         alert("Factura actualizada con éxito.");
         navigate("/facturas");
       } catch (error) {
@@ -45,7 +90,8 @@ const EditBilling = () => {
   };
 
   if (loading) return <p className="text-center mt-4">Cargando factura...</p>;
-  if (!billing) return <p className="text-center mt-4">Factura no encontrada</p>;
+  if (!billing)
+    return <p className="text-center mt-4">Factura no encontrada</p>;
 
   return (
     <>
@@ -66,28 +112,51 @@ const EditBilling = () => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Monto:</label>
-            <input
-              type="number"
-              className="form-control"
-              name="amount"
-              value={billing.amount}
-              onChange={handleChange}
-              required
-            />
+            <label className="form-label">Monto (₡):</label>
+            <div className="input-group">
+              <span className="input-group-text">₡</span>
+              <input
+                type="number"
+                className="form-control"
+                name="amount"
+                min="0"
+                step="0.01"
+                value={billing.amount}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
 
           <div className="mb-3">
             <label className="form-label">Período:</label>
-            <input
-              type="text"
-              className="form-control"
-              name="period"
-              value={billing.period}
-              onChange={handleChange}
-              placeholder="Ej: Ene-Jun"
-              required
-            />
+            <div className="d-flex gap-2">
+              <select
+                className="form-control"
+                value={startMonth}
+                onChange={(e) => setStartMonth(e.target.value)}
+              >
+                <option value="">Mes inicio</option>
+                {months.map((month) => (
+                  <option key={month} value={month}>
+                    {month}
+                  </option>
+                ))}
+              </select>
+              <span className="align-self-center">a</span>
+              <select
+                className="form-control"
+                value={endMonth}
+                onChange={(e) => setEndMonth(e.target.value)}
+              >
+                <option value="">Mes fin</option>
+                {months.map((month) => (
+                  <option key={month} value={month}>
+                    {month}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="mb-3">
@@ -107,8 +176,33 @@ const EditBilling = () => {
             </select>
           </div>
 
-          <button type="submit" className="btn btn-primary">Guardar Cambios</button>
-          <button type="button" className="btn btn-secondary ms-2" onClick={() => navigate("/facturas")}>Cancelar</button>
+          <div className="mb-3">
+            <label className="form-label">Residente:</label>
+            <select
+              className="form-select"
+              value={billing.resident?.id ?? ""}
+              onChange={handleResidentChange}
+              required
+            >
+              <option value="">Seleccionar Residente</option>
+              {residents.map((res) => (
+                <option key={res.id} value={res.id}>
+                  {res.name ?? `Residente ${res.id}`}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button type="submit" className="btn btn-primary">
+            Guardar Cambios
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary ms-2"
+            onClick={() => navigate("/facturas")}
+          >
+            Cancelar
+          </button>
         </form>
       </div>
       <Footer />

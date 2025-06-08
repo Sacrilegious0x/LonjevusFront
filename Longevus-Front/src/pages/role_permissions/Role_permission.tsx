@@ -4,7 +4,7 @@ import Footer from '../../components/Footer'
 import Header from '../../components/HeaderAdmin'
 import type { columnDefinition } from '../../components/TableBasic'
 import Table from '../../components/TableBasic';
-import { getAllPermissions, getAllPermissionsById, getAllRoles, updatePermissions } from '../services/RolePermissionsService';
+import { getAllPermissions, getAllPermissionsById, getAllRoles, updatePermissions } from '../../services/RolePermissionsService';
 
 interface IRole{
   id: number

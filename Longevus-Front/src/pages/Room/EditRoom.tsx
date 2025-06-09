@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getRoomById, updateRoom } from '../../services/RoomService';
 import Header from '../../components/HeaderAdmin';
 import Footer from '../../components/Footer';
+import { confirmEditAlert, succesAlert } from '../../js/alerts';
 
 interface IRoomForm {
   id: number;
@@ -67,13 +68,21 @@ export default function EditRoom() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+  const response = await confirmEditAlert(`La habitación: ${formData.roomNumber.toString()}`);
+
+    if(response.isConfirmed){
+
     try {
+      
       await updateRoom(formData);
+      succesAlert("Actualizado","Habitacion actualizada");
       navigate('/habitaciones');
     } catch (error) {
       console.error('Error al actualizar la habitación:', error);
     }
-  };
+  }
+};
 
   return (
     <>
@@ -113,7 +122,7 @@ export default function EditRoom() {
 
               <div className="mb-3">
                 <label htmlFor="roomType" className="form-label">
-                  <i className="bi bi-building"></i> Tipo de habitación:
+                  <i className="bi bi-lamp-fill"></i>Tipo de habitación:
                 </label>
                 <select
                   id="roomType"
@@ -131,7 +140,7 @@ export default function EditRoom() {
 
               <div className="mb-3">
                 <label htmlFor="bedCount" className="form-label">
-                  <i className="bi bi-houses-fill"></i> Número de camas:
+                  <i className="bi bi-usb-mini-fill"></i> Número de camas:
                 </label>
                 <input
                   type="number"

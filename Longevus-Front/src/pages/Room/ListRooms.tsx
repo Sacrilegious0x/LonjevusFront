@@ -6,7 +6,7 @@ import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import Table from '../../components/TableBasic';
 import { deleteRoom, getRooms } from "../../services/RoomService";
-
+import { confirmDeleteAlert, succesAlert, errorAlert } from '../../js/alerts';
 
 interface IRoom{
     id:number,
@@ -37,10 +37,10 @@ const RoomList=() => {
     const roomColumns: columnDefinition<IRoom>[]=[
 
         {header:'#', accessor:'id',Cell:(_room,index)=>{return(index+1)}},
-        {header:'Estado De Habitacion',accessor:'statusRoom'},
-        {header:'Tipo de Habitacion',accessor:'roomType'},
+        {header:'Estado De Habitación',accessor:'statusRoom'},
+        {header:'Tipo de Habitación',accessor:'roomType'},
         {header:'Cantidad de camas',accessor:'bedCount'},
-        {header:'Numero de habitacion',accessor:'roomNumber'},
+        {header:'Numero de habitación',accessor:'roomNumber'},
         {header: 'Acciones', accessor: (room) => room,   
                 Cell: (room) =>(
                     <>
@@ -93,18 +93,24 @@ const RoomList=() => {
     }
 
     const handleDelete = async (id: number) => {
-        const confirmDelete = window.confirm("¿Seguro que deseas eliminar esta habitacion?");
-        if (!confirmDelete) return;
+        //const confirmDelete = window.confirm("¿Seguro que deseas eliminar esta habitacion?");
+        const response = await confirmDeleteAlert("la habitación");
+        if (response.isConfirmed){
       
          try {
+            console.log("eliminada la habitacion")
             await deleteRoom(id);
             setRoomData((prev) => prev.filter((p) => p.id !== id));
-            alert("Habitacion eliminada correctamente");
+            succesAlert("Eliminado","Habitación eliminada");
           } catch (err) {
             alert(err instanceof Error ? err.message : "Error desconocido al eliminar habitacion");
-          }
-        };
-
+          }finally{
+            setLoading(false);
+          };
+    }else{
+        return;
+    }
+}
         return(
              <>  
     <Header/>
@@ -112,11 +118,11 @@ const RoomList=() => {
         <div className='row'>
             <div className='card mt-5 mb-5'>
                 <div className='card-title d-flex justify-content-between align-items-center mt-3'>
-                        <h4 className="m-2">Lista de productos</h4>
+                        <h4 className="m-2">Lista de habitaciones</h4>
                         <Link className='btn btn-success' to='/habitaciones/agregar'>Agregar</Link>
                 </div>  
                 <div className='card-body'>
-                        <input className="mb-3" type="text" placeholder="Buscar..." id="RoomSearch" value={searchTerm} onChange={(e)=> setSearchTerm(e.target.value)}/>
+                        <input className="mb-3" type="text" placeholder="Buscar por número..." id="RoomSearch" value={searchTerm} onChange={(e)=> setSearchTerm(e.target.value)}/>
                         <button className="btn btn-secondary" id="btnSearch"><i className='bi bi-search'/></button>
                         <Table<IRoom> data={filteredRooms} columns={roomColumns} selectedRows={new Set()} onToggleRow={()=>{}} onSelectAll={()=>{}}/>
                 </div>

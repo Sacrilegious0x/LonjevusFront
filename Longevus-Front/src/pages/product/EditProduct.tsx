@@ -8,6 +8,7 @@ import { getSuppliers, type ISupplier } from "../../services/SupplierService";
 import { getProductById, getUnits, updateProduct, type IUnit, type RawProduct } from "../../services/ProductService";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
+import { confirmEditAlert, succesAlert } from "../../js/alerts";
 getProductById
 interface FormState {
   name: string;
@@ -165,8 +166,16 @@ const EditProduct: React.FC = () => {
         data.append("photo", selectedFile);
       }
 
+       const response = await confirmEditAlert(formData.name);
+
+      if(response.isConfirmed){
+
       await updateProduct(data);
+      succesAlert("Actualizado",`Producto actualizado exitosamente`)
       navigate("/productos");
+      }else{
+        console.log("No se actualizo el producto");
+      }
     } catch (error) {
       console.error("Error actualizando producto:", error);
     }

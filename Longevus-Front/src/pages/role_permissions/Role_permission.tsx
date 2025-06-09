@@ -1,12 +1,13 @@
 
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Footer from '../../components/Footer'
 import Header from '../../components/HeaderAdmin'
 import type { columnDefinition } from '../../components/TableBasic'
 import Table from '../../components/TableBasic';
 import { getAllPermissions, getAllPermissionsById, getAllRoles, updatePermissions } from '../../services/RolePermissionsService';
+import { confirmEditAlert, succesAlert } from '../../js/alerts';
 
-interface IRole{
+interface IRole {
   id: number
   name: string
   description: string
@@ -58,27 +59,27 @@ const RolesList = () => {
     }
   ];
 
-    // 3. Abrir modal y cargar permisos del rol
-const handleOpenModal = (role: IRole) => {
-  setCurrentRole(role);
-  setLoadingPerms(true);
+  // 3. Abrir modal y cargar permisos del rol
+  const handleOpenModal = (role: IRole) => {
+    setCurrentRole(role);
+    setLoadingPerms(true);
 
-  getAllPermissionsById(role.id)
-    .then(apiPerms => {
-      // mapeo de canX → X
-      const mapped = apiPerms.map(p => ({
-        module: p.module,
-        canView:   !!p.canView,
-        canCreate: !!p.canCreate,
-        canUpdate: !!p.canUpdate,
-        canDelete: !!p.canDelete,
-      }));
-      setPermissions(mapped);
-      setShowModal(true);
-    })
-    .catch(console.error)
-    .finally(() => setLoadingPerms(false));
-};
+    getAllPermissionsById(role.id)
+      .then(apiPerms => {
+        // mapeo de canX → X
+        const mapped = apiPerms.map(p => ({
+          module: p.module,
+          canView: !!p.canView,
+          canCreate: !!p.canCreate,
+          canUpdate: !!p.canUpdate,
+          canDelete: !!p.canDelete,
+        }));
+        setPermissions(mapped);
+        setShowModal(true);
+      })
+      .catch(console.error)
+      .finally(() => setLoadingPerms(false));
+  };
 
 
   const handleCloseModal = () => {
@@ -87,33 +88,39 @@ const handleOpenModal = (role: IRole) => {
     setPermissions([]);
   };
 
-   const handleToggle = (index: number, field: keyof Omit<IPermissionModule,'module'>) => {
+  const handleToggle = (index: number, field: keyof Omit<IPermissionModule, 'module'>) => {
     const updated = [...permissions];
     updated[index][field] = !updated[index][field];
     setPermissions(updated);
   };
 
-    // 4. Guardar permisos (aquí usarías tu función savePermissions)
-  const handleSave = () => {
+  // 4. Guardar permisos (aquí usarías tu función savePermissions)
+  const handleSave = async () => {
     if (!currentRole) return;
 
-  try {
-     updatePermissions(currentRole.id, permissions);
-    // opcional: toast.success('Permisos actualizados');
-  } catch (e) {
-     console.log(e);
-  } finally {
-    handleCloseModal();
-  }
+
+
+    const response = await confirmEditAlert(`l rol: ${currentRole.name}`);
+
+    if (response.isConfirmed) {
+
+      try {
+        updatePermissions(currentRole.id, permissions);
+        succesAlert("Actualizado", "Habitacion actualizada");
+        // opcional: toast.success('Permisos actualizados');
+      } catch (e) {
+        console.log(e);
+      } finally {
+        handleCloseModal();
+      }
+    }
 
   };
 
-
-
   return (
     <>
-    <Header/>
-    <div className="container">
+      <Header />
+      <div className="container">
         <div className='row'>
           <div className='card mt-5 mb-5'>
             <div className="card-title d-flex justify-content-between align-items-center mt-3">
@@ -128,13 +135,13 @@ const handleOpenModal = (role: IRole) => {
             <div className="card-body">
               {loadingRoles
                 ? <p>Cargando roles...</p>
-                : <Table<IRole> data={rolesData} columns={rolesColumns} selectedRows={new Set()} onToggleRow={() => {}} onSelectAll={() => {}}/>
+                : <Table<IRole> data={rolesData} columns={rolesColumns} selectedRows={new Set()} onToggleRow={() => { }} onSelectAll={() => { }} />
               }
             </div>
           </div>
         </div>
       </div>
-       {showModal && (
+      {showModal && (
 
         <div className="modal fade show d-block" tabIndex={-1} role="dialog">
           <div className="modal-dialog modal-lg" role="document">
@@ -146,40 +153,40 @@ const handleOpenModal = (role: IRole) => {
               <div className="modal-body">
 
                 {permissions.length === 0
-                
-                ?<p>Cargando Permisos...</p>:(
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th>Modulo</th>
-                      <th>VER</th>
-                      <th>INSERTAR</th>
-                      <th>ACTUALIZAR</th>
-                      <th>ELIMINAR</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {permissions.map((perm, idx) => (
-                      <tr key={perm.module}>
-                        <td>{perm.module}</td>
-                        <td>
-                          <input type="checkbox" checked={!!perm.canView} onChange={() => handleToggle(idx, 'canView')} />
-                        </td>
-                        <td>
-                          <input type="checkbox" checked={!!perm.canCreate} onChange={() => handleToggle(idx, 'canCreate')} />
-                        </td>
-                        <td>
-                          <input type="checkbox" checked={!!perm.canUpdate} onChange={() => handleToggle(idx, 'canUpdate')} />
-                        </td>
-                        <td>
-                          <input type="checkbox" checked={!!perm.canDelete} onChange={() => handleToggle(idx, 'canDelete')} />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                )
-               } 
+
+                  ? <p>Cargando Permisos...</p> : (
+                    <table className="table">
+                      <thead>
+                        <tr>
+                          <th>Modulo</th>
+                          <th>VER</th>
+                          <th>INSERTAR</th>
+                          <th>ACTUALIZAR</th>
+                          <th>ELIMINAR</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {permissions.map((perm, idx) => (
+                          <tr key={perm.module}>
+                            <td>{perm.module}</td>
+                            <td>
+                              <input type="checkbox" checked={!!perm.canView} onChange={() => handleToggle(idx, 'canView')} />
+                            </td>
+                            <td>
+                              <input type="checkbox" checked={!!perm.canCreate} onChange={() => handleToggle(idx, 'canCreate')} />
+                            </td>
+                            <td>
+                              <input type="checkbox" checked={!!perm.canUpdate} onChange={() => handleToggle(idx, 'canUpdate')} />
+                            </td>
+                            <td>
+                              <input type="checkbox" checked={!!perm.canDelete} onChange={() => handleToggle(idx, 'canDelete')} />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )
+                }
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>Cancelar</button>
@@ -187,10 +194,10 @@ const handleOpenModal = (role: IRole) => {
               </div>
             </div>
           </div>
-          
+
         </div>
       )}
-      <Footer/>
+      <Footer />
     </>
   )
 }

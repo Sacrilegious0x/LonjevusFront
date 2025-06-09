@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import Table from '../../components/TableBasic';
 import { useState, useEffect } from "react";
 import { deleteSupplier, getSuppliers } from "../../services/SupplierService";
-
+import { confirmDeleteAlert, succesAlert, errorAlert } from '../../js/alerts';
 
 interface ISupplier{
     id: number,
@@ -23,7 +23,6 @@ const SuppliersList = () =>{
   const [supplierData, setSupplierData] = useState<ISupplier[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   const filteredSuppliers = supplierData.filter(supplier => {
@@ -53,7 +52,7 @@ const SuppliersList = () =>{
         Cell: (supplier) =>(
             <>
             <Link className="btn btn-warning me-2" to={`/proveedores/editar/${supplier.id}`}><i className='bi bi-pencil-square' /></Link>
-            <a className='btn btn-danger me-2' onClick={()=>handleDelete(supplier.id)}>
+            <a className='btn btn-danger me-2' onClick={()=>handleDelete(supplier.id,supplier.name)}>
                 <i className="bi bi-trash"/>
             </a>  
             </>
@@ -97,19 +96,29 @@ const SuppliersList = () =>{
   }
 
 
-  const handleDelete = async (id: number) => {
-  const confirmDelete = window.confirm("¿Seguro que deseas eliminar este proveedor?");
-  if (!confirmDelete) return;
 
+
+  const handleDelete = async (id: number,supplierName:string) => {
+  //const confirmDelete = window.confirm("¿Seguro que deseas eliminar este proveedor?");
+  const response = await confirmDeleteAlert(supplierName);
+  if(response.isConfirmed){
+            setLoading(true);
+            setError(null);
    try {
       await deleteSupplier(id);
+            succesAlert("Eliminado",`Proveedor ${supplierName} eliminado exitosamente`);
       setSupplierData((prev) => prev.filter((p) => p.id !== id));
-      alert("Proveedor eliminado correctamente");
+
     } catch (err) {
       alert(err instanceof Error ? err.message : "Error desconocido al eliminar proveedor");
-    }
-  };
-
+    } finally{
+      setLoading(false);
+    };
+      
+  }else{
+    return;
+  }
+}
 return (
 
     
@@ -132,7 +141,7 @@ return (
       </div>
     <Footer/>
   </>  
-    
+  
     )
   }
 

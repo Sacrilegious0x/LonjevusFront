@@ -4,12 +4,17 @@ import Header from '../../components/HeaderAdmin';
 import Footer from '../../components/Footer';
 import { useNavigate } from 'react-router-dom';
 import { createSupplier } from '../../services/SupplierService'
+import { succesAlert, errorAlert } from '../../js/alerts';
 
 export default function SuppliersAdd() {
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const navigate = useNavigate();
+
+  //manejar inputs vacios
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState({
     name: '',
@@ -21,24 +26,34 @@ export default function SuppliersAdd() {
   });
 
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(f => ({ ...f, [name]: value }));
   };
 
-const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  if (e.target.files && e.target.files[0]) {
-    const file = e.target.files[0];
-    setSelectedFile(file);
-    setFormData({
-      ...formData,
-      photoUrl: URL.createObjectURL(file), // opcional, para previsualizar
-    });
-  }
-};
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      setFormData({
+        ...formData,
+        photoUrl: URL.createObjectURL(file), // opcional, para previsualizar
+      });
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setTouched(target => ({ ...target, [name]: true }));
 
 
-  const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
+    setErrors(err => ({
+      ...err,
+      [name]: value.trim() ? '' : 'Este campo es obligatorio'}));
+  };
+
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const data = new FormData();
@@ -49,13 +64,15 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       data.append('isActive', formData.isActive.toString());
 
       if (selectedFile) {
-      data.append('photo', selectedFile); //el archivo real
-    }
+        data.append('photo', selectedFile); //el archivo real
+      }
 
 
-    await createSupplier(data);
+      await createSupplier(data);
+      succesAlert("Agregado", "Proveedor agregado correctamente");
       navigate('/proveedores');
     } catch (error) {
+      errorAlert("Hubo un error al agregar al proveedor");
       console.error('Error saving supplier:', error);
     }
   };
@@ -78,9 +95,16 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   name='name'
                   value={formData.name}
                   onChange={handleChange}
-                  className='form-control'
+                  onBlur={handleBlur}
+                  className={`form-control ${touched.name && errors.name ? 'is-invalid' : ''}`}
                   required
                 />
+                {touched.name && errors.name && (
+                  <div className="invalid-feedback">
+                    {errors.name}
+                  </div>
+                )}
+
               </div>
 
               <div className='mb-3'>
@@ -91,9 +115,15 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   name='phoneNumber'
                   value={formData.phoneNumber}
                   onChange={handleChange}
-                  className='form-control'
+                  onBlur={handleBlur}
+                  className={`form-control ${touched.phoneNumber && errors.phoneNumber ? 'is-invalid' : ''}`}
                   required
                 />
+                {touched.phoneNumber && errors.phoneNumber && (
+                  <div className="invalid-feedback">
+                    {errors.phoneNumber}
+                  </div>
+                )}
               </div>
 
               <div className='mb-3'>
@@ -104,9 +134,15 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   name='email'
                   value={formData.email}
                   onChange={handleChange}
-                  className='form-control'
+                  onBlur={handleBlur}
+                  className={`form-control ${touched.email && errors.email ? 'is-invalid' : ''}`}
                   required
                 />
+                {touched.email && errors.email && (
+                  <div className="invalid-feedback">
+                    {errors.email}
+                  </div>
+                )}
               </div>
 
               <div className='mb-3'>
@@ -117,9 +153,15 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   name='address'
                   value={formData.address}
                   onChange={handleChange}
-                  className='form-control'
+                  onBlur={handleBlur}
+                  className={`form-control ${touched.address && errors.address ? 'is-invalid' : ''}`}
                   required
                 />
+                {touched.address && errors.address && (
+                  <div className="invalid-feedback">
+                    {errors.address}
+                  </div>
+                )}
               </div>
 
               <div className='mb-3'>
@@ -143,7 +185,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           </div>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </>
   );
 }

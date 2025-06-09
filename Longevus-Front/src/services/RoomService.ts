@@ -35,6 +35,7 @@ export const deleteRoom = async (id: number): Promise<void> => {
             `${API_BASE_URL}/rooms/delete`,
             { params: { id } }
         );
+        console.log("axios sin problemas")
     } catch (error) {
         console.error('Error al eliminar la habitación:', error);
         throw new Error('Ocurrió un error al eliminar la habitación');

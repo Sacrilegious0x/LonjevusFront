@@ -3,6 +3,7 @@ import Header from '../../components/HeaderAdmin';
 import Footer from '../../components/Footer';
 import { useNavigate } from 'react-router-dom';
 import { createRoom } from '../../services/RoomService';
+import { errorAlert, succesAlert } from '../../js/alerts';
 
 export default function AddRoom(){
 
@@ -43,11 +44,13 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
   try {
 
+    succesAlert("Agregado","Habitación agregada");
     const roomJson = { ...formData };
     const newRoom = await createRoom(roomJson);
     console.log('Habitación creada:', newRoom);
     navigate('/habitaciones');
   } catch (error) {
+    errorAlert("Hubo un error al agregar una habitación");
     console.error('Error al crear la habitación:', error);
   }
 };

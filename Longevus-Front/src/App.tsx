@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route  } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/home/HomePage';
 import InventoryPage from "./pages/inventory/InventoryPage";
 import VisitSchedule from './pages/home/VisitSchedule';
@@ -25,39 +25,43 @@ import ViewResident from './pages/Residents/ViewResident';
 import SuppliersEdit from './pages/supplier/SuppliertsUpdate';
 import ShowVisits from './pages/visits/ShowVisits';
 import EditVisit from './pages/visits/EditVisit';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
-    <BrowserRouter>  
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/inventario" element={<InventoryPage />} />
-        <Route path="/visita" element={<VisitSchedule />} />
-        <Route path='/login' element={<Index/>} />
-        <Route path='/empleado/agregar' element={< AddEmployee/>}/>
-        <Route path='/empleado/mostrar' element={<ShowEmployee/>}/>
-        <Route path='/empleado/editar/:id' element={<EditEmployee/>}/>
-        <Route path='/empleado/perfil/:id' element={< ViewEmployee/>}/>
-        <Route path='/residente/mostrar' element={<ShowResidents/>}/>
-        <Route path='/residente/agregar' element={<AddResident/>}/>
-        <Route path="/compras" element={<PurchasePage />} />
-        <Route path="/compras/editar/:id" element={<EditPurchase />} />    
-        <Route path="/compras/agregar" element={<AddPurchase/>} /> 
-        <Route path="/productos" element={<ProductPage/>} />
-        <Route path="/productos/editar/:id" element={<EditProduct />} />
-        <Route path="/productos/agregar" element={<AddProduct />} />
-        <Route path="/proveedores" element={<SuppliersList />} />
-        <Route path="/proveedores/agregar" element={<SuppliersAdd/>} />
-        <Route path='/proveedores/editar/:id' element={<SuppliersEdit/>} />
-        <Route path="/roles_permisos" element={<Role_Permissions />} />
-        <Route path='/admin/agregar' element={<AddAdmin/>}/>
-        <Route path='/admin/editar/:id' element = {<EditAdmin/>}/>
-        <Route path='/residente/editar/:id' element={<EditResident/>}/>
-        <Route path='/residente/perfil/:id' element={<ViewResident/>}/>
-        <Route path='/residente/visitas' element={<ShowVisits/>}/>
-        <Route path='/residente/visitas/editar/:id' element={<EditVisit/>}/>
-         </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/inventario" element={<InventoryPage />} />
+          <Route path="/visita" element={<VisitSchedule />} />
+          <Route path='/login' element={<Index />} />
+          <Route path='/empleado/agregar' element={< AddEmployee />} />
+          <Route path='/empleado/mostrar' element={<ShowEmployee />} />
+          <Route path='/empleado/editar/:id' element={<EditEmployee />} />
+          <Route path='/empleado/perfil/:id' element={< ViewEmployee />} />
+          <Route path='/residente/mostrar' element={<ShowResidents />} />
+          <Route path='/residente/agregar' element={<AddResident />} />
+          <Route path="/compras" element={<PurchasePage />} />
+          <Route path="/compras/editar/:id" element={<EditPurchase />} />
+          <Route path="/compras/agregar" element={<AddPurchase />} />
+          <Route path="/productos" element={<ProductPage />} />
+          <Route path="/productos/editar/:id" element={<EditProduct />} />
+          <Route path="/productos/agregar" element={<AddProduct />} />
+          <Route path="/proveedores" element={<SuppliersList />} />
+          <Route path="/proveedores/agregar" element={<SuppliersAdd />} />
+          <Route path='/proveedores/editar/:id' element={<SuppliersEdit />} />
+          <Route path="/roles_permisos" element={<Role_Permissions />} />
+          <Route path='/admin/agregar' element={<AddAdmin />} />
+          <Route path='/admin/editar/:id' element={<EditAdmin />} />
+          <Route path='/residente/editar/:id' element={<EditResident />} />
+          <Route path='/residente/perfil/:id' element={<ViewResident />} />
+          <Route path='/residente/visitas' element={<ShowVisits />} />
+          <Route path='/residente/visitas/editar/:id' element={<EditVisit />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+
   );
 }
 export default App;

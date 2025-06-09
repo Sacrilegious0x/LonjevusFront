@@ -48,7 +48,11 @@ const AppointmentSummary = ({
                         </span>
                         <span className="badge fs-6" style={{background: '#202042'}}>
                             <i className="bi bi-calendar-event-fill me-1"></i>
-                            {displayDate}
+                            {new Date(selectedDate).toLocaleDateString("es-ES", {
+                                weekday: "long",
+                                day: "numeric",
+                                month: "long",
+                            })}
                         </span>
                         <span className="badge fs-6" style={{background: '#422C20'}}>
                             <i className="bi bi-clock-fill me-1"></i>

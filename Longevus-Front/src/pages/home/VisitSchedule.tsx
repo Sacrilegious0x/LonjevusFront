@@ -89,19 +89,6 @@ const AppointmentScheduler = () => {
     }
   }
 
-  // const handleNewAppointment = () => {
-  //   setIsSubmitted(false)
-  //   setSelectedDate("")
-  //   setSelectedTime("")
-  //   setFormData({
-  //     resident: "",
-  //     name: "",
-  //     email: "",
-  //     phone: "",
-  //     relationship: "",
-  //   })
-  // }
-
   const isFormValid =
     selectedDate && selectedTime && formData.resident &&
     formData.name && formData.email && formData.relationship

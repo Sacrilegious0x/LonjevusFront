@@ -1,8 +1,9 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-
-
+import {login} from '../../services/AuthService' 
+import { succesAlert, errorAlert } from '../../js/alerts';
 const Index = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -18,19 +19,28 @@ const Index = () => {
         }));
     }
 
-    const submit = (e: FormEvent<HTMLFormElement>) => {
+    const submit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (formData.password === "pass") {
-            console.log("Puede ingresar");
-            navigate("/roles_permisos");
-        } else {
-            console.log("No puede ingresar");
-        }
+        
+    console.log("CREDENCIALES" , formData);
+       try {
+         await login({
+            email: formData.userEmail,
+            password: formData.password
+         });
+            succesAlert("Login exitoso!","Puede ingresar")
+             console.log("Puede ingresar");
+             navigate("/roles_permisos");
+         
+       } catch (error) {
+            errorAlert("Credenciales incorrectas")
+       }
     }
 
 
     return (
         <>
+            <Header/>
             <div className='cardLogin'>
                 <div className='row'>
                     <div className='cardLogin-body text-center'>

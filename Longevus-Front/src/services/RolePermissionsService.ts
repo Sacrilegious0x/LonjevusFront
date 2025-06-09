@@ -38,6 +38,19 @@ export const getAllRoles = async (): Promise<IRole[]> => {
     }
 };
 
+
+export const createRole = async (role: Omit<IRole, 'id'>): Promise<IRole> => {
+    try {
+        const response = await axios.post<IRole>(
+            `${API_BASE_URL}/roles/save`,role
+        );
+        return response.data;
+    } catch (error) {
+        console.error('Error al crear el rol:', error);
+        throw new Error('No se pudo crear el rol');
+    }
+};
+
 //Permisos
 export const getAllPermissions = async (): Promise<IPermissionModule[]> => {
     try {

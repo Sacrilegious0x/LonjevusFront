@@ -4,7 +4,7 @@ import Footer from '../../components/Footer'
 import Header from '../../components/HeaderAdmin'
 import type { columnDefinition } from '../../components/TableBasic'
 import Table from '../../components/TableBasic';
-import { getAllPermissions, getAllPermissionsById, getAllRoles, updatePermissions } from '../../services/RolePermissionsService';
+import { createRole, getAllPermissions, getAllPermissionsById, getAllRoles, updatePermissions } from '../../services/RolePermissionsService';
 import { confirmEditAlert, succesAlert } from '../../js/alerts';
 
 interface IRole {
@@ -22,6 +22,7 @@ interface IPermissionModule {
   canDelete: boolean;
 }
 
+
 const RolesList = () => {
   const [rolesData, setRolesData] = useState<IRole[]>([]);
   const [loadingRoles, setLoadingRoles] = useState(false);
@@ -31,16 +32,13 @@ const RolesList = () => {
   const [permissions, setPermissions] = useState<IPermissionModule[]>([]);
   const [loadingPerms, setLoadingPerms] = useState(false);
 
-  // 1. Cargar roles al montar
+  const fetchRoles = () => {setLoadingRoles(true);getAllRoles().then(setRolesData).catch(console.error).finally(() => setLoadingRoles(false))};
+  //Cargar roles al montar
   useEffect(() => {
     setLoadingRoles(true);
-    getAllRoles() //OJO! QUE LA IDEA ES QUE SE MANDE EL ID DE LA PERSONA QUE ESTA VIENDO LOS PERMISOS
-      .then(setRolesData)
-      .catch(err => console.error(err))
-      .finally(() => setLoadingRoles(false));
+    fetchRoles();
   }, []);
-
-  // 2. Columnas de la tabla
+  //Columnas de la tabla
   const rolesColumns: columnDefinition<IRole>[] = [
     { header: '#', accessor: 'id', Cell: (_r, idx) => idx + 1 },
     { header: 'Nombre', accessor: 'name' },
@@ -51,7 +49,7 @@ const RolesList = () => {
       Cell: role => (
         <button
           className="btn btn-warning"
-          onClick={() => handleOpenModal(role)}
+          onClick={() => handleOpenModalRoleEdit(role)}
         >
           <i className="bi bi-key-fill"></i>
         </button>
@@ -59,8 +57,48 @@ const RolesList = () => {
     }
   ];
 
-  // 3. Abrir modal y cargar permisos del rol
-  const handleOpenModal = (role: IRole) => {
+  // Estado para el modal de “nuevo rol”
+  const [showAddRoleModal, setShowAddRoleModal] = useState(false);
+
+  // Estado para el formulario
+  const [newRoleName, setNewRoleName] = useState('');
+  const [newRoleDescription, setNewRoleDescription] = useState('');
+  const [newRoleIsActive, setNewRoleIsActive] = useState(true);
+
+  // Abre modal creación
+  const handleOpenAddRoleModal = () => {
+    setNewRoleName('');
+    setNewRoleDescription('');
+    setNewRoleIsActive(true);
+    setShowAddRoleModal(true);
+  };
+
+  // Cierra modal creación
+  const handleCloseNewModal = () => {
+    setShowAddRoleModal(false);
+  };
+
+  // Crea el rol y actualiza la lista
+  const handleCreateRole = async () => {
+    try {
+      const created = await createRole({
+        name: newRoleName,
+        description: newRoleDescription,
+        isActive: newRoleIsActive
+      });
+      // Añade el rol nuevo al array para que aparezca en la tabla
+      setRolesData(prev => [...prev, created]);
+      succesAlert('Rol creado', `Se creó el rol correctamente`);
+      handleCloseNewModal();
+      fetchRoles();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+
+  //  Abrir modal y cargar permisos del rol
+  const handleOpenModalRoleEdit = (role: IRole) => {
     setCurrentRole(role);
     setLoadingPerms(true);
 
@@ -98,8 +136,6 @@ const RolesList = () => {
   const handleSave = async () => {
     if (!currentRole) return;
 
-
-
     const response = await confirmEditAlert(`l rol: ${currentRole.name}`);
 
     if (response.isConfirmed) {
@@ -128,7 +164,7 @@ const RolesList = () => {
                 <i className="bi bi-person-badge me-2"></i>
                 Roles Usuario Hogar de Ancianos
               </h2>
-              <button className="btn btn-success">
+              <button className="btn btn-success"onClick={handleOpenAddRoleModal}>
                 <i className="bi bi-plus-lg me-1"></i> Nuevo
               </button>
             </div>
@@ -195,6 +231,50 @@ const RolesList = () => {
             </div>
           </div>
 
+        </div>
+      )};
+      {showAddRoleModal && (
+        <div className="modal fade show d-block" tabIndex={-1}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Crear nuevo rol</h5>
+                <button className="btn-close" onClick={handleCloseNewModal}></button>
+              </div>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label">Nombre</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={newRoleName}
+                    onChange={e => setNewRoleName(e.target.value)}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Descripción</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={newRoleDescription}
+                    onChange={e => setNewRoleDescription(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={handleCloseNewModal}>
+                  Cancelar
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={handleCreateRole}
+                  disabled={!newRoleName.trim()}
+                >
+                  Crear
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
       <Footer />

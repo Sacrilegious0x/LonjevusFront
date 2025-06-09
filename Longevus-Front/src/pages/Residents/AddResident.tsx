@@ -1,7 +1,7 @@
 import AddResidentForm from "../../components/ResidentForm";
 import HeaderA from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
-import type { ResidentData } from "../../components/ResidentForm";
+import type { ResidentData } from "../../services/ResidentService";
 import { useNavigate } from "react-router-dom";
 import { createResident } from "../../services/ResidentService";
 

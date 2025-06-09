@@ -1,0 +1,85 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom"
+import { type Activity, getActivityById, getResidentsByActivityId } from "../../services/ActivityService";
+import { type Resident} from "../../services/ResidentService";
+import Header from "../../components/HeaderAdmin";
+import Footer from "../../components/Footer";
+import { Link } from "react-router-dom";
+
+const ViewActivity: React.FC = () => {
+    const {id} = useParams();
+    const [activityData, setActivityData] = useState<Activity | null>(null);
+    const [residentsData, setResidentsData] = useState<Resident[]>([]);
+
+    useEffect(() => {
+        if(id){
+            getActivityById(Number(id))
+                .then(res => setActivityData(res))
+                .catch(err => console.error("Error al obtener actividad", err) );
+        }
+    }, [id]);
+
+    useEffect(() => {
+        if(id){
+            getResidentsByActivityId(Number(id))
+                .then(res => setResidentsData(res))
+                .catch(err => console.error("Error al obtener residentes", err) );
+        }
+    }, [id]);
+
+    const [showResidentsModal, setShowResidentsModal] = useState(false);
+    const [showAddResidentModal, setShowAddResidentModal] = useState(false);
+
+    return (
+        <>
+            <Header />
+            <div className="container mt-5 mb-5">
+                <h2 className="mb-4">Información de la Actividad</h2>
+                <div className="card shadow p-4">
+
+                    <p><strong>Nombre:</strong> {activityData?.name}</p>
+                    <p><strong>Descripcion:</strong> {activityData?.description}</p>
+                    <p><strong>Tipo:</strong> {activityData?.type} años</p>
+                    <p><strong>Fecha:</strong> {activityData?.date}</p>
+                    <p><strong>Hora inicio:</strong> {activityData?.startTime}</p>
+                    <p><strong>Hora fin:</strong> {activityData?.endTime}</p>
+                    <p><strong>Localización:</strong> {activityData?.location}</p>
+                    <p><strong>Estado:</strong> {activityData?.status}</p>
+                    <p><strong>Encargado(a):</strong> {activityData?.caregiver?.name ?? 'No asignado'}</p>
+
+                    <center>
+                        {/*<button className="btn btn-primary mt-3" onClick={() => showAddResidentModal(true)}>
+                            Agregar contactos
+                        </button>
+                        <button className="btn btn-info mt-3 ms-2" onClick={() => setShowContactModal(true)}>
+                            Ver contactos
+                        </button>*/}
+                        <Link className='btn btn-secondary float-end' to="/actividades/mostrar"><i className="bi bi-reply" /> Volver</Link>
+                    </center>
+
+                </div>
+
+                {/*<ViewContactModal
+                    show={showContactModal}
+                    onClose={() => setShowContactModal(false)}
+                    residentName={residentData?.name}
+                    contactsList={contactsData}
+                    onDeleteContact={handleDeleteContact}
+                    onEditContact={handleEditContact}
+                />
+
+                <AddContactModal
+                    show={showAddContactModal}
+                    onClose={() => setShowAddContactModal(false)}
+                    residentName={residentData?.name}
+                    residentId={residentData?.id}
+                    onAddContact={handleAddContact}
+                />*/}
+            </div>
+            <Footer />
+        </>
+    );
+
+};
+
+export default ViewActivity;

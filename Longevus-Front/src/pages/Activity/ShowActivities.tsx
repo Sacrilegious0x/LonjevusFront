@@ -4,7 +4,7 @@ import Table from '../../components/TableBasic';
 import type { columnDefinition } from '../../components/TableBasic';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { getActivitiesByDate, type Activity } from "../../services/ActivityService";
+import { getActivitiesByDate, deleteActivity, type Activity} from "../../services/ActivityService";
 
 const Activities = (date: string) => {
     const navigate = useNavigate();
@@ -25,6 +25,19 @@ const Activities = (date: string) => {
             });
     };
 
+
+    const handleDeleteActivity = (activity: Activity) => {
+            if (window.confirm(`¿Estás seguro de eliminar la actividad ${activity.name}?`)) {
+                deleteActivity(activity.id)
+                .then(() => {
+                    setActivitiesData(prev => prev.filter(r => r.id !== activity.id));
+                })
+                .catch(error => {
+                    console.error("Error al eliminar la actividad", error);
+                });
+            }
+        }
+
     const activityColumns: columnDefinition<Activity>[] = [
         { header: '#', accessor: 'id', Cell: (activity, index) => { return (index + 1) } },
         { header: 'Nombre', accessor: 'name' },
@@ -36,14 +49,14 @@ const Activities = (date: string) => {
             header: 'Acciones', accessor: (activity) => activity,
             Cell: (activity) => (
                 <>
-                    <a className='btn btn-info me-2' /* onClick={() => navigate(`/residente/perfil/${resident.id}`)}*/>
+                    <a className='btn btn-info me-2' onClick={() => navigate(`/actividad/info/${activity.id}`)}>
                         <i className='bi bi-eye' />
                     </a>
-                    <a className='btn btn-warning me-2' /*onClick={() => navigate(`/residente/editar/${resident.id}`)}*/>
+                    <a className='btn btn-warning me-2' onClick={() => navigate(`/actividad/editar/${activity.id}`)}>
                         <i className='bi bi-pencil-square' />
                     </a>
 
-                    <a className='btn btn-danger me-2'/* onClick={() => handleDeleteResident(resident)}*/>
+                    <a className='btn btn-danger me-2' onClick={() => handleDeleteActivity(activity)}>
                         <i className="bi bi-trash" />
                     </a>
 
@@ -73,7 +86,7 @@ const Activities = (date: string) => {
                     <div className='card mt-5 mb-5'>
                         <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                             <h4>Lista de actividades</h4>
-                            <Link className='btn btn-success' to='/residente/agregar'><i className='bi bi-person-plus-fill' /></Link>
+                            <Link className='btn btn-success' to='/actividad/agregar'><i className='bi bi-person-plus-fill' /></Link>
                         </div>
                         <div className='card-body'>
                             {activitiesData.length === 0 ? (

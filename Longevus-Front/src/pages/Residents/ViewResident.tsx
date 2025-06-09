@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { ResidentData } from "../../components/ResidentForm";
+import type { ResidentData } from "../../services/ResidentService";
 import ViewContactModal from "../../components/ViewContactModal";
 import AddContactModal from "../../components/AddContactModal";
 import type { Contact } from "../../components/ViewContactModal";

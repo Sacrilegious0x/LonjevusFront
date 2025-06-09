@@ -17,6 +17,9 @@ import ShowResidents from './pages/Residents/ShowResidents';
 import EditResident from './pages/Residents/EditResident';
 import ViewResident from './pages/Residents/ViewResident';
 import ShowActivity from './pages/Activity/ShowActivities';
+import ViewActivity from './pages/Activity/ViewActivity';
+import AddActivity from './pages/Activity/AddActivity';
+import EditActivity from './pages/Activity/EditActivity';
 
 function App() {
   return (
@@ -40,6 +43,9 @@ function App() {
         <Route path="/productos/editar/:id" element={<EditProduct />} />
         <Route path="/productos/agregar" element={<AddProduct />} />
         <Route path="/actividades/mostrar" element={<ShowActivity />} />
+        <Route path='/actividad/info/:id' element={<ViewActivity/>}/>
+        <Route path='/actividad/agregar/' element={<AddActivity/>}/>
+        <Route path='/actividad/editar/:id' element={<EditActivity/>}/>
       </Routes>
     </BrowserRouter>
   );

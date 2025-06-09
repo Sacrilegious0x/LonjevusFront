@@ -1,132 +1,121 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
+import {
+  getPurchaseById,
+  updatePurchase,
+  deletePurchase,
+  type Purchase,
+  type PurchaseItem,
+} from "../../services/PurchaseService";
+import { getProducts, type IProduct } from "../../services/ProductService";
+import DatePicker, { registerLocale } from "react-datepicker";
+import { es } from "date-fns/locale/es";
+import "react-datepicker/dist/react-datepicker.css";
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-}
+registerLocale("es", es);
 
-interface PurchaseItem {
-  idProduct: number;
-  quantity: number;
-  expirationDate?: string;
-  productName?: string;
-  price?: number;
-}
-
-interface Purchase {
-  id: string;
-  date: string;
-  admin: {
-    id: number;
-    name: string;
-  };
-  items: PurchaseItem[];
-}
+const isValidDate = (dateString: string): boolean => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return false;
+  const [year, month, day] = dateString.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  return (
+    date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day
+  );
+};
 
 const EditPurchase = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [date, setDate] = useState('');
-  const [managerName, setManagerName] = useState('');
-  const [items, setItems] = useState<{ productId: number; quantity: number; expirationDate: string }[]>([]);
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [initialData, setInitialData] = useState('');
-
-  const getAllProducts = async (): Promise<Product[]> => {
-    const response = await fetch("http://localhost:8080/api/products/all");
-    return await response.json();
-  };
-
-  const getPurchaseById = async (id: string): Promise<Purchase> => {
-    const response = await fetch(`http://localhost:8080/api/purchases/${id}`);
-    if (!response.ok) throw new Error("No se pudo obtener la compra");
-    const text = await response.text();
-    if (!text) throw new Error("Respuesta vacía del servidor");
-    return JSON.parse(text);
-  };
-
-  const updatePurchase = async (id: string, data: any): Promise<boolean> => {
-    const response = await fetch(`http://localhost:8080/api/purchases/update/${id}`, {
-      method: 'PUT',
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    });
-    return response.ok;
-  };
+  const [date, setDate] = useState("");
+  const [managerName, setManagerName] = useState("");
+  const [items, setItems] = useState<
+    { productId: number; quantity: number; expirationDate: string }[]
+  >([]);
+  const [allProducts, setAllProducts] = useState<IProduct[]>([]);
+  const [initialData, setInitialData] = useState("");
+  const [invalidIndexes, setInvalidIndexes] = useState<number[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const products = await getAllProducts();
+        const [products, purchase] = await Promise.all([
+          getProducts(),
+          getPurchaseById(id!),
+        ]);
+
         setAllProducts(products);
+        setDate(purchase.date);
+        setManagerName(purchase.admin.name || "No asignado");
 
-        if (id) {
-          const data: Purchase = await getPurchaseById(id);
-          setDate(data.date);
-          setManagerName(data.admin?.name ?? "No asignado");
+        const mappedItems = purchase.items.map((item: PurchaseItem) => ({
+          productId: item.idProduct,
+          quantity: item.quantity,
+          expirationDate: item.expirationDate ?? "",
+        }));
 
-          const compraItems = data.items.map((item: PurchaseItem) => ({
-            productId: item.idProduct,
-            quantity: item.quantity,
-            expirationDate: item.expirationDate ?? ""
+        const missingProducts: IProduct[] = purchase.items
+          .filter((item) => !products.some((p) => p.id === item.idProduct))
+          .map((item) => ({
+            id: item.idProduct,
+            name: `Producto eliminado (#${item.idProduct})`,
+            price: 0,
+            expirationDate: "",
+            category: "Desconocido",
+            unit: "N/A",
+            supplier: "N/A",
+            photoURL: "",
+            isActive: false,
           }));
 
-          const productosFaltantes = data.items
-            .filter((item: PurchaseItem) => !products.some((p: Product) => p.id === item.idProduct))
-            .map((item: PurchaseItem) => ({
-              id: item.idProduct,
-              name: `Producto eliminado (#${item.idProduct})`,
-              price: 0,
-            }));
-
-          setAllProducts(prev => [...prev, ...productosFaltantes]);
-          setItems(compraItems);
-          setInitialData(JSON.stringify({ date: data.date, items: compraItems }));
-        }
-      } catch (error) {
-        console.error("Error cargando productos o compra:", error);
-        alert("Error cargando productos o compra");
+        setAllProducts((prev) => [...prev, ...missingProducts]);
+        setItems(mappedItems);
+        setInitialData(
+          JSON.stringify({ date: purchase.date, items: mappedItems })
+        );
+      } catch (err) {
+        console.error("Error al cargar la compra o los productos", err);
+        alert("Ocurrió un error al cargar los datos.");
       }
     };
 
-    fetchData();
+    if (id) {
+      fetchData();
+    }
   }, [id]);
 
-  const handleProductChange = (index: number, newProductId: number) => {
-    setItems(prev =>
+  const handleChangeItem = (
+    index: number,
+    field: "productId" | "quantity" | "expirationDate",
+    value: string | number
+  ) => {
+    setItems((prev) =>
       prev.map((item, i) =>
-        i === index ? { ...item, productId: newProductId } : item
+        i === index
+          ? {
+              ...item,
+              [field]:
+                field === "expirationDate" ? String(value) : Number(value),
+            }
+          : item
       )
     );
+    setInvalidIndexes((prev) => prev.filter((i) => i !== index));
   };
 
-  const handleQuantityChange = (index: number, quantity: number) => {
-    setItems(prev =>
-      prev.map((item, i) =>
-        i === index ? { ...item, quantity } : item
-      )
-    );
-  };
-
-  const handleExpirationChange = (index: number, newDate: string) => {
-    setItems(prev =>
-      prev.map((item, i) =>
-        i === index ? { ...item, expirationDate: newDate } : item
-      )
-    );
+  const handleRemoveItem = (index: number) => {
+    setItems((prev) => prev.filter((_, i) => i !== index));
+    setInvalidIndexes((prev) => prev.filter((i) => i !== index));
   };
 
   const getTotal = () => {
     return items.reduce((sum, item) => {
-      const product = allProducts.find(p => p.id === item.productId);
+      const product = allProducts.find((p) => p.id === item.productId);
       return sum + (product ? product.price * item.quantity : 0);
     }, 0);
   };
@@ -134,149 +123,230 @@ const EditPurchase = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const invalids: number[] = [];
+    items.forEach((item, i) => {
+      if (!isValidDate(item.expirationDate)) invalids.push(i);
+    });
+
+    if (invalids.length > 0) {
+      setInvalidIndexes(invalids);
+      return;
+    }
+
     if (items.length === 0) {
-      alert("Debe seleccionar al menos un producto.");
+      const confirmDelete = window.confirm(
+        "No se puede guardar una compra sin productos. ¿Desea eliminar esta compra?"
+      );
+      if (confirmDelete && id) {
+        try {
+          await deletePurchase(id);
+          alert("Compra eliminada correctamente.");
+          navigate("/compras");
+        } catch (error) {
+          console.error("Error al eliminar la compra:", error);
+          alert("Ocurrió un error al eliminar la compra.");
+        }
+      }
       return;
     }
 
-    if (items.some(item => !item.expirationDate)) {
-      alert("Todos los productos deben tener una fecha de vencimiento.");
-      return;
-    }
-
-    const payload = {
-      id: id ?? '',
+    const payload: Purchase = {
+      id: id!,
       date,
       amount: getTotal(),
-      admin: { id: 1 },
-      items: items.map(item => ({
-        idProduct: item.productId,
-        quantity: item.quantity,
-        expirationDate: item.expirationDate
-      }))
+      admin: { id: 1, name: "" },
+      items: items.map((i) => ({
+        idProduct: i.productId,
+        name: "",
+        quantity: i.quantity,
+        expirationDate: i.expirationDate,
+      })),
     };
 
     try {
-      const success = await updatePurchase(payload.id, payload);
-      if (success) {
-        alert("Compra actualizada correctamente");
-        navigate('/compras');
-      } else {
-        alert("Error al actualizar");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Ocurrió un error al actualizar");
+      await updatePurchase(id!, payload);
+      alert("Compra actualizada correctamente.");
+      navigate("/compras");
+    } catch (err) {
+      console.error("Error al actualizar", err);
+      alert("Ocurrió un error al actualizar la compra.");
     }
   };
 
   const handleBack = () => {
-    const currentData = JSON.stringify({ date, items });
-    if (currentData !== initialData) {
-      const confirmExit = window.confirm("Tienes cambios sin guardar. ¿Deseas salir sin guardar?");
-      if (!confirmExit) return;
-    }
-    navigate('/compras');
+    const hasChanges = JSON.stringify({ date, items }) !== initialData;
+    if (
+      hasChanges &&
+      !window.confirm("Tienes cambios sin guardar. ¿Salir sin guardar?")
+    )
+      return;
+    navigate("/compras");
   };
 
   return (
-    <div className="container mt-4">
-      <h2>Editar Compra #{id}</h2>
+    <>
+      <Header />
+      <div className="container mt-4">
+        <h2>Editar Compra</h2>
 
-      <div className="mb-3">
-        <button type="button" className="btn btn-secondary" onClick={handleBack}>
-          ← Volver a Compras
-        </button>
+        <form onSubmit={handleSubmit} noValidate>
+          <div className="mb-3">
+            <label className="form-label">Fecha</label>
+            <DatePicker
+              selected={date ? new Date(date) : null}
+              onChange={(date: Date | null) =>
+                setDate(date ? date.toISOString().split("T")[0] : "")
+              }
+              dateFormat="dd/MM/yyyy"
+              locale="es"
+              placeholderText="dd/mm/aaaa"
+              className="form-control"
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Encargado</label>
+            <input
+              type="text"
+              className="form-control"
+              value={managerName}
+              readOnly
+            />
+          </div>
+
+          <h5>Productos</h5>
+          <table className="table table-bordered">
+            <thead className="table-secondary">
+              <tr>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+                <th>Fecha de Vencimiento</th>
+                <th>Subtotal</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item, index) => {
+                const product = allProducts.find(
+                  (p) => p.id === item.productId
+                );
+                const price = product?.price || 0;
+                const showInvalid = invalidIndexes.includes(index);
+
+                return (
+                  <tr key={index}>
+                    <td>
+                      <select
+                        className="form-select"
+                        value={item.productId}
+                        onChange={(e) =>
+                          handleChangeItem(
+                            index,
+                            "productId",
+                            parseInt(e.target.value)
+                          )
+                        }
+                      >
+                        {allProducts.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>${price.toFixed(2)}</td>
+                    <td>
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={item.quantity}
+                        min={1}
+                        onChange={(e) =>
+                          handleChangeItem(
+                            index,
+                            "quantity",
+                            parseInt(e.target.value) || 1
+                          )
+                        }
+                      />
+                    </td>
+                    <td style={{ position: "relative" }}>
+                      <DatePicker
+                        selected={
+                          isValidDate(item.expirationDate)
+                            ? new Date(item.expirationDate)
+                            : null
+                        }
+                        onChange={(date: Date | null) => {
+                          if (date) {
+                            const iso = date.toISOString().split("T")[0];
+                            handleChangeItem(index, "expirationDate", iso);
+                          }
+                        }}
+                        dateFormat="dd/MM/yyyy"
+                        locale="es"
+                        placeholderText="dd/mm/aaaa"
+                        className={`form-control ${showInvalid ? "is-invalid" : ""}`}
+                      />
+                      {showInvalid && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "100%",
+                            left: 0,
+                            zIndex: 1000,
+                            backgroundColor: "#f8d7da",
+                            color: "#721c24",
+                            border: "1px solid #f5c6cb",
+                            borderRadius: "0.25rem",
+                            padding: "0.4rem 0.6rem",
+                            fontSize: "0.875rem",
+                            marginTop: "4px",
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          ⚠ Por favor ingrese una fecha válida del calendario.
+                        </div>
+                      )}
+                    </td>
+                    <td>${(item.quantity * price).toFixed(2)}</td>
+                    <td>
+                      <button
+                        type="button"
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleRemoveItem(index)}
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+
+          <div className="text-end mb-3">
+            <strong>Total:</strong> ${getTotal().toFixed(2)}
+          </div>
+
+          <div className="d-flex justify-content-start gap-2 mt-4">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={handleBack}
+            >
+              ← Volver
+            </button>
+            <button type="submit" className="btn btn-primary">
+              Guardar Cambios
+            </button>
+          </div>
+        </form>
       </div>
-
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="form-label">Fecha</label>
-          <input
-            type="date"
-            className="form-control"
-            value={date}
-            onChange={e => setDate(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Encargado</label>
-          <input
-            type="text"
-            className="form-control"
-            value={managerName}
-            readOnly
-          />
-        </div>
-
-        <h5>Productos</h5>
-        <table className="table table-bordered">
-          <thead className="table-secondary">
-            <tr>
-              <th>Producto</th>
-              <th>Precio</th>
-              <th>Cantidad</th>
-              <th>Fecha de Vencimiento</th>
-              <th>Subtotal</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item, index) => {
-              const selectedProduct = allProducts.find(p => p.id === item.productId);
-              const price = selectedProduct?.price || 0;
-
-              return (
-                <tr key={index}>
-                  <td>
-                    <select
-                      className="form-select"
-                      value={item.productId}
-                      onChange={e => handleProductChange(index, parseInt(e.target.value))}
-                    >
-                      {allProducts.map(product => (
-                        <option key={product.id} value={product.id}>
-                          {product.name}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>${price.toFixed(2)}</td>
-                  <td>
-                    <input
-                      type="number"
-                      className="form-control"
-                      value={item.quantity}
-                      min={1}
-                      onChange={e => handleQuantityChange(index, parseInt(e.target.value) || 1)}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="date"
-                      className="form-control"
-                      value={item.expirationDate}
-                      required
-                      onChange={e => handleExpirationChange(index, e.target.value)}
-                    />
-                  </td>
-                  <td>${(item.quantity * price).toFixed(2)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-
-        <div className="text-end mb-3">
-          <strong>Total:</strong> ${getTotal().toFixed(2)}
-        </div>
-
-        <button type="submit" className="btn btn-primary">
-          Guardar Cambios
-        </button>
-      </form>
-    </div>
+      <Footer />
+    </>
   );
 };
 

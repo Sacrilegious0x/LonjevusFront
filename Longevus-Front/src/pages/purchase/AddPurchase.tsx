@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 interface Product {
   id: number;
@@ -49,26 +50,26 @@ const AddPurchase = () => {
   const navigate = useNavigate();
 
   const [products, setProducts] = useState<Product[]>([]);
-  const [date, setDate] = useState(
-    () => new Date().toISOString().split("T")[0]
-  );
+  const [date, setDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [items, setItems] = useState<PurchaseItem[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get<Product[]>(
-          "http://localhost:8080/products/list"
-        );
-        setProducts(response.data);
-        if (response.data.length > 0) {
+        const response = await axios.get("http://localhost:8080/products/list");
+        setProducts(response.data.products);
+        if (response.data.products.length > 0) {
           setItems([
-            { productId: response.data[0].id, quantity: 1, expirationDate: "" },
+            {
+              productId: response.data.products[0].id,
+              quantity: 1,
+              expirationDate: "",
+            },
           ]);
         }
       } catch (error) {
-        console.error("Error cargando productos:", error);
+        Swal.fire("Error", "No se pudieron cargar los productos.", "error");
       }
     };
 
@@ -79,7 +80,7 @@ const AddPurchase = () => {
         );
         setAdmin(response.data);
       } catch (err) {
-        console.error("Error obteniendo administrador:", err);
+        Swal.fire("Error", "No se pudo cargar el administrador.", "error");
       }
     };
 
@@ -105,8 +106,7 @@ const AddPurchase = () => {
         i === index
           ? {
               ...item,
-              [field]:
-                field === "expirationDate" ? String(value) : Number(value),
+              [field]: field === "expirationDate" ? String(value) : Number(value),
             }
           : item
       )
@@ -128,12 +128,12 @@ const AddPurchase = () => {
     e.preventDefault();
 
     if (!admin) {
-      alert("No se pudo obtener el administrador.");
+      Swal.fire("Error", "No se pudo obtener el administrador.", "error");
       return;
     }
 
     if (items.some((item) => !isValidDate(item.expirationDate))) {
-      alert("Hay una o más fechas inválidas. Corrige antes de guardar.");
+      Swal.fire("Advertencia", "Hay una o más fechas inválidas.", "warning");
       return;
     }
 
@@ -151,11 +151,11 @@ const AddPurchase = () => {
 
     try {
       await axios.post("http://localhost:8080/api/purchases/add", payload);
-      alert("Compra registrada correctamente");
+      await Swal.fire("Éxito", "Compra registrada correctamente", "success");
       navigate("/compras");
     } catch (error) {
       console.error("Error al guardar la compra:", error);
-      alert("Ocurrió un error al registrar la compra.");
+      Swal.fire("Error", "Ocurrió un error al registrar la compra.", "error");
     }
   };
 
@@ -245,8 +245,7 @@ const AddPurchase = () => {
                     </td>
                     <td>
                       <input
-                        type="text"
-                        placeholder="AAAA-MM-DD"
+                        type="date"
                         className={`form-control ${
                           fechaInvalida ? "is-invalid" : ""
                         }`}
@@ -258,11 +257,10 @@ const AddPurchase = () => {
                       />
                       {fechaInvalida && (
                         <div className="invalid-feedback">
-                          Por favor ingrese una fecha válida (AAAA-MM-DD real).
+                          Por favor ingrese una fecha válida (AAAA-MM-DD).
                         </div>
                       )}
                     </td>
-
                     <td>${(price * item.quantity).toFixed(2)}</td>
                     <td>
                       <button

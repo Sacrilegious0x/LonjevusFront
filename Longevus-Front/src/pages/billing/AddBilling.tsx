@@ -3,6 +3,7 @@ import { createBilling, getAllResidents } from "../../services/BillingService";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
+import Swal from "sweetalert2"; // <-- Importación de SweetAlert
 import type { Resident } from "../../services/BillingService";
 
 const AddBilling = () => {
@@ -24,10 +25,7 @@ const AddBilling = () => {
 
   const navigate = useNavigate();
 
-  const months = [
-    "Ene","Feb","Mar","Abr","May","Jun",
-    "Jul","Ago","Sep","Oct","Nov","Dic",
-  ];
+  const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
   useEffect(() => {
     const loadResidents = async () => {
@@ -38,13 +36,11 @@ const AddBilling = () => {
         console.error("Error cargando residentes:", error);
       }
     };
-
     loadResidents();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const period = startMonth && endMonth ? `${startMonth}-${endMonth}` : "";
 
     const newErrors = {
@@ -58,7 +54,11 @@ const AddBilling = () => {
     setErrors(newErrors);
 
     if (Object.values(newErrors).some(Boolean)) {
-      alert("Por favor complete todos los campos.");
+      Swal.fire({
+        icon: "warning",
+        title: "Campos incompletos",
+        text: "Por favor complete todos los campos antes de guardar."
+      });
       return;
     }
 
@@ -73,9 +73,20 @@ const AddBilling = () => {
 
     try {
       await createBilling(billing);
+      await Swal.fire({
+        icon: "success",
+        title: "¡Factura agregada!",
+        text: "La factura se ha guardado correctamente.",
+        confirmButtonText: "Aceptar"
+      });
       navigate("/facturas");
     } catch (error) {
       console.error("Error guardando factura:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Hubo un problema al guardar la factura. Intente de nuevo."
+      });
     }
   };
 
@@ -121,26 +132,20 @@ const AddBilling = () => {
                 onChange={(e) => setStartMonth(e.target.value)}
               >
                 <option value="">Mes inicio</option>
-                {months
-                  .filter((month) => month !== endMonth)
-                  .map((month) => (
-                    <option key={month} value={month}>{month}</option>
-                  ))}
+                {months.filter((m) => m !== endMonth).map((month) => (
+                  <option key={month} value={month}>{month}</option>
+                ))}
               </select>
-
               <span className="align-self-center">a</span>
-
               <select
                 className={`form-control ${errors.endMonth ? "is-invalid" : ""}`}
                 value={endMonth}
                 onChange={(e) => setEndMonth(e.target.value)}
               >
                 <option value="">Mes fin</option>
-                {months
-                  .filter((month) => month !== startMonth)
-                  .map((month) => (
-                    <option key={month} value={month}>{month}</option>
-                  ))}
+                {months.filter((m) => m !== startMonth).map((month) => (
+                  <option key={month} value={month}>{month}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -169,9 +174,7 @@ const AddBilling = () => {
             >
               <option value="">Seleccionar Residente</option>
               {residents.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.name}
-                </option>
+                <option key={r.id} value={r.id}>{r.name}</option>
               ))}
             </select>
           </div>

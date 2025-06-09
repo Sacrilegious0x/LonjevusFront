@@ -10,6 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
+import Swal from "sweetalert2";
 
 type Resident = {
   id: number;
@@ -33,9 +34,7 @@ const BillingPage = () => {
   const [billings, setBillings] = useState<Billing[]>([]);
   const [residents, setResidents] = useState<Resident[]>([]);
   const [selectedDate, setSelectedDate] = useState("");
-  const [selectedResidentId, setSelectedResidentId] = useState<number | null>(
-    null
-  );
+  const [selectedResidentId, setSelectedResidentId] = useState<number | null>(null);
   const [selectedBilling, setSelectedBilling] = useState<Billing | null>(null);
   const navigate = useNavigate();
 
@@ -45,6 +44,7 @@ const BillingPage = () => {
       setBillings(data);
     } catch (error) {
       console.error("Error cargando facturas:", error);
+      Swal.fire("Error", "No se pudieron cargar las facturas.", "error");
     }
   };
 
@@ -59,6 +59,7 @@ const BillingPage = () => {
       setResidents(enriched);
     } catch (error) {
       console.error("Error cargando residentes:", error);
+      Swal.fire("Error", "No se pudieron cargar los residentes.", "error");
     }
   };
 
@@ -68,27 +69,46 @@ const BillingPage = () => {
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (window.confirm("¿Seguro que deseas eliminar esta factura?")) {
-      await deleteBilling(id);
-      await loadBillings();
+    const result = await Swal.fire({
+      title: "¿Eliminar factura?",
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteBilling(id);
+        await loadBillings();
+        Swal.fire("Eliminada", "La factura fue eliminada exitosamente.", "success");
+      } catch (error) {
+        console.error("Error al eliminar factura:", error);
+        Swal.fire("Error", "No se pudo eliminar la factura.", "error");
+      }
     }
   };
 
   const handleSearchByResident = async () => {
-    if (selectedResidentId === -1) {
-      const data = await getBillingsByInactiveResidents();
-      setBillings(data);
-    } else if (selectedResidentId) {
-      if (selectedDate) {
-        const data = await getBillingsByResidentAndDate(
-          selectedResidentId,
-          selectedDate
-        );
+    try {
+      if (selectedResidentId === -1) {
+        const data = await getBillingsByInactiveResidents();
         setBillings(data);
+      } else if (selectedResidentId) {
+        if (selectedDate) {
+          const data = await getBillingsByResidentAndDate(selectedResidentId, selectedDate);
+          setBillings(data);
+        } else {
+          const data = await getBillingsByResident(selectedResidentId);
+          setBillings(data);
+        }
       } else {
-        const data = await getBillingsByResident(selectedResidentId);
-        setBillings(data);
+        Swal.fire("Atención", "Debe seleccionar un residente para buscar.", "info");
       }
+    } catch (error) {
+      console.error("Error en búsqueda:", error);
+      Swal.fire("Error", "Ocurrió un problema al buscar las facturas.", "error");
     }
   };
 
@@ -114,7 +134,7 @@ const BillingPage = () => {
               <option value="">Seleccione un residente</option>
               <option value={-1}>Residentes inactivos</option>
               {residents
-                .filter((r) => r.active) // Solo mostrar residentes activos
+                .filter((r) => r.active)
                 .map((r) => (
                   <option key={r.id} value={r.id}>
                     {r.name}
@@ -134,12 +154,17 @@ const BillingPage = () => {
                     const newDate = e.target.value;
                     setSelectedDate(newDate);
 
-                    if (selectedResidentId) {
-                      const data = await getBillingsByResidentAndDate(
-                        selectedResidentId,
-                        newDate
-                      );
-                      setBillings(data);
+                    try {
+                      if (selectedResidentId) {
+                        const data = await getBillingsByResidentAndDate(
+                          selectedResidentId,
+                          newDate
+                        );
+                        setBillings(data);
+                      }
+                    } catch (error) {
+                      console.error("Error filtrando por fecha:", error);
+                      Swal.fire("Error", "No se pudieron filtrar por fecha.", "error");
                     }
                   }}
                 />
@@ -240,30 +265,14 @@ const BillingPage = () => {
                   />
                 </div>
                 <div className="modal-body">
-                  <p>
-                    <strong>Consecutivo:</strong> {selectedBilling.consecutive}
-                  </p>
-                  <p>
-                    <strong>Fecha:</strong> {selectedBilling.date}
-                  </p>
-                  <p>
-                    <strong>Monto:</strong> ₡{selectedBilling.amount.toFixed(2)}
-                  </p>
-                  <p>
-                    <strong>Método de Pago:</strong>{" "}
-                    {selectedBilling.paymentMethod}
-                  </p>
-                  <p>
-                    <strong>Periodo:</strong> {selectedBilling.period}
-                  </p>
+                  <p><strong>Consecutivo:</strong> {selectedBilling.consecutive}</p>
+                  <p><strong>Fecha:</strong> {selectedBilling.date}</p>
+                  <p><strong>Monto:</strong> ₡{selectedBilling.amount.toFixed(2)}</p>
+                  <p><strong>Método de Pago:</strong> {selectedBilling.paymentMethod}</p>
+                  <p><strong>Periodo:</strong> {selectedBilling.period}</p>
                   <hr />
-                  <p>
-                    <strong>Administrador:</strong>{" "}
-                    {selectedBilling.administrator?.name}
-                  </p>
-                  <p>
-                    <strong>Residente:</strong> {selectedBilling.resident?.name}
-                  </p>
+                  <p><strong>Administrador:</strong> {selectedBilling.administrator?.name}</p>
+                  <p><strong>Residente:</strong> {selectedBilling.resident?.name}</p>
                 </div>
                 <div className="modal-footer">
                   <button

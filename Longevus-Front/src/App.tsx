@@ -17,6 +17,7 @@ import BillingPage from './pages/billing/BillingPage';
 import EditBilling from './pages/billing/EditBilling';
 import AddBilling from './pages/billing/AddBilling';
 import InactiveBillingsPage from "./pages/billing/InactiveBillingsPage";
+import InactivePurchasesPage from './pages/purchase/InactivePurchasesPage';
 
 function App() {
   return (
@@ -40,7 +41,8 @@ function App() {
         <Route path="/facturas/editar/:id" element={<EditBilling />} />
         <Route path="/facturas/nueva" element={<AddBilling />} />
         <Route path="/facturas/inactivas" element={<InactiveBillingsPage />} />
-         </Routes>
+        <Route path="/compras/inactivas" element={<InactivePurchasesPage />} />
+        </Routes>
     </BrowserRouter>
   );
 }

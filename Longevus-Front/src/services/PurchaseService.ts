@@ -46,3 +46,9 @@ export const updatePurchase = async (id: string, purchase: Purchase): Promise<vo
 export const deletePurchase = async (id: string): Promise<void> => {
   await axios.delete(`http://localhost:8080/api/purchases/delete/${id}`);
 };
+
+// Obtener compras inactivas
+export const getInactivePurchases = async (): Promise<Purchase[]> => {
+  const response = await axios.get("http://localhost:8080/api/purchases/inactive");
+  return response.data;
+};

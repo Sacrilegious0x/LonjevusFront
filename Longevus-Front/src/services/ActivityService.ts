@@ -112,3 +112,11 @@ export const deleteResidentFromActivity = async (idActivity: number, idResident:
 };
 
 
+export const addResidentFromActivity = async (idActivity: number, idResident: number): Promise<void> => {
+    try {
+        await axios.post(`${API_BASE_URL}/addResidentToActivity?activityId=${idActivity}&residentId=${idResident}`);
+    } catch (error) {
+        console.error('Error al agrwgar el residente', error);
+        throw error;
+    }
+};

@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import { getActivitiesByDate, deleteActivity, type Activity} from "../../services/ActivityService";
 
-const Activities = (date: string) => {
+const Activities = () => {
     const navigate = useNavigate();
     const [activitiesData, setActivitiesData] = useState<Activity[]>([]);
     const [activitiesDate, setActivitiesDate] = useState<string>("");
@@ -96,7 +96,7 @@ const Activities = (date: string) => {
                                     data={activitiesData}
                                     columns={activityColumns}
                                     selectedRows={new Set()}
-                                    onToggleRow={() => { }}
+                                    onToggleRow={() => { 1}}
                                     onSelectAll={() => { }}
                                 />
                             )}

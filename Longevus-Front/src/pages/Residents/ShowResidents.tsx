@@ -25,18 +25,18 @@ const Residents = () => {
     const handleDeleteResident = (resident: Resident) => {
         if (window.confirm(`¿Estás seguro de eliminar al residente ${resident.name}?`)) {
             deleteResident(resident.id)
-            .then(() => {
-                setResidentData(prev => prev.filter(r => r.id !== resident.id));
-            })
-            .catch(error => {
-                console.error("Error al eliminar el residente", error);
-            });
+                .then(() => {
+                    setResidentData(prev => prev.filter(r => r.id !== resident.id));
+                })
+                .catch(error => {
+                    console.error("Error al eliminar el residente", error);
+                });
         }
     }
 
     const [searchInput, setSearchInput] = useState("");
 
-  const handleSearch = () => {
+    const handleSearch = () => {
         {/* axios.get<Resident[]>(`http://localhost:8080/findResidentByNameorIdentification?value=${searchInput}`)
             .then((response) => {
                 setResidentData(response.data);
@@ -73,6 +73,7 @@ const Residents = () => {
         }
     ];
 
+
     return (
         <>
             <HeaderA />
@@ -81,13 +82,13 @@ const Residents = () => {
                     <div className='card mt-5 mb-5'>
                         <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                             <h4>Lista de residentes</h4>
-                            <Link className='btn btn-success' to='/residente/agregar'><i className='bi bi-person-plus-fill'/></Link>
+                            <Link className='btn btn-success' to='/residente/agregar'><i className='bi bi-person-plus-fill' /></Link>
                         </div>
                         <div className='card-body'>
                             <label>Buscar</label>
                             <input type="text" placeholder="Buscar..." id="userSearch" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
                             <button className="btn btn-secondary" id="btnSearch"><i className='bi bi-search' onClick={handleSearch} /></button>
-                            <Table<Resident> data={residentData} columns={personColumns} selectedRows={new Set()} onToggleRow={() => { }} onSelectAll={() => { }} />
+                            <Table<Resident> data={residentData} columns={personColumns} selectedRows={new Set()} onToggleRow={() => {} } onSelectAll={() => {}} />
                         </div>
                     </div>
 

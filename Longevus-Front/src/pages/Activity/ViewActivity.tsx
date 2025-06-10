@@ -48,12 +48,12 @@ const ViewActivity: React.FC = () => {
                     <p><strong>Encargado(a):</strong> {activityData?.caregiver?.name ?? 'No asignado'}</p>
 
                     <center>
-                        {/*<button className="btn btn-primary mt-3" onClick={() => showAddResidentModal(true)}>
-                            Agregar contactos
-                        </button>
-                        <button className="btn btn-info mt-3 ms-2" onClick={() => setShowContactModal(true)}>
-                            Ver contactos
-                        </button>*/}
+                        <Link className="btn btn-info mt-3 ms-2" to={`/actividad/info/residentes/agregar/${activityData?.id}`}>
+                            Agregar residentes
+                        </Link>
+                        <Link className="btn btn-info mt-3 ms-2" to={`/actividad/info/residentes/${activityData?.id}`}>
+                            Ver residentes
+                        </Link>
                         <Link className='btn btn-secondary float-end' to="/actividades/mostrar"><i className="bi bi-reply" /> Volver</Link>
                     </center>
 

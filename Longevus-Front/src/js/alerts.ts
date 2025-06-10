@@ -4,7 +4,7 @@ import withReactContent from 'sweetalert2-react-content'
 
 export function confirmDeleteAlert(param: string){
     return Swal.fire({
-      title: `¿Estas seguro que deseas elimiar a ${param}?`,
+      title: `¿Estas seguro que deseas eliminar a ${param}?`,
       text: "Esta accion es definitiva!",
       icon: "warning",
       showCancelButton: true,

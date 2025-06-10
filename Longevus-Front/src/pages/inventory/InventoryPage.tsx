@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-//import { useNavigate } from "react-router-dom";
 import TableBasic from "../../components/TableBasic";
 import type { columnDefinition } from "../../components/TableBasic";
 import DateFilter from "../../components/DateFilter";
 import Footer from "../../components/Footer";
 import Header from "../../components/HeaderAdmin";
-import "bootstrap/dist/css/bootstrap.min.css";
+import Swal from "sweetalert2";
+
 import {
   getAllInventory,
   deleteInventory,
@@ -17,39 +17,57 @@ const InventoryPage = () => {
   const [inventoryData, setInventoryData] = useState<InventoryItem[]>([]);
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
 
-  //const navigate = useNavigate();
-
   useEffect(() => {
     getAllInventory()
       .then((data) => setInventoryData(data))
-      .catch((err) => console.error("Error cargando inventario:", err));
+      .catch((err) => {
+        console.error("Error cargando inventario:", err);
+        Swal.fire("Error", "No se pudo cargar el inventario.", "error");
+      });
   }, []);
 
   const handleDelete = async (id: number) => {
-    const confirmed = window.confirm("¿Estás seguro de que deseas eliminar este ítem del inventario?");
-    if (confirmed) {
-      try {
-        await deleteInventory(id);
-        setInventoryData((prev) => prev.filter((item) => item.id !== id));
-      } catch (err) {
-        console.error("Error al eliminar inventario:", err);
-      }
+    const result = await Swal.fire({
+      title: "¿Eliminar producto?",
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await deleteInventory(id);
+      setInventoryData((prev) => prev.filter((item) => item.id !== id));
+      await Swal.fire({
+        title: "Eliminado",
+        text: "El producto fue eliminado correctamente.",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      console.error("Error al eliminar inventario:", err);
+      Swal.fire("Error", "No se pudo eliminar el producto.", "error");
     }
   };
 
   const toggleRow = (id: number) => {
     const newSelection = new Set(selectedRows);
-if (newSelection.has(id)) {
-  newSelection.delete(id);
-} else {
-  newSelection.add(id);
-}
-
+    if (newSelection.has(id)) {
+      newSelection.delete(id);
+    } else {
+      newSelection.add(id);
+    }
     setSelectedRows(newSelection);
   };
 
   const selectAll = (isSelected: boolean) => {
-    setSelectedRows(isSelected ? new Set(inventoryData.map((i) => i.id)) : new Set());
+    setSelectedRows(
+      isSelected ? new Set(inventoryData.map((i) => i.id)) : new Set()
+    );
   };
 
   const columns: columnDefinition<InventoryItem>[] = [
@@ -72,24 +90,38 @@ if (newSelection.has(id)) {
       accessor: (item) => item.purchase.id,
     },
     {
-      header: "Foto",
-      accessor: () => "",
-      Cell: (item) => (
-        <img
-          src={item.photoURL}
-          alt={item.product.name}
-          className="img-thumbnail"
-          width="60"
-          height="60"
-          style={{ objectFit: "cover" }}
-        />
-      ),
-    },
+  header: "Foto",
+  accessor: () => "",
+  Cell: (item) => {
+    const [imgError, setImgError] = useState(false);
+    const url = `http://localhost:8080/${item.photoURL}`;
+
+    return !imgError ? (
+      <img
+        src={url}
+        alt={`Foto de ${item.product.name}`}
+        width="60"
+        height="60"
+        className="img-thumbnail"
+        style={{ objectFit: "cover" }}
+        onError={() => {
+          console.warn("⚠️ Imagen rota:", url);
+          setImgError(true);
+        }}
+      />
+    ) : (
+      <span className="text-muted">Sin imagen</span>
+    );
+  },
+},
     {
       header: "Acciones",
       accessor: () => "",
       Cell: (item) => (
-        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(item.id)}>
+        <button
+          className="btn btn-danger btn-sm"
+          onClick={() => handleDelete(item.id)}
+        >
           Eliminar
         </button>
       ),
@@ -117,7 +149,10 @@ if (newSelection.has(id)) {
           </div>
         </div>
 
-        <button className="btn btn-secondary mb-3" onClick={() => setSelectedDate("")}>
+        <button
+          className="btn btn-secondary mb-3"
+          onClick={() => setSelectedDate("")}
+        >
           Limpiar búsqueda
         </button>
 

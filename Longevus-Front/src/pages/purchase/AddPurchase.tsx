@@ -35,20 +35,28 @@ interface PurchasePayload {
   }[];
 }
 
+// Valida DD-MM-AAAA
 const isValidDate = (dateString: string): boolean => {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return false;
-  const [year, month, day] = dateString.split("-").map(Number);
-  const date = new Date(dateString);
+  if (!/^\d{2}-\d{2}-\d{4}$/.test(dateString)) return false;
+  const [day, month, year] = dateString.split("-").map(Number);
+  if (month < 1 || month > 12 || day < 1 || day > 31) return false;
+
+  const date = new Date(year, month - 1, day);
   return (
     date.getFullYear() === year &&
-    date.getMonth() + 1 === month &&
+    date.getMonth() === month - 1 &&
     date.getDate() === day
   );
 };
 
+// Convierte DD-MM-AAAA a YYYY-MM-DD
+const convertToISODate = (dateString: string): string => {
+  const [day, month, year] = dateString.split("-");
+  return `${year}-${month}-${day}`;
+};
+
 const AddPurchase = () => {
   const navigate = useNavigate();
-
   const [products, setProducts] = useState<Product[]>([]);
   const [date, setDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [admin, setAdmin] = useState<Admin | null>(null);
@@ -90,10 +98,7 @@ const AddPurchase = () => {
 
   const handleAddProduct = () => {
     if (products.length === 0) return;
-    setItems([
-      ...items,
-      { productId: products[0].id, quantity: 1, expirationDate: "" },
-    ]);
+    setItems([...items, { productId: products[0].id, quantity: 1, expirationDate: "" }]);
   };
 
   const handleChange = (
@@ -133,7 +138,7 @@ const AddPurchase = () => {
     }
 
     if (items.some((item) => !isValidDate(item.expirationDate))) {
-      Swal.fire("Advertencia", "Hay una o más fechas inválidas.", "warning");
+      Swal.fire("Advertencia", "Hay una o más fechas inválidas (DD-MM-AAAA).", "warning");
       return;
     }
 
@@ -145,7 +150,7 @@ const AddPurchase = () => {
         idProduct: item.productId,
         name: "",
         quantity: item.quantity,
-        expirationDate: item.expirationDate,
+        expirationDate: convertToISODate(item.expirationDate),
       })),
     };
 
@@ -203,8 +208,7 @@ const AddPurchase = () => {
               {items.map((item, index) => {
                 const product = products.find((p) => p.id === item.productId);
                 const price = product?.price ?? 0;
-                const fechaInvalida =
-                  item.expirationDate && !isValidDate(item.expirationDate);
+                const fechaInvalida = item.expirationDate && !isValidDate(item.expirationDate);
 
                 return (
                   <tr key={index}>
@@ -213,11 +217,7 @@ const AddPurchase = () => {
                         className="form-select"
                         value={item.productId}
                         onChange={(e) =>
-                          handleChange(
-                            index,
-                            "productId",
-                            parseInt(e.target.value)
-                          )
+                          handleChange(index, "productId", parseInt(e.target.value))
                         }
                       >
                         {products.map((p) => (
@@ -235,20 +235,15 @@ const AddPurchase = () => {
                         min={1}
                         value={item.quantity}
                         onChange={(e) =>
-                          handleChange(
-                            index,
-                            "quantity",
-                            parseInt(e.target.value)
-                          )
+                          handleChange(index, "quantity", parseInt(e.target.value))
                         }
                       />
                     </td>
                     <td>
                       <input
-                        type="date"
-                        className={`form-control ${
-                          fechaInvalida ? "is-invalid" : ""
-                        }`}
+                        type="text"
+                        placeholder="DD-MM-AAAA"
+                        className={`form-control ${fechaInvalida ? "is-invalid" : ""}`}
                         value={item.expirationDate}
                         onChange={(e) =>
                           handleChange(index, "expirationDate", e.target.value)
@@ -257,7 +252,7 @@ const AddPurchase = () => {
                       />
                       {fechaInvalida && (
                         <div className="invalid-feedback">
-                          Por favor ingrese una fecha válida (AAAA-MM-DD).
+                          Por favor ingrese una fecha válida (DD-MM-AAAA).
                         </div>
                       )}
                     </td>

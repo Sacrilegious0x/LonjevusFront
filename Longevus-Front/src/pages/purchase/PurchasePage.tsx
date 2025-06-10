@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import StandardTable, { type Column } from "../../components/StandardTable";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
@@ -193,7 +192,7 @@ const PurchasePage = () => {
                       {selectedPurchase.items.map((item, index) => (
                         <tr key={index}>
                           <td>
-                            {item.productName || `Producto #${item.idProduct}`}
+                           {item.productName ?? 'Producto no disponible'}
                           </td>
                           <td>{item.quantity}</td>
                           <td>{item.expirationDate}</td>

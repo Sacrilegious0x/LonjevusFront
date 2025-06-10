@@ -18,6 +18,8 @@ import EditBilling from './pages/billing/EditBilling';
 import AddBilling from './pages/billing/AddBilling';
 import InactiveBillingsPage from "./pages/billing/InactiveBillingsPage";
 import InactivePurchasesPage from './pages/purchase/InactivePurchasesPage';
+import AddProduct from './pages/product/AddProduct';
+import EditProduct from './pages/product/EditProduct';
 
 function App() {
   return (
@@ -42,6 +44,8 @@ function App() {
         <Route path="/facturas/nueva" element={<AddBilling />} />
         <Route path="/facturas/inactivas" element={<InactiveBillingsPage />} />
         <Route path="/compras/inactivas" element={<InactivePurchasesPage />} />
+        <Route path="/productos/agregar" element={<AddProduct />} />
+        <Route path="/productos/editar/:id" element={<EditProduct />} />
         </Routes>
     </BrowserRouter>
   );

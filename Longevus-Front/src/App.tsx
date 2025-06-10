@@ -18,6 +18,15 @@ import EditBilling from './pages/billing/EditBilling';
 import AddBilling from './pages/billing/AddBilling';
 import InactiveBillingsPage from "./pages/billing/InactiveBillingsPage";
 import InactivePurchasesPage from './pages/purchase/InactivePurchasesPage';
+import SuppliersList from './pages/supplier/SuppliersList';
+import SuppliersAdd from './pages/supplier/SuppliersAdd';
+import SuppliersEdit from './pages/supplier/SuppliertsUpdate';
+import RolesList from './pages/role_permissions/Role_permission';
+import RoomList from './pages/Room/ListRooms';
+import AddRoom from './pages/Room/AddRoom';
+import EditRoom from './pages/Room/EditRoom';
+import EditProduct from './pages/product/EditProduct';
+import AddProduct from './pages/product/AddProduct';
 
 function App() {
   return (
@@ -37,11 +46,24 @@ function App() {
         <Route path="/compras/editar/:id" element={<EditPurchase />} /> 
         <Route path="/compras/agregar" element={<AddPurchase />} />
         <Route path="/productos" element={<ProductsList />} />
+        <Route path="/productos/editar/:id" element={<EditProduct />} />
+        <Route path="/productos/agregar" element={<AddProduct />} />
         <Route path="/facturas" element={<BillingPage />} />
         <Route path="/facturas/editar/:id" element={<EditBilling />} />
         <Route path="/facturas/nueva" element={<AddBilling />} />
         <Route path="/facturas/inactivas" element={<InactiveBillingsPage />} />
         <Route path="/compras/inactivas" element={<InactivePurchasesPage />} />
+        <Route path="/proveedores" element={<SuppliersList />} />
+        <Route path="/proveedores/agregar" element={<SuppliersAdd/>} />
+        <Route path='/proveedores/editar/:id' element={<SuppliersEdit/>} />
+        <Route path="/roles_permisos" element={<RolesList/>} />
+        <Route path='/habitaciones' element={<RoomList/>}/>
+        <Route path='/habitaciones/agregar' element={<AddRoom/>}/>
+        <Route path='/habitaciones/editar/:id' element={<EditRoom/>}/>
+
+
+
+
         </Routes>
     </BrowserRouter>
   );

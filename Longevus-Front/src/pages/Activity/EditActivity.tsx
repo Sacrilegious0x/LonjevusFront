@@ -5,6 +5,7 @@ import Footer from "../../components/Footer";
 import { getActivityById, type Activity, updateActivity } from '../../services/ActivityService';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
+import { succesAlert, errorAlert } from "../../js/alerts";
 
 const EditResidentPage: React.FC = () => {
 
@@ -27,9 +28,13 @@ const EditResidentPage: React.FC = () => {
             .then(res => {
                 console.log("Activdad recibido:", res);
                 setActivityData(res);
+                succesAlert('Editada', 'La actividad ha sido actualizada con éxito');
                 navigate("/actividades/mostrar");
             })
-            .catch(err => console.error("Error al actualizar el actividad", err));
+            .catch(err =>{ 
+                console.error("Error al actualizar el actividad", err);
+                errorAlert('Error al editar la actividad');
+            });
     };
 
     return (

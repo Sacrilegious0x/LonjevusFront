@@ -7,7 +7,7 @@ import { getResidentsByActivityId, deleteResidentFromActivity } from "../../serv
 import { useState, useEffect } from "react";
 import type { Resident } from "../../services/ResidentService";
 import { Link } from "react-router-dom";
-useParams
+import { confirmDeleteAlert, succesAlert, errorAlert } from "../../js/alerts";
 
 const ResidentsFromActivity = () => {
 
@@ -32,32 +32,31 @@ const ResidentsFromActivity = () => {
         })
     }, []);
 
-    const handleDelete = (resident: Resident) => {
-        console.log(selectedIds)
-    }
-
 
     const handleDeleteSelectedResidents = async () => {
         const selectedIds = Array.from(selectedRows);
 
         if (selectedIds.length === 0) return;
 
-        const confirmDelete = window.confirm(`¿Seguro que deseas eliminar ${selectedIds.length} residente(s) de esta actividad?`);
-        if (!confirmDelete) return;
+        const result = await confirmDeleteAlert('los residentes seleccionados')
 
-        try {
-            for (const residentId of selectedIds) {
-                console.log('Eliminando residente ID:', residentId);
-                await deleteResidentFromActivity(Number(id), residentId);
+
+        if (result.isConfirmed) {
+
+            try {
+                for (const residentId of selectedIds) {
+                    await deleteResidentFromActivity(Number(id), residentId);
+                }
+                const updatedResidents = residentData.filter(resident => !selectedRows.has(resident.id));
+                setResidentData(updatedResidents);
+                setSelectedRows(new Set());
+                succesAlert('Eliminados','Residentes eliminados de la actividad exitosamente')
+            } catch (error) {
+                console.error("Error al eliminar residentes:", error);
+                errorAlert('Ocurrió un error al eliminar los residentes seleccionados')
             }
-            const updatedResidents = residentData.filter(resident => !selectedRows.has(resident.id));
-            setResidentData(updatedResidents);
-            setSelectedRows(new Set());
-
-            alert("Residentes eliminados de la actividad exitosamente.");
-        } catch (error) {
-            console.error("Error al eliminar residentes:", error);
-            alert("Ocurrió un error al eliminar algunos residentes.");
+        } else {
+            return
         }
     };
 

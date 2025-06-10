@@ -7,13 +7,11 @@ import { getResidentsByActivityId, addResidentFromActivity } from "../../service
 import { useState, useEffect } from "react";
 import { type Resident, getResidents } from "../../services/ResidentService";
 import { Link } from "react-router-dom";
-useParams
+import { succesAlert, errorAlert } from "../../js/alerts";
 
 const AddResidentsToActivity = () => {
 
     const { id } = useParams();
-
-    console.log("ID RECIBIDO", id)
 
     const navigate = useNavigate();
     const [residentOnActivityData, setResidentOnActivityData] = useState<Resident[]>([]);
@@ -73,10 +71,10 @@ const AddResidentsToActivity = () => {
 
             setSelectedRows(new Set());
 
-            alert("Residentes agregados de la actividad exitosamente.");
+            succesAlert('Agregados', 'Residente(s) agregados con éxito');
         } catch (error) {
             console.error("Error al agregar residentes:", error);
-            alert("Ocurrió un error al agregar algunos residentes.");
+            errorAlert('Error al agregar residentes a la actividad')
         }
     };
 

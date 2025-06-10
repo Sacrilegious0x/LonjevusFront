@@ -9,7 +9,7 @@ import Footer from "../../components/Footer";
 import { Link } from 'react-router-dom';
 import { getResidentById } from "../../services/ResidentService";
 import { getContactsByResidentId, addContact, updateContact, deleteContact } from "../../services/ContactService";
-
+import { confirmDeleteAlert, succesAlert, errorAlert } from "../../js/alerts";
 
 const ViewResident: React.FC = () => {
 
@@ -41,10 +41,12 @@ const ViewResident: React.FC = () => {
         addContact(contact)
             .then(() => {
                 console.log("Contacto agregado");
+                succesAlert('Agregado', 'Contacto agregado con éxito');
                 setContactsData(prev => [...prev, contact]);
             })
             .catch((error) => {
                 console.error("Error al guardar el contacto", error);
+                errorAlert('Error al guardar contacto');
             });
     }
 
@@ -52,6 +54,7 @@ const ViewResident: React.FC = () => {
         updateContact(updatedContact)
             .then(() => {
                 console.log("Contacto actualizado");
+                succesAlert('Editado', 'Contacto actualizado con éxito');
                 setContactsData(prev =>
                     prev.map(contact =>
                         contact.id === updatedContact.id ? updatedContact : contact
@@ -60,11 +63,14 @@ const ViewResident: React.FC = () => {
             })
             .catch((error) => {
                 console.error("Error al actualizar contacto", error);
+                errorAlert('Error al actualizar contacto');
             });
     };
 
-    const handleDeleteContact = (contactId: number) => {
-        if (window.confirm(`¿Estás seguro de eliminar el contacto?`)) {
+    const handleDeleteContact = async (contactId: number) => {
+        const result = await confirmDeleteAlert('')
+
+        if (result.isConfirmed) {
             deleteContact(contactId).then(() => {
                     console.log("Contacto eliminado");
                     setContactsData(prev =>
@@ -73,6 +79,8 @@ const ViewResident: React.FC = () => {
                 }).catch((error) => {
                     console.error("Error al eliminar contacto", error);
                 });
+        }else{
+            return;
         }
     };
 

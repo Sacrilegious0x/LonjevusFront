@@ -3,6 +3,7 @@ import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import { type Activity, createActivity } from "../../services/ActivityService";
 import { useNavigate } from "react-router-dom";
+import { succesAlert, errorAlert } from "../../js/alerts";
 
 const AddActivity: React.FC = () => {
     const navigate = useNavigate();
@@ -10,11 +11,12 @@ const AddActivity: React.FC = () => {
     const handleCreateActivity = (data: Activity) => {
         createActivity(data)
             .then(() => {
-                alert("Actividad creada");
+                succesAlert('Agregada', 'La actividad ha sido agregada con éxito');
                 navigate("/actividades/mostrar");
             })
             .catch((error) => {
-                console.error("Error al crear el residente", error);
+                errorAlert('Error al crear la actividad')
+                console.error("Error al crear la actividad", error);
             });
     }
 

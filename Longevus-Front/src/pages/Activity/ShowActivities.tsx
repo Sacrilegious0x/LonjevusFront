@@ -4,7 +4,8 @@ import Table from '../../components/TableBasic';
 import type { columnDefinition } from '../../components/TableBasic';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { getActivitiesByDate, deleteActivity, type Activity} from "../../services/ActivityService";
+import { getActivitiesByDate, deleteActivity, type Activity } from "../../services/ActivityService";
+import { confirmDeleteAlert, succesAlert, errorAlert } from "../../js/alerts";
 
 const Activities = () => {
     const navigate = useNavigate();
@@ -26,17 +27,23 @@ const Activities = () => {
     };
 
 
-    const handleDeleteActivity = (activity: Activity) => {
-            if (window.confirm(`¿Estás seguro de eliminar la actividad ${activity.name}?`)) {
-                deleteActivity(activity.id)
+    const handleDeleteActivity = async (activity: Activity) => {
+        const result = await confirmDeleteAlert(activity.name);
+
+        if (result.isConfirmed) {
+            deleteActivity(activity.id)
                 .then(() => {
+                    succesAlert('Eliminada', 'Actividad eliminada con éxito');
                     setActivitiesData(prev => prev.filter(r => r.id !== activity.id));
                 })
                 .catch(error => {
                     console.error("Error al eliminar la actividad", error);
+                    errorAlert('Error al eliminar la actividad');
                 });
-            }
+        }else{
+            return;
         }
+    }
 
     const activityColumns: columnDefinition<Activity>[] = [
         { header: '#', accessor: 'id', Cell: (activity, index) => { return (index + 1) } },
@@ -96,7 +103,7 @@ const Activities = () => {
                                     data={activitiesData}
                                     columns={activityColumns}
                                     selectedRows={new Set()}
-                                    onToggleRow={() => { 1}}
+                                    onToggleRow={() => { 1 }}
                                     onSelectAll={() => { }}
                                 />
                             )}

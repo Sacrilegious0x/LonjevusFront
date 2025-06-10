@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import { getResidents, deleteResident } from "../../services/ResidentService";
 import type { Resident } from "../../services/ResidentService";
+import { confirmDeleteAlert, succesAlert, errorAlert } from "../../js/alerts";
 
 const Residents = () => {
 
@@ -22,16 +23,21 @@ const Residents = () => {
     }, []);
 
 
-    const handleDeleteResident = (resident: Resident) => {
-        if (window.confirm(`¿Estás seguro de eliminar al residente ${resident.name}?`)) {
+    const handleDeleteResident = async (resident: Resident) => {
+        const result = await confirmDeleteAlert(resident?.name ?? "");
+
+        if (result.isConfirmed) {
             deleteResident(resident.id)
                 .then(() => {
                     setResidentData(prev => prev.filter(r => r.id !== resident.id));
+                    succesAlert('Eliminado', `Residente ${resident.name}`)
                 })
                 .catch(error => {
                     console.error("Error al eliminar el residente", error);
+                    errorAlert('Error al eliminar el residente')
                 });
-        }
+        }else
+            return
     }
 
     const [searchInput, setSearchInput] = useState("");

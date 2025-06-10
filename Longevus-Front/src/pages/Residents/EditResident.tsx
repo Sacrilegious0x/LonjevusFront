@@ -6,6 +6,7 @@ import type { ResidentData } from "../../components/ResidentForm";
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { updateResident, getResidentById } from '../../services/ResidentService';
+import { succesAlert } from '../../js/alerts';
 
 const EditResidentPage: React.FC = () => {
 
@@ -28,6 +29,7 @@ const EditResidentPage: React.FC = () => {
             .then(res => {
                 console.log("Residente recibido:", res);
                 setResidentData(res);
+                succesAlert('Editado', 'Residente editado con éxito')
                 navigate("/residente/mostrar");
             })
             .catch(err => console.error("Error al actualizar el residente", err));

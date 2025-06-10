@@ -27,9 +27,6 @@ const ViewActivity: React.FC = () => {
         }
     }, [id]);
 
-    const [showResidentsModal, setShowResidentsModal] = useState(false);
-    const [showAddResidentModal, setShowAddResidentModal] = useState(false);
-
     return (
         <>
             <Header />
@@ -58,23 +55,6 @@ const ViewActivity: React.FC = () => {
                     </center>
 
                 </div>
-
-                {/*<ViewContactModal
-                    show={showContactModal}
-                    onClose={() => setShowContactModal(false)}
-                    residentName={residentData?.name}
-                    contactsList={contactsData}
-                    onDeleteContact={handleDeleteContact}
-                    onEditContact={handleEditContact}
-                />
-
-                <AddContactModal
-                    show={showAddContactModal}
-                    onClose={() => setShowAddContactModal(false)}
-                    residentName={residentData?.name}
-                    residentId={residentData?.id}
-                    onAddContact={handleAddContact}
-                />*/}
             </div>
             <Footer />
         </>

@@ -4,6 +4,7 @@ import Footer from "../../components/Footer";
 import type { ResidentData } from "../../services/ResidentService";
 import { useNavigate } from "react-router-dom";
 import { createResident } from "../../services/ResidentService";
+import { succesAlert, errorAlert } from "../../js/alerts";
 
 const AddResident: React.FC = () => {
 
@@ -12,11 +13,12 @@ const AddResident: React.FC = () => {
     const handleCreateResident = (data:ResidentData) => {
         createResident(data)
         .then(() => {
-            alert("Residente creado");
+            succesAlert('Creado', 'El residente ha sido creado');
             navigate("/residente/mostrar");
         })
         .catch((error) => {
             console.error("Error al crear el residente", error);
+            errorAlert('Error al crear residente');
         });
     }
 

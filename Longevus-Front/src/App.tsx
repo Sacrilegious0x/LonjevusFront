@@ -27,6 +27,8 @@ import AddRoom from './pages/Room/AddRoom';
 import EditRoom from './pages/Room/EditRoom';
 import EditProduct from './pages/product/EditProduct';
 import AddProduct from './pages/product/AddProduct';
+import EditResident from './pages/Residents/EditResident';
+import ViewResident from './pages/Residents/ViewResident';
 
 function App() {
   return (
@@ -42,6 +44,8 @@ function App() {
         <Route path='/empleado/perfil/:id' element={< ViewEmployee/>}/>
         <Route path='/residente/mostrar' element={<ShowResidents/>}/>
         <Route path='/residente/agregar' element={<AddResident/>}/>
+        <Route path='/residente/editar/:id' element={<EditResident/>}/>
+        <Route path='/residente/perfil/:id' element={<ViewResident/>}/>
         <Route path="/compras" element={<PurchasePage />} />
         <Route path="/compras/editar/:id" element={<EditPurchase />} /> 
         <Route path="/compras/agregar" element={<AddPurchase />} />

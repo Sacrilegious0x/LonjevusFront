@@ -15,6 +15,14 @@ type RoomListResponse = {
     rooms: IRoom[];
 };
 
+export interface IResident {
+    id: number,
+    identification: string,
+    name: string,
+    age: number,
+    numberRoom: number,
+}
+
 
 export const getRooms = async (): Promise<IRoom[]> => {
     try {
@@ -80,4 +88,9 @@ export const updateRoom = async (room: IRoom): Promise<void> => {
         console.error('Error al actualizar la habitación:', error);
         throw new Error('No se pudo actualizar la habitación');
     }
+};
+
+export const getAllResidentsByRoom = async (): Promise<IResident[]> => {
+  const response = await axios.get<IResident[]>(`${API_BASE_URL}/residents`);
+  return response.data;
 };

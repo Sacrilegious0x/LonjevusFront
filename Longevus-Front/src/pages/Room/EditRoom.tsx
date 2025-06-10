@@ -150,7 +150,7 @@ export default function EditRoom() {
                   onChange={handleChange}
                   className="form-control"
                   min={1}
-                  max={100}
+                  max={formData.roomType === 'Individual' ? 1 : 100}
                   required
                 />
               </div>

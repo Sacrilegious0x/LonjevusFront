@@ -5,8 +5,9 @@ import type { columnDefinition } from "../../components/TableBasic";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import Table from '../../components/TableBasic';
-import { deleteRoom, getRooms } from "../../services/RoomService";
+import { deleteRoom, getAllResidentsByRoom, getRooms, type IResident } from "../../services/RoomService";
 import { confirmDeleteAlert, succesAlert, errorAlert } from '../../js/alerts';
+import { getAllResidents } from "../../services/BillingService";
 
 interface IRoom{
     id:number,
@@ -19,6 +20,7 @@ interface IRoom{
 
 const RoomList=() => {
 
+    const [userData, setUserData] = useState<IResident[]>([]);
     const [roomData,setRoomData] = useState<IRoom[]>([])
     const [loading,setLoading] = useState<boolean>(true);
     const [error,setError] = useState<string | null>(null);
@@ -45,18 +47,17 @@ const RoomList=() => {
                 Cell: (room) =>(
                     <>
                     <Link className="btn btn-warning me-2" to={`/habitaciones/editar/${room.id}`}><i className='bi bi-pencil-square' /></Link>
-                    <a className='btn btn-danger me-2' onClick={()=>handleDelete(room.id)}>
+                    <a className='btn btn-danger me-2' onClick={()=>handleDelete(room.id,room.roomNumber)}>
                         <i className="bi bi-trash"/>
                     </a>  
                     </>
-                ) 
-            }
-
-
-    ];
+        )}];
 
     useEffect(()=>{
         loadRooms();
+        getAllResidentsByRoom()
+        .then((data)=>setUserData(data))
+        .catch((error) => console.error('Error al obtener los residentes: ',error));
     },[]);
 
     const loadRooms = async () =>{
@@ -92,9 +93,17 @@ const RoomList=() => {
 
     }
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: number,roomNumber:number) => {
         //const confirmDelete = window.confirm("¿Seguro que deseas eliminar esta habitacion?");
         const response = await confirmDeleteAlert("la habitación");
+
+        const hasResidents = userData.some(res => res.numberRoom === roomNumber);
+        console.log(`HasResidents: ${hasResidents}`)
+        if (hasResidents) {
+            errorAlert("No se puede eliminar porque hay residentes en ella");
+            return;
+        }
+
         if (response.isConfirmed){
       
          try {

@@ -9,11 +9,12 @@ import Footer from '../../components/Footer';
 import type { Task } from '../../services/TaskService';
 import { getCaregiverTask, updateTask, deleteTask} from '../../services/TaskService';
 import { Link } from 'react-router-dom';
-
+import { useAuth } from '../../context/AuthContext';
 const BACKEND_URL = 'http://localhost:8080/';
 
 
 const ViewEmployee = () => {
+    const { hasAuthority } = useAuth();
     const [employeeData, setEmployeeData] = useState<any>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [isLoadingTasks, setIsLoadingTasks] = useState(false);
@@ -270,6 +271,7 @@ const ViewEmployee = () => {
                                             <>Mostrar ({tasks.length}) <i className="bi bi-eye-fill"/></>
                                         )}
                                     </button>
+                                    {hasAuthority('PERMISSION_TAREAS_CREATE') && (
                                     <button 
                                         className="btn btn-success" 
                                         onClick={handleShowAddTask}
@@ -277,6 +279,7 @@ const ViewEmployee = () => {
                                     >
                                         Agregar <i className="bi bi-clipboard-plus-fill"/>
                                     </button>
+                                    )}
                                 </div>
                             </div>
                         </div>

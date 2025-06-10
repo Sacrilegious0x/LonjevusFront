@@ -4,7 +4,9 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import {login} from '../../services/AuthService' 
 import { succesAlert, errorAlert } from '../../js/alerts';
+import { useAuth } from '../../context/AuthContext';
 const Index = () => {
+    const { hasAuthority } = useAuth();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         userEmail: "",
@@ -30,7 +32,8 @@ const Index = () => {
          });
             succesAlert("Login exitoso!","Puede ingresar")
              console.log("Puede ingresar");
-             navigate("/roles_permisos");
+             navigate("/residente/mostrar")
+             
          
        } catch (error) {
             errorAlert("Credenciales incorrectas")

@@ -1,6 +1,6 @@
 import type { Contact } from "./ViewContactModal";
 import { useState, useEffect } from "react";
-
+import { useAuth } from '../context/AuthContext';
 interface AddContactProps {
     show: boolean;
     onClose: () => void;
@@ -13,7 +13,7 @@ interface AddContactProps {
 const AddContactModal: React.FC<AddContactProps> = ({ show, onClose, residentName, residentId, onAddContact, editingContact }) => {
     if (!show)
         return null
-    
+    const { hasAuthority } = useAuth();
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
     const [relationShip, setRelationship] = useState("");
@@ -53,9 +53,11 @@ const AddContactModal: React.FC<AddContactProps> = ({ show, onClose, residentNam
             <div className="modal-dialog">
                 <div className="modal-content">
 
-                    <div className="modal-header">
+                    <div className="modal-header">   
                         <h5 className="modal-title">Agregar contacto para {residentName}</h5>
+                        {hasAuthority('PERMISSION_CONTACTOS_VIEW') && (
                         <button type="button" className="btn-close" onClick={onClose}></button>
+                        )}
                     </div>
 
                     <div className="modal-body">
@@ -94,9 +96,11 @@ const AddContactModal: React.FC<AddContactProps> = ({ show, onClose, residentNam
                         <button className="btn btn-secondary" onClick={onClose}>
                             Cancelar
                         </button>
+                        {hasAuthority('PERMISSION_CONTACTOS_CREATE') && (
                         <button className="btn btn-primary" onClick={handleSubmit}>
                             Guardar
                         </button>
+                        )}
                     </div>
 
                 </div>

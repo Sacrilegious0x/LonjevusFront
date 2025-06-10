@@ -24,8 +24,7 @@ export interface VisitPayload {
 }
 export const getResidents = async (): Promise<ApiResident[]> => {
     try{
-        const response = await axios.get<ApiResident[]>('http://localhost:8080/residents')
-       
+        const response = await axios.get<ApiResident[]>('http://localhost:8080/public-list')      
         return response.data;
         
     }catch(error){

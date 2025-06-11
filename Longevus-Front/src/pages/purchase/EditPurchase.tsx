@@ -14,9 +14,10 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import { es } from "date-fns/locale/es";
 import "react-datepicker/dist/react-datepicker.css";
 import {
-  confirmDeleteAlert,
   succesAlert,
   errorAlert,
+  confirmExitAlert,
+  confirmDeletePurchaseAlert,
 } from "../../js/alerts";
 
 registerLocale("es", es);
@@ -30,6 +31,11 @@ const isValidDate = (dateString: string): boolean => {
     date.getMonth() === month - 1 &&
     date.getDate() === day
   );
+};
+
+const parseLocalISODate = (isoString: string): Date => {
+  const [year, month, day] = isoString.split("-").map(Number);
+  return new Date(year, month - 1, day); // mes: 0-based
 };
 
 const EditPurchase = () => {
@@ -150,13 +156,14 @@ const EditPurchase = () => {
     }
 
     if (items.length === 0) {
-      const result = await confirmDeleteAlert(
-        "No puedes guradar una compra sin productos. ¿Desea eliminar la compra?"
-      );
+      const result = await confirmDeletePurchaseAlert();
       if (result.isConfirmed && id) {
         try {
           await deletePurchase(id);
-          succesAlert("Compra eliminada", "La compra fue eliminada correctamente.");
+          succesAlert(
+            "Compra eliminada",
+            "La compra fue eliminada correctamente."
+          );
           navigate("/compras");
         } catch (error) {
           console.error("Error al eliminar la compra:", error);
@@ -192,12 +199,13 @@ const EditPurchase = () => {
   const handleBack = async () => {
     const hasChanges = JSON.stringify({ date, items }) !== initialData;
     if (hasChanges) {
-      const result = await confirmDeleteAlert("Salir sin guardar los cambios");
-if (!result.isConfirmed) return;
-navigate("/compras");
-
+      const result = await confirmExitAlert(
+        "Tienes cambios sin guardar. ¿Deseas salir?"
+      );
+      if (!result.isConfirmed) return;
+    }
+    navigate("/compras");
   };
-}
 
   return (
     <>
@@ -219,7 +227,7 @@ navigate("/compras");
             <div className="mb-3">
               <label className="form-label">Fecha</label>
               <DatePicker
-                selected={date ? new Date(date) : null}
+                selected={date ? parseLocalISODate(date) : null}
                 onChange={(date: Date | null) =>
                   setDate(date ? date.toISOString().split("T")[0] : "")
                 }
@@ -301,7 +309,7 @@ navigate("/compras");
                         <DatePicker
                           selected={
                             isValidDate(item.expirationDate)
-                              ? new Date(item.expirationDate)
+                              ? parseLocalISODate(item.expirationDate)
                               : null
                           }
                           onChange={(date: Date | null) => {
@@ -358,18 +366,19 @@ navigate("/compras");
             <div className="text-end mb-3">
               <strong>Total:</strong> ${getTotal().toFixed(2)}
             </div>
-            <button type="submit" className="btn btn-primary">
-              Guardar Cambios
-            </button>
           </fieldset>
-
           <div className="d-flex justify-content-start gap-2 mt-4">
             <button
               type="button"
               className="btn btn-secondary"
               onClick={handleBack}
             >
-              ← Volver
+              <i className="bi bi-reply me-1"></i>
+              Volver
+            </button>
+
+            <button type="submit" className="btn btn-primary">
+              Guardar Cambios
             </button>
           </div>
         </form>

@@ -32,3 +32,51 @@ export function errorAlert(message:string){
         timer: 3000
     });
 }
+
+export const confirmExitAlert = (text: string) => {
+  return Swal.fire({
+    icon: "warning",
+    title: "¿Estás seguro?",
+    text: text,
+    showCancelButton: true,
+    confirmButtonText: "Salir sin guardar",
+    cancelButtonText: "Cancelar",
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+  });
+};
+
+export const confirmDeletePurchaseAlert = () => {
+  return Swal.fire({
+    icon: "warning",
+    title: "Compra sin productos",
+    text: "No puedes guardar una compra vacía. ¿Deseas eliminarla?",
+    showCancelButton: true,
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "Cancelar",
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+  });
+};
+
+export function confirmEditAlert(message: string) {
+  return Swal.fire({
+    title: "¿Deseas Editar?",
+    text: message,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sí, continuar",
+    cancelButtonText: "Cancelar"
+  });
+}
+
+export function infoAlert(title: string, message: string) {
+  Swal.fire({
+    title,
+    text: message,
+    icon: "info",
+    timer: 3000,
+  });
+}

@@ -1,8 +1,6 @@
 import axios from "axios";
 
 
-
-
 export interface Administrator {
   id: number;
   name?: string;

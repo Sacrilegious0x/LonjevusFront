@@ -56,6 +56,8 @@ const AddResidentsToActivity = () => {
 
         if (selectedIds.length === 0) return;
 
+        const result = await con
+
         const confirmDelete = window.confirm(`¿Seguro que deseas agregar residente(s) a esta actividad?`);
         if (!confirmDelete) return;
 
@@ -157,7 +159,7 @@ const AddResidentsToActivity = () => {
                     <div className='card mt-5 mb-5'>
                         <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                             <h4>Lista de residentes</h4>
-                            <Link className='btn btn-success' to='/residente/agregar'><i className='bi bi-person-plus-fill' /></Link>
+                            <Link className='btn btn-secondary float-end' to={`/actividad/info/${id}`}><i className='bi bi-reply' /></Link>
                         </div>
                         <div className='card-body'>
                             {/*<label>Buscar</label>
@@ -182,7 +184,7 @@ const AddResidentsToActivity = () => {
 
                             {selectionMode && (
                                 <button
-                                    className="btn btn-danger mt-3"
+                                    className="btn btn-info mt-3"
                                     disabled={selectedRows.size === 0}
                                     onClick={handleAddSelectedResidents}
                                 >

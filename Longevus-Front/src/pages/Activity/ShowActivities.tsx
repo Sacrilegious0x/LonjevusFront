@@ -93,7 +93,7 @@ const Activities = () => {
                     <div className='card mt-5 mb-5'>
                         <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                             <h4>Lista de actividades</h4>
-                            <Link className='btn btn-success' to='/actividad/agregar'><i className='bi bi-person-plus-fill' /></Link>
+                            <Link className='btn btn-success' to='/actividad/agregar'><i className='bi bi-calendar-plus' /> Agregar</Link>
                         </div>
                         <div className='card-body'>
                             {activitiesData.length === 0 ? (

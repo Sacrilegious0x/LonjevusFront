@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { ResidentData } from "../../services/ResidentService";
 import ViewContactModal from "../../components/ViewContactModal";
 import AddContactModal from "../../components/AddContactModal";
-import type { Contact } from "../../components/ViewContactModal";
+import type { Contact } from "../../services/ContactService";
 import { useParams } from "react-router-dom";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
@@ -88,9 +88,11 @@ const ViewResident: React.FC = () => {
         <>
             <Header />
             <div className="container mt-5 mb-5">
-                <h2 className="mb-4">Información del Residente</h2>
                 <div className="card shadow p-4">
-
+                    <div className='card-title d-flex justify-content-between align-items-center mt-3'>
+                        <h2 className="mb-4">Información del Residente</h2>
+                        <Link className='btn btn-secondary float-end' to="/residente/mostrar"><i className="bi bi-reply" /> Volver</Link>
+                    </div>
                     {residentData?.photo && (
                         <div className=" mb-3">
                             <img
@@ -114,7 +116,6 @@ const ViewResident: React.FC = () => {
                         <button className="btn btn-info mt-3 ms-2" onClick={() => setShowContactModal(true)}>
                             Ver contactos
                         </button>
-                        <Link className='btn btn-secondary float-end' to="/residente/mostrar"><i className="bi bi-reply" /> Volver</Link>
                     </center>
 
                 </div>

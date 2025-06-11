@@ -1,14 +1,7 @@
 import { useState } from "react";
 import AddContactModal from "./AddContactModal";
 import type { Resident } from "../services/ResidentService";
-
-export interface Contact {
-    id: number;
-    resident: Resident;
-    name: string;
-    phoneNumber: string;
-    relationShip: string;
-}
+import type { Contact } from "../services/ContactService";
 
 interface ContactProps {
     show: boolean;

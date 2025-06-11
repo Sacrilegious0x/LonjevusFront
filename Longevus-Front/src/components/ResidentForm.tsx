@@ -1,16 +1,6 @@
 import React, { useState, useEffect, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
-
-export interface ResidentData {
-  id: number;
-  identification: string;
-  name: string;
-  birthdate: string,
-  age: number;
-  healthStatus: string;
-  numberRoom: number;
-  photo: File | null;
-}
+import type { ResidentData } from "../services/ResidentService";
 
 interface ResidentProps {
   onSubmit: (data: ResidentData) => void;

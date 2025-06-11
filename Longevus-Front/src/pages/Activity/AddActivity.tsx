@@ -4,6 +4,7 @@ import Footer from "../../components/Footer";
 import { type Activity, createActivity } from "../../services/ActivityService";
 import { useNavigate } from "react-router-dom";
 import { succesAlert, errorAlert } from "../../js/alerts";
+import { Link } from "react-router-dom";
 
 const AddActivity: React.FC = () => {
     const navigate = useNavigate();
@@ -26,7 +27,10 @@ const AddActivity: React.FC = () => {
             <div className="container">
                 <div className="row">
                     <div className="div_ResidentForm card mt-5 mb-5 border-primary">
-                        <h1 className="fw-bold text-uppercase">Agregar Actividad</h1>
+                        <div className='card-title d-flex justify-content-between align-items-center mt-3'>
+                            <h1 className="fw-bold text-uppercase">Agregar Actividad</h1>
+                            <Link className='btn btn-secondary float-end' to="/actividades/mostrar"><i className="bi bi-reply" /> Volver</Link>
+                        </div>
                         <AddActivtyForm onSubmit={handleCreateActivity} />
                     </div>
                 </div>

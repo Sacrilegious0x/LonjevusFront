@@ -1,12 +1,13 @@
-import type { Contact } from "./ViewContactModal";
+import type { Contact } from "../services/ContactService";
 import { useState, useEffect } from "react";
+import { errorAlert } from "../js/alerts";
 
 interface AddContactProps {
     show: boolean;
     onClose: () => void;
     residentName?: string;
     residentId: number | undefined;
-    onAddContact: (contact: Contact) => void; //para agregar un contacto
+    onAddContact: (contact: Contact) => void;
     editingContact?: Contact;
 }
 
@@ -31,7 +32,11 @@ const AddContactModal: React.FC<AddContactProps> = ({ show, onClose, residentNam
     }, [editingContact, show])
 
     const handleSubmit = () => {
-        if (!name || !phone || !relationShip) return alert("Completa todos los campos");
+
+        if (!name || !phone || !relationShip) {
+            errorAlert('Completa todos lo campos');
+            return;
+        }
 
         const newContact: Contact = {
             id: editingContact?.id ?? 0,
@@ -40,9 +45,6 @@ const AddContactModal: React.FC<AddContactProps> = ({ show, onClose, residentNam
             relationShip,
             resident: editingContact?.resident ?? { id: residentId! }
         };
-
-          console.log("Enviando contacto al backend:", JSON.stringify(newContact, null, 2));
-
 
         onAddContact(newContact);
         onClose();
@@ -68,7 +70,13 @@ const AddContactModal: React.FC<AddContactProps> = ({ show, onClose, residentNam
                                 type="text"
                                 className="form-control"
                                 value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (value !== "" && value.trim() === "") return;
+                                    if (/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(value)) {
+                                        setName(value);
+                                    }
+                                }}
                             />
                         </div>
 
@@ -78,7 +86,12 @@ const AddContactModal: React.FC<AddContactProps> = ({ show, onClose, residentNam
                                 type="tel"
                                 className="form-control"
                                 value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (/^\d*$/.test(value)) {
+                                        setPhone(value);
+                                    }
+                                }}
                             />
                         </div>
 
@@ -88,7 +101,13 @@ const AddContactModal: React.FC<AddContactProps> = ({ show, onClose, residentNam
                                 type="text"
                                 className="form-control"
                                 value={relationShip}
-                                onChange={(e) => setRelationship(e.target.value)}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (value !== "" && value.trim() === "") return;
+                                    if (/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(value)) {
+                                        setRelationship(value);
+                                    }
+                                }}
                             />
                         </div>
                     </div>

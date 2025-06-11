@@ -38,19 +38,35 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
     const target = e.target as HTMLInputElement;
     const { name, type, value, checked, files } = target;
 
-    //Validar que solo se puedan colocar letrar y espacios
+    if (name === "name" && value !== "" && value.trim() === "") {
+      return;
+    }
+    
     if (name === "name" && !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(value)) {
       return;
     }
-    //Validar que solo se puedan colocar números y guiones
+
     if (name === "identification") {
-      if (!/^[0-9-]*$/.test(value)) {
-        setErrors(prev => ({ ...prev, [name]: "Solo números y guiones permitidos" }));
+      if (!/^\d*$/.test(value)) {
+        return;
       }
-      if (value && !/^[0-9]-\d{4}-\d{4}$/.test(value)) {
-        setErrors(prev => ({ ...prev, [name]: "Formato inválido. Ej: 7-0323-0654" }));
+    }
+
+    if (name === "identification") {
+      if (!/^\d*$/.test(value)) {
+        return;
+      }
+
+      if (value.length > 0 && (value.length < 8 || value.length > 12)) {
+        setErrors(prev => ({
+          ...prev,
+          identification: "Debe tener entre 8 y 12 dígitos"
+        }));
       } else {
-        setErrors(prev => ({ ...prev, [name]: "" }));
+        setErrors(prev => ({
+          ...prev,
+          identification: ""
+        }));
       }
     }
 
@@ -69,24 +85,24 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const validIdentification = /^[0-9]-\d{4}-\d{4}$/.test(data.identification);
+    const validIdentification = /^\d{9,12}$/.test(data.identification);
 
     if (!validIdentification) {
-      errorAlert('Cáracteres de la cédula inválidos');
+      setErrors({ identification: "La identificación debe tener entre 9 y 12 digitos" });
       return;
     }
-    
+
     const requiredFields = [
-            "name", "identification", "birthdate", "healthStatus",
-            "numberRoom", "photo"
-        ];
+      "name", "identification", "birthdate", "healthStatus",
+      "numberRoom", "photo"
+    ];
 
-        const emptyFields = requiredFields.filter((field) => !data[field as keyof typeof data]);
+    const emptyFields = requiredFields.filter((field) => !data[field as keyof typeof data]);
 
-        if (emptyFields.length > 0) {
-            errorAlert("Por favor complete todos los campos antes de guardar.");
-            return;
-        }
+    if (emptyFields.length > 0) {
+      errorAlert("Por favor complete todos los campos antes de guardar.");
+      return;
+    }
 
 
     if (!data.photo && isEditing) {
@@ -108,7 +124,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           type="text"
           name="identification"
           value={data.identification}
-          placeholder="ej: 7-0323-0654"
+          placeholder="ej: 703230654"
           onChange={handleForm}
           className={`form-control ${errors.identification ? "is-invalid" : ""}`}
         />
@@ -173,7 +189,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
         />
       </div>
 
-      <button type="submit" className="btnAddResident">Guardar</button>
+      <button type="submit" className="btnAddResident float-end">Guardar</button>
     </form>
   );
 };

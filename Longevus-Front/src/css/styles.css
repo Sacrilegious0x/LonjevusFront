@@ -368,6 +368,12 @@ nav a {
 
 .btnAddResident {
   background: #422C20;
+  color: #FFFFFF
+}
+
+.btnAddActivity {
+  background: #422C20;
+  color: #FFFFFF
 }
 
 .btn-time-selected{

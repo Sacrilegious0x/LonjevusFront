@@ -28,7 +28,10 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
     useEffect(() => {
         if (initialData) {
             console.log("Cargando initialData en form:", initialData);
-            setData(initialData);
+            setData({
+                ...initialData,
+                caregiverId: initialData.caregiver?.id ?? 0
+            });
         }
     }, [initialData]);
 
@@ -75,6 +78,26 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
             .catch(err => console.error("Error al obtener cuidadores", err));
 
     }, []);
+
+    const getNext30Min = (time: string): string => {
+        const [hour, minute] = time.split(":").map(Number);
+        let newHour = hour;
+        let newMinute = minute + 30;
+
+        if (newMinute >= 60) {
+            newMinute = 0;
+            newHour += 1;
+        }
+
+        if (newHour > 22) {
+            return "22:00";
+        }
+
+        return `${newHour.toString().padStart(2, "0")}:${newMinute
+            .toString()
+            .padStart(2, "0")}`;
+    };
+
 
 
     return (
@@ -136,6 +159,7 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                     className="form-control"
                     min="07:00"
                     max="22:00"
+                    step={1800}
                 />
             </div>
 
@@ -147,10 +171,12 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                     value={data.endTime}
                     onChange={handleForm}
                     className="form-control"
-                    min={data.startTime || "07:00"}
+                    min={data.startTime ? getNext30Min(data.startTime) : "07:30"}
                     max="22:00"
+                    step={1800}
                 />
             </div>
+
 
             <div className="mb-3">
                 <label className="form-label">Localización</label>
@@ -187,7 +213,7 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                 </select>
             </div>
 
-            <button type="submit" className="btnAddCaregiver">Guardar</button>
+            <button type="submit" className="btnAddActivity float-end">Guardar</button>
         </form>
     );
 };

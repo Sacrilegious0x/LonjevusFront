@@ -9,6 +9,8 @@ import EditEmployee from './pages/Employee/EditEmployee';
 import ViewEmployee from './pages/Employee/VIewEmployee';
 import ShowResidents from './pages/Residents/ShowResidents';
 import AddResident from './pages/Residents/AddResident';
+import EditResident from './pages/Residents/EditResident';
+import ViewResident from './pages/Residents/ViewResident';
 import PurchasePage from './pages/purchase/PurchasePage';
 import EditPurchase from './pages/purchase/EditPurchase';
 import AddPurchase from './pages/purchase/AddPurchase';
@@ -18,8 +20,12 @@ import EditBilling from './pages/billing/EditBilling';
 import AddBilling from './pages/billing/AddBilling';
 import InactiveBillingsPage from "./pages/billing/InactiveBillingsPage";
 import InactivePurchasesPage from './pages/purchase/InactivePurchasesPage';
-import AddProduct from './pages/product/AddProduct';
-import EditProduct from './pages/product/EditProduct';
+import ShowActivities from './pages/Activity/ShowActivities';
+import AddActivity from './pages/Activity/AddActivity';
+import EditActivity from './pages/Activity/EditActivity';
+import ViewActivity from './pages/Activity/ViewActivity';
+import ShowResidentsFromActivity from './pages/Activity/ShowResidentsFromActivity';
+import AddResidentsToActivity from './pages/Activity/AddResidentToActivity';
 
 function App() {
   return (
@@ -35,6 +41,8 @@ function App() {
         <Route path='/empleado/perfil/:id' element={< ViewEmployee/>}/>
         <Route path='/residente/mostrar' element={<ShowResidents/>}/>
         <Route path='/residente/agregar' element={<AddResident/>}/>
+        <Route path="/residente/editar/:id" element={<EditResident />} /> 
+        <Route path="/residente/perfil/:id" element={<ViewResident />} /> 
         <Route path="/compras" element={<PurchasePage />} />
         <Route path="/compras/editar/:id" element={<EditPurchase />} /> 
         <Route path="/compras/agregar" element={<AddPurchase />} />
@@ -44,8 +52,12 @@ function App() {
         <Route path="/facturas/nueva" element={<AddBilling />} />
         <Route path="/facturas/inactivas" element={<InactiveBillingsPage />} />
         <Route path="/compras/inactivas" element={<InactivePurchasesPage />} />
-        <Route path="/productos/agregar" element={<AddProduct />} />
-        <Route path="/productos/editar/:id" element={<EditProduct />} />
+        <Route path="/actividades/mostrar" element={<ShowActivities />} />
+        <Route path="/actividad/agregar" element={<AddActivity />} />
+        <Route path="/actividad/editar/:id" element={<EditActivity />} />
+        <Route path="/actividad/info/:id" element={<ViewActivity />} />
+        <Route path="/actividad/info/residentes/:id" element={<ShowResidentsFromActivity />} />
+        <Route path="/actividad/info/residentes/agregar/:id" element={<AddResidentsToActivity />} />
         </Routes>
     </BrowserRouter>
   );

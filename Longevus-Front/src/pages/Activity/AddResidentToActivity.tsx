@@ -7,7 +7,7 @@ import { getResidentsByActivityId, addResidentFromActivity } from "../../service
 import { useState, useEffect } from "react";
 import { type Resident, getResidents } from "../../services/ResidentService";
 import { Link } from "react-router-dom";
-import { succesAlert, errorAlert } from "../../js/alerts";
+import { succesAlert, errorAlert, confirmAlert } from "../../js/alerts";
 
 const AddResidentsToActivity = () => {
 
@@ -56,27 +56,29 @@ const AddResidentsToActivity = () => {
 
         if (selectedIds.length === 0) return;
 
-        const result = await con
+        const result = await confirmAlert('los residentes seleccionados');
 
-        const confirmDelete = window.confirm(`¿Seguro que deseas agregar residente(s) a esta actividad?`);
-        if (!confirmDelete) return;
+        if (result.isConfirmed) {
 
-        try {
-            for (const residentId of selectedIds) {
-                console.log('Agregar residente ID:', residentId);
-                await addResidentFromActivity(Number(id), residentId);
+            try {
+                for (const residentId of selectedIds) {
+                    console.log('Agregar residente ID:', residentId);
+                    await addResidentFromActivity(Number(id), residentId);
+                }
+                const updatedOutResidents = residentsOutActivity.filter(
+                    (resident) => !selectedRows.has(resident.id)
+                );
+                setResidentOutActivity(updatedOutResidents);
+
+                setSelectedRows(new Set());
+
+                succesAlert('Agregados', 'Residente(s) agregados con éxito');
+            } catch (error) {
+                console.error("Error al agregar residentes:", error);
+                errorAlert('Error al agregar residentes a la actividad')
             }
-            const updatedOutResidents = residentsOutActivity.filter(
-                (resident) => !selectedRows.has(resident.id)
-            );
-            setResidentOutActivity(updatedOutResidents);
-
-            setSelectedRows(new Set());
-
-            succesAlert('Agregados', 'Residente(s) agregados con éxito');
-        } catch (error) {
-            console.error("Error al agregar residentes:", error);
-            errorAlert('Error al agregar residentes a la actividad')
+        } else {
+            return;
         }
     };
 
@@ -158,7 +160,7 @@ const AddResidentsToActivity = () => {
                 <div className='row'>
                     <div className='card mt-5 mb-5'>
                         <div className='card-title d-flex justify-content-between align-items-center mt-3'>
-                            <h4>Lista de residentes</h4>
+                            <h4>Lista de residentes disponibles</h4>
                             <Link className='btn btn-secondary float-end' to={`/actividad/info/${id}`}><i className='bi bi-reply' /></Link>
                         </div>
                         <div className='card-body'>

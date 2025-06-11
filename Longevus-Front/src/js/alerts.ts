@@ -15,6 +15,18 @@ export function confirmDeleteAlert(param: string){
   })
 }
 
+export function confirmAlert(param: string){
+    return Swal.fire({
+      title: `¿Estas seguro que deseas agregar a ${param}?`,
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Agregar",
+      cancelButtonText: "Cancelar"
+  })
+}
+
 export function succesAlert(title: string, message: string){
   Swal.fire({
         title: title,

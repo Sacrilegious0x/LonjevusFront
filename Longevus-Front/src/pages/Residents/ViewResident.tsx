@@ -68,7 +68,7 @@ const ViewResident: React.FC = () => {
     };
 
     const handleDeleteContact = async (contactId: number) => {
-        const result = await confirmDeleteAlert('')
+        const result = await confirmDeleteAlert('este contacto')
 
         if (result.isConfirmed) {
             deleteContact(contactId).then(() => {

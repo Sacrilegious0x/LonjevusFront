@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Activity } from "../services/ActivityService";
 import { getAllCaregivers, type CaregiverApiResponse } from "../services/CaregiverService";
+import { errorAlert } from "../js/alerts";
 
 interface ActivityProps {
     onSubmit: (data: Activity) => void;
@@ -36,6 +37,9 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
         const target = e.target as HTMLInputElement;
         const { name, type, value } = target;
 
+        if ((name === "name" || name === "description") && value !== "" && value.trim() === "") {
+            return;
+        }
         setData(prev => ({
             ...prev, //version anterior del form
             [name]: type === 'number' ? Number(value) : value,
@@ -45,6 +49,20 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        const requiredFields = [
+            "name", "description", "type", "date",
+            "startTime", "endTime", "location", "status", "caregiverId"
+        ];
+
+        const emptyFields = requiredFields.filter((field) => !data[field as keyof typeof data]);
+
+        if (emptyFields.length > 0) {
+            errorAlert("Por favor complete todos los campos antes de guardar.");
+            return;
+        }
+
+
         onSubmit(data);
         console.log(data);
     };
@@ -68,7 +86,6 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                     type="text"
                     name="name"
                     value={data.name}
-                    readOnly={isEditing}
                     onChange={handleForm}
                     className="form-control"
                 />
@@ -89,6 +106,7 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                 <label className="form-label">Tipo</label>
                 <select name="type" value={data.type}
                     onChange={handleForm} className="form-select">
+                    <option value="">Seleccione un tipo</option>
                     <option value="Recreativa">Recreativa</option>
                     <option value="Física">Física</option>
                     <option value="Educativa">Educativa</option>
@@ -149,6 +167,7 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                 <label className="form-label">Estado</label>
                 <select name="status" value={data.status}
                     onChange={handleForm} className="form-select">
+                    <option value="">Seleccione el estado de la actividad</option>
                     <option value="Pendiente">Pendiente</option>
                     <option value="En progreso">En progreso</option>
                     <option value="Finalizada">Finalizada</option>
@@ -159,6 +178,7 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
             <div className="mb-3">
                 <label className="form-label">Encargado(a)</label>
                 <select name="caregiverId" value={data.caregiverId} onChange={handleForm} className="form-select">
+                    <option value="">Seleccione el encargado</option>
                     {caregivers.map((c) => (
                         <option key={c.id} value={c.id}>
                             {c.name}

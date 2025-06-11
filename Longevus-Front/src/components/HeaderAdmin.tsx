@@ -9,11 +9,10 @@ const Header = () => {
     const { logout } = useAuth();
     const navigate = useNavigate();
     const handleLogout = () => {
-        logout();          // Limpia localStorage y estado
-        navigate('/login'); // Redirige al login
+        logout();   
+        navigate('/login'); 
     };
     const [menuActive, setMenuActive] = useState<string | null>(null);
-
     return (
         <header className="header">
             <div className="container-fluid d-flex align-items-center justify-content-between flex-wrap py-3">
@@ -153,13 +152,11 @@ const Header = () => {
                             {menuActive === 'user' && (
                                 <ul className="sub_ul-actions">
                                     <li className="sub_ul-actions-li">
-                                        <Link className="sub_menu-options" to="/empleado/perfil/:id">Ver Perfil</Link>
-                                    </li>
-                                    <li className="sub_ul-actions-li">
+                                        <Link className="sub_menu-options" to="/perfil">Ver Perfil</Link>
+                                    </li>                                   
                                         <li className="sub_ul-actions-li" onClick={handleLogout}>
                                             <span className="sub_menu-options">Cerrar sesión</span>
                                         </li>
-                                    </li>
                                 </ul>
                             )}
 

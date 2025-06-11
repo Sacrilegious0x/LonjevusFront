@@ -15,7 +15,7 @@ export function confirmDeleteAlert(param: string){
 }
 
 export function succesAlert(title: string, message: string){
-  Swal.fire({
+  return Swal.fire({
         title: title,
         text: message,
         icon: "success",

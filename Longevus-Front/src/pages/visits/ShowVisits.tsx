@@ -6,6 +6,7 @@ import { getAllVisits, deleteVisit } from '../../services/VisitService';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { confirmDeleteAlert, succesAlert, errorAlert } from '../../js/alerts';
+import { useAuth } from '../../context/AuthContext';
 interface IVisitData {
     id: number,
     name: string,
@@ -22,6 +23,7 @@ interface IVisitData {
 }
 
 const showVisits = () => {
+    const {hasAuthority} = useAuth();
     const navigate = useNavigate();
     const [visitData, setVisitData] = useState<IVisitData[]>([]);
     const [loading, setLoading] = useState(true);

@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import Table from '../../components/TableBasic';
 import { useState, useEffect } from "react";
 import { deleteSupplier, getSuppliers } from "../../services/SupplierService";
-
+import { useAuth } from "../../context/AuthContext";
 
 interface ISupplier{
     id: number,
@@ -19,7 +19,7 @@ interface ISupplier{
 }
 
 const SuppliersList = () =>{
-
+  const {hasAuthority} = useAuth();
   const [supplierData, setSupplierData] = useState<ISupplier[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);

@@ -144,9 +144,9 @@ const EditVisit = () => {
                                     onChange={handleChange}
                                     readOnly/>
                                 </div>
-                                <div className="d-grid">
+                                <div className="me-3">
                                 <button type="submit" className="btn btn-success">Guardar</button>
-                                <button className="btn btn-secondary" onClick={()=> navigate("/residente/visitas")}>Cancelar</button>
+                                <button type="button"className="btn btn-secondary" onClick={()=> navigate("/residente/visitas")}>Cancelar</button>
                             </div>
                             </form>
 

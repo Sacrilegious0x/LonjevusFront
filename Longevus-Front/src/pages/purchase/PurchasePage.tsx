@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import StandardTable, { type Column } from "../../components/StandardTable";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import axios from "axios";
-
+import { useAuth } from "../../context/AuthContext";
 
 interface PurchaseItem {
   productName: string;
@@ -22,6 +22,7 @@ interface Purchase {
 }
 
 const PurchasePage = () => {
+  const {hasAuthority} = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedPurchase, setSelectedPurchase] = useState<Purchase | null>(null);

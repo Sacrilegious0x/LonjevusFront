@@ -5,6 +5,7 @@ import Header from '../../components/HeaderAdmin';
 import { useState } from 'react';
 import { createCaregiver } from '../../services/CaregiverService';
 import Footer from '../../components/Footer';
+import { succesAlert, errorAlert } from '../../js/alerts';
 const AddEmployee = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +20,7 @@ const AddEmployee = () => {
             const response = await createCaregiver(formData);
 
             console.log("Empleado creado exitosamente:", response);
-            alert("Empleado agregado exitosamente!");
+            succesAlert("Nuevo empleado","Empleado agregado exitosamente!");
             navigate('/empleado/mostrar');
 
         } catch (err: any) {

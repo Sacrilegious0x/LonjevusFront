@@ -55,7 +55,7 @@ const AddContactModal: React.FC<AddContactProps> = ({ show, onClose, residentNam
 
                     <div className="modal-header">   
                         <h5 className="modal-title">Agregar contacto para {residentName}</h5>
-                        {hasAuthority('PERMISSION_CONTACTOS_VIEW') && (
+                        {hasAuthority('PERMISSION_CONTACTOS_CREATE') && (
                         <button type="button" className="btn-close" onClick={onClose}></button>
                         )}
                     </div>

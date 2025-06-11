@@ -7,7 +7,7 @@ import type { IShift } from '../../components/HourSelector';
 import Header from '../../components/HeaderAdmin';
 import Footer from '../../components/Footer';
 import type { Task } from '../../services/TaskService';
-import { getCaregiverTask, updateTask, deleteTask} from '../../services/TaskService';
+import { getCaregiverTask, updateTask, deleteTask } from '../../services/TaskService';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 const BACKEND_URL = 'http://localhost:8080/';
@@ -20,7 +20,10 @@ const ViewEmployee = () => {
     const [isLoadingTasks, setIsLoadingTasks] = useState(false);
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
-    
+
+
+
+
     // Cargar datos del empleado
     useEffect(() => {
         if (id) {
@@ -31,11 +34,11 @@ const ViewEmployee = () => {
                 })
                 .catch(error => {
                     console.error("Error al obtener cuidador:", error);
-                    
+
                 });
         }
     }, [id, navigate]);
-    
+
     // Cargar tareas del empleado
     useEffect(() => {
         if (id) {
@@ -53,13 +56,13 @@ const ViewEmployee = () => {
                 });
         }
     }, [id]);
-    
+
     // Procesar los datos del schedule si existen
     const workScheduleData = useMemo(() => {
         if (!employeeData?.schedule) return [];
-        
+
         const scheduleInfo: IShift[] = [];
-        
+
         if (employeeData.schedule.entryTime1) {
             scheduleInfo.push({
                 id: '1',
@@ -67,7 +70,7 @@ const ViewEmployee = () => {
                 exitTime: employeeData.schedule.exitTime1
             });
         }
-        
+
         if (employeeData.schedule.entryTime2) {
             scheduleInfo.push({
                 id: '2',
@@ -75,16 +78,16 @@ const ViewEmployee = () => {
                 exitTime: employeeData.schedule.exitTime2
             });
         }
-        
+
         return scheduleInfo.length > 0 ? scheduleInfo : [];
     }, [employeeData?.schedule]);
-    
+
     // Procesar los días seleccionados
     const selectedDaysData = useMemo(() => {
         if (!employeeData?.schedule?.days) return [];
         return employeeData?.schedule.days.split(',').map((day: string) => day.trim());
     }, [employeeData?.schedule?.days]);
-    
+
     // Procesar los turnos seleccionados
     const selectedShiftsData = useMemo(() => {
         if (!employeeData?.shift) return [];
@@ -144,15 +147,15 @@ const ViewEmployee = () => {
                 ...editingTask,
                 description: editingTaskDescription.trim()
             };
-            
+
             await updateTask(updatedTask);
-            
+
             // Recargar tareas después de actualizar
             if (id) {
                 const freshTasks = await getCaregiverTask(id);
                 setTasks(freshTasks || []);
             }
-            
+
             handleCancelEdit();
         } catch (error) {
             console.error("Error al actualizar tarea:", error);
@@ -168,13 +171,13 @@ const ViewEmployee = () => {
     const handleDeleteTask = async (taskId: number | string) => {
         try {
             await deleteTask(Number(taskId));
-            
+
             // Recargar tareas después de eliminar
             if (id) {
                 const freshTasks = await getCaregiverTask(id);
                 setTasks(freshTasks || []);
             }
-            
+
             // Si la tarea eliminada era la que se estaba editando, cancelar edición
             if (editingTask?.id === taskId) {
                 handleCancelEdit();
@@ -187,13 +190,29 @@ const ViewEmployee = () => {
 
     const hasItems = (arr?: any[]) => Array.isArray(arr) && arr.length > 0;
 
-    return(
+    const formattedSalary = useMemo(() => {
+        const salary = Number(employeeData?.salary);
+        const formateadorCRC = new Intl.NumberFormat('es-CR', {
+            style: 'currency',
+            currency: 'CRC',
+        });
+        if (!salary) return '';
+        try {
+            return formateadorCRC.format(salary);
+        } catch (e) {
+            console.error("Error formateando salario:", e);
+            return salary;
+        }
+
+    }, [employeeData?.salary]);
+
+    return (
         <>
-            <Header/>
+            {/* <Header /> */}
             <div className="container mt-5">
                 <div className="card m-5">
                     <div className="row g-0">
-                     
+
                         <div className="col-md-4 text-center p-3">
                             <img
                                 src={imageUrl}
@@ -204,20 +223,20 @@ const ViewEmployee = () => {
                             <h5 className="card-title mt-3"><strong>Nombre: </strong>{employeeData?.name}</h5>
                             <p className="card-text"><strong>Identificación:</strong> {employeeData?.identification}</p>
                             <p className="card-text"><strong>Email:</strong> {employeeData?.email}</p>
-                            <p className="card-text"><strong>Salario:</strong> ${Number(employeeData?.salary).toFixed(2)}</p>
+                            <p className="card-text"><strong>Salario:</strong> {formattedSalary}</p>
                         </div>
 
-                     
+
                         <div className="col-md-8">
                             <div className="card-body">
-                               
-                                <Link className='btn btn-secondary float-end' to="/empleado/mostrar"><i className="bi bi-reply"/> Volver</Link>
+
+                                <Link className='btn btn-secondary float-end' to="/empleado/mostrar"><i className="bi bi-reply" /> Volver</Link>
                                 <div className="card-text">
-                                    
+
                                     <strong>Días de trabajo:</strong>
                                     {hasItems(selectedDaysData) ? (
                                         <ul>
-                                            {selectedDaysData.map((day:string, index: number) => (
+                                            {selectedDaysData.map((day: string, index: number) => (
                                                 <li key={index}>{day}</li>
                                             ))}
                                         </ul>
@@ -226,7 +245,7 @@ const ViewEmployee = () => {
                                     )}
                                 </div>
 
-                               
+
                                 <div className="card-text">
                                     <strong>Horario de trabajo:</strong>
                                     {hasItems(workScheduleData) ? (
@@ -240,12 +259,12 @@ const ViewEmployee = () => {
                                     )}
                                 </div>
 
-                              
+
                                 <div className="card-text">
                                     <strong>Turnos seleccionados:</strong>
                                     {hasItems(selectedShiftsData) ? (
                                         <ul>
-                                            {selectedShiftsData.map((shift:string, index:number) => (
+                                            {selectedShiftsData.map((shift: string, index: number) => (
                                                 <li key={index}>{shift}</li>
                                             ))}
                                         </ul>
@@ -254,31 +273,33 @@ const ViewEmployee = () => {
                                     )}
                                 </div>
 
-                                <hr/> 
+                                <hr />
                                 <h6>Gestión de Tareas Pendientes</h6>
-                                <div className="d-flex gap-2"> 
-                                    <button 
-                                        className="btn btn-primary" 
-                                        onClick={handleShowViewTasks}
-                                        disabled={isLoadingTasks}
-                                    >
-                                        {isLoadingTasks ? (
-                                            <>
-                                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                                Cargando...
-                                            </>
-                                        ) : (
-                                            <>Mostrar ({tasks.length}) <i className="bi bi-eye-fill"/></>
-                                        )}
-                                    </button>
+                                <div className="d-flex gap-2">
+                                    {hasAuthority('PERMISSION_TAREAS_VIEW') && (
+                                        <button
+                                            className="btn btn-primary"
+                                            onClick={handleShowViewTasks}
+                                            disabled={isLoadingTasks}
+                                        >
+                                            {isLoadingTasks ? (
+                                                <>
+                                                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                    Cargando...
+                                                </>
+                                            ) : (
+                                                <>Mostrar ({tasks.length}) <i className="bi bi-eye-fill" /></>
+                                            )}
+                                        </button>
+                                    )}
                                     {hasAuthority('PERMISSION_TAREAS_CREATE') && (
-                                    <button 
-                                        className="btn btn-success" 
-                                        onClick={handleShowAddTask}
-                                        disabled={isLoadingTasks}
-                                    >
-                                        Agregar <i className="bi bi-clipboard-plus-fill"/>
-                                    </button>
+                                        <button
+                                            className="btn btn-success"
+                                            onClick={handleShowAddTask}
+                                            disabled={isLoadingTasks}
+                                        >
+                                            Agregar <i className="bi bi-clipboard-plus-fill" />
+                                        </button>
                                     )}
                                 </div>
                             </div>
@@ -287,9 +308,9 @@ const ViewEmployee = () => {
                 </div>
             </div>
 
-         
 
-            
+
+
             <ViewTasksModal
                 show={showViewTasksModal}
                 onClose={handleCloseViewTasks}
@@ -304,7 +325,7 @@ const ViewEmployee = () => {
                 onDeleteTask={handleDeleteTask}
             />
 
-           
+
             <AddTaskModal
                 show={showAddTaskModal}
                 onClose={handleCloseAddTask}
@@ -312,7 +333,7 @@ const ViewEmployee = () => {
                 caregiverId={id}
                 onTaskAdded={handleTaskAdded}
             />
-            <Footer/>
+            {/* <Footer /> */}
         </>
     );
 }

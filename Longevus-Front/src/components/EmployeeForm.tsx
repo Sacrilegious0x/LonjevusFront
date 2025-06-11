@@ -9,8 +9,8 @@ export interface EmployeeFormData {
     name: string;
     identification: string;
     email: string;
-    password: string; // Nota: La contraseña NO se carga para edición, generalmente se deja vacía.
-    photo: File | null; // Nota: La foto File NO se carga para edición, se maneja de forma diferente (URL existente + nueva carga).
+    password: string; 
+    photo: File | null;
     salary: string;
     selectedDays: string[];
     workSchedule: IShift[];
@@ -52,7 +52,7 @@ const EmployeeForm = ({initialData, onSubmit, onCancel, showShiftSelector = fals
     console.log("showDaySelector:", showDaySelector, typeof showDaySelector);
     console.log("showHourSelector:", showHourSelector, typeof showHourSelector);
     console.log("showOfficeContactField:", showOfficeContactField, typeof showOfficeContactField); // Para comparar
-
+    
     const [formData, setFormData] = useState<EmployeeFormData>(()=>{
         if(initialData){
             return{
@@ -158,6 +158,7 @@ const EmployeeForm = ({initialData, onSubmit, onCancel, showShiftSelector = fals
             ...formData,
             scheduleId: initialData?.scheduleId ?? formData.scheduleId,
         };
+    
         onSubmit(finalFormData, initialData?.id);
         console.log("Form Data Submitted:", JSON.stringify(formData, null, 2));
     };

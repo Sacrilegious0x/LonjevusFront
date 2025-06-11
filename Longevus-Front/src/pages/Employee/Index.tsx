@@ -1,17 +1,26 @@
-import { useState, type ChangeEvent, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect,useState, type ChangeEvent, type FormEvent } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import {login} from '../../services/AuthService' 
 import { succesAlert, errorAlert } from '../../js/alerts';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 const Index = () => {
-    const { hasAuthority } = useAuth();
     const navigate = useNavigate();
+    const { login, isAuthenticated, loginSuccess } = useAuth();
     const [formData, setFormData] = useState({
         userEmail: "",
         password: ""
     });
+
+    useEffect(() => {
+        if (loginSuccess) {    
+            succesAlert("Login exitoso!","Puede ingresar").
+            then(()=>{
+                 navigate('/perfil');
+            });     
+           
+        }
+    }, [loginSuccess, navigate]);
 
     const handleForm = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -30,9 +39,11 @@ const Index = () => {
             email: formData.userEmail,
             password: formData.password
          });
-            succesAlert("Login exitoso!","Puede ingresar")
+         
+            
              console.log("Puede ingresar");
-             navigate("/residente/mostrar")
+             
+             //navigate("/perfil")
              
          
        } catch (error) {

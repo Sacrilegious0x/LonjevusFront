@@ -1,14 +1,19 @@
 // src/context/AuthContext.tsx
+
 import { createContext, useState, useContext, useEffect, type ReactNode, useCallback, useMemo } from 'react';
-import { login as loginService, logout as logoutService, type ILoginCredentials } from '../services/AuthService';
+import { login as loginService, logout as logoutService, type ILoginCredentials, type UserProfile } from '../services/AuthService';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 interface AuthContextType {
   isAuthenticated: boolean;
   authorities: string[];
   login: (credentials: ILoginCredentials) => Promise<void>;
   logout: () => void;
   hasAuthority: (permission: string) => boolean;
-  refreshAuthorities: (newAuthorities: string[]) => void;
+  user: UserProfile | null;
+  loginSuccess: boolean;
+  loading: boolean;
+  
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -16,49 +21,67 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [authorities, setAuthorities] = useState<string[]>([]);
-
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [loginSuccess, setLoginSuccess] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  
+  // EFECTO CORREGIDO: Usa las claves correctas de tu localStorage
   useEffect(() => {
-    // Al cargar la app, revisa si hay datos de sesión en localStorage
     const token = localStorage.getItem('accessToken');
+    const storedUser = localStorage.getItem('userProfile');
     const storedAuthorities = localStorage.getItem('userAuthorities');
-    if (token && storedAuthorities) {
-      setIsAuthenticated(true);
-      setAuthorities(JSON.parse(storedAuthorities));
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    
+    if (token && storedAuthorities && storedUser) {
+      try {
+        setIsAuthenticated(true);
+        setAuthorities(JSON.parse(storedAuthorities));
+        setUser(JSON.parse(storedUser) as UserProfile);
+        // Restaura el header de Axios para las peticiones futuras en esta sesión
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      } catch (error) {
+        console.error("Error al parsear datos de sesión desde localStorage", error);
+        logoutService(); // Si los datos están corruptos, cerramos sesión.
+      }
     }
+    setLoading(false);
   }, []);
 
-  const refreshAuthorities = useCallback ((newAuthorities: string[]) => {
-    setAuthorities(newAuthorities);
-    localStorage.setItem('userAuthorities', JSON.stringify(newAuthorities));
-    console.log("Permisos del usuario actualizados en el frontend!");
-  }, []);
-
+  // Lógica de login simplificada y robusta
   const login = useCallback(async (credentials: ILoginCredentials) => {
     const response = await loginService(credentials);
-    // Usamos la función refreshAuthorities para mantener la lógica en un solo lugar
-    refreshAuthorities(response.authorities); 
     setIsAuthenticated(true);
-  }, [refreshAuthorities]);
+    setAuthorities(response.authorities || []);
+    setUser(response.user || null);
+    setLoginSuccess(true);
+  
+   
+  }, []);
 
+  // Lógica de logout que limpia todo
   const logout = useCallback(() => {
     logoutService();
     setAuthorities([]);
     setIsAuthenticated(false);
+    setUser(null);
+    setLoginSuccess(false);
   }, []);
 
-  // Función de ayuda para verificar permisos fácilmente
   const hasAuthority = useCallback((authority: string) => {
     return authorities.includes(authority);
   }, [authorities]);
+  
+  // El `useMemo` que asegura la reactividad con las dependencias correctas
   const contextValue = useMemo(() => ({
     isAuthenticated,
     authorities,
+    user,
     login,
     logout,
     hasAuthority,
-    refreshAuthorities
-  }), [isAuthenticated, authorities, login, logout, hasAuthority, refreshAuthorities]);
+    loginSuccess,
+    loading
+   
+  }), [isAuthenticated, authorities, user, login, logout, hasAuthority,loginSuccess,loading]);
 
   return (
     <AuthContext.Provider value={contextValue}>
@@ -67,7 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// Hook personalizado para usar el contexto de forma simple en otros componentes
+// Hook personalizado
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

@@ -57,6 +57,7 @@ const EditEmployee =()=>{
                         scheduleId: dbScheduleId, 
                     };
 
+                    console.log("URL DE LA FOTO ", apiData.photoUrl);
                     console.log("Datos del cuidador recibidos (crudos API):", apiData);
                     console.log("Datos iniciales para el formulario (transformados):", initialData);
 

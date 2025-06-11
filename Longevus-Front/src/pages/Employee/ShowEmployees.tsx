@@ -89,7 +89,7 @@ const ShowEmployee = () => {
                 try {
                     return formateadorCRC.format(salary); 
                 } catch (e) {
-                    console.error("Error formateando hora:", e);
+                    console.error("Error formateando salario:", e);
                     return salary;
                 }
             }
@@ -123,7 +123,7 @@ const ShowEmployee = () => {
     if (loading) return <div className="container mt-5">Cargando cuidadores...</div>;
     return (
         <>
-            <Header />
+            {/* <Header /> */}
             <div className='container'>
                 <div className='row'>
                     <div className='card mt-5 mb-5'>
@@ -144,7 +144,7 @@ const ShowEmployee = () => {
                 </div>
 
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </>
 
     )

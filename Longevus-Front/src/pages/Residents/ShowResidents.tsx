@@ -5,7 +5,7 @@ import type { columnDefinition } from '../../components/TableBasic';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import { useAuth } from "../../context/AuthContext";
 interface Resident {
     id: number,
     identification: string,
@@ -22,7 +22,7 @@ interface Resident {
 ];*/
 
 const Residents = () => {
-
+    const { hasAuthority } = useAuth();
     const navigate = useNavigate();
     const [userData, setUserData] = useState<Resident[]>([]);
 
@@ -69,17 +69,21 @@ const Residents = () => {
         {
             header: 'Acciones', accessor: (person) => person,
             Cell: (resident) => (
-                <>
+                <>  {hasAuthority('PERMISSION_RESIDENTES_VIEW') && (
                     <a className='btn btn-info me-2' onClick={() => navigate(`/residente/perfil/${resident.id}`)}>
                         <i className='bi bi-eye' />
                     </a>
-                    <a className='btn btn-warning me-2' onClick={() => navigate(`/residente/editar/${resident.id}`)}>
-                        <i className='bi bi-pencil-square' />
-                    </a>
-
-                    <a className='btn btn-danger me-2' onClick={() => handleDeleteResident(resident)}>
-                        <i className="bi bi-trash" />
-                    </a>
+                )}
+                    {hasAuthority('PERMISSION_RESIDENTES_UPDATE') && (
+                        <a className='btn btn-warning me-2' onClick={() => navigate(`/residente/editar/${resident.id}`)}>
+                            <i className='bi bi-pencil-square' />
+                        </a>
+                    )}
+                    {hasAuthority('PERMISSION_RESIDENTES_DELETE') && (
+                        <a className='btn btn-danger me-2' onClick={() => handleDeleteResident(resident)}>
+                            <i className="bi bi-trash" />
+                        </a>
+                    )}
 
                 </>
             )
@@ -95,7 +99,9 @@ const Residents = () => {
                     <div className='card mt-5 mb-5'>
                         <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                             <h4>Lista de residentes</h4>
-                            <Link className='btn btn-success' to='/residente/agregar'><i className='bi bi-person-plus-fill'/></Link>
+                            {hasAuthority('PERMISSION_RESIDENTES_CREATE') && (
+                                <Link className='btn btn-success' to='/residente/agregar'><i className='bi bi-person-plus-fill' /></Link>
+                            )}
                         </div>
                         <div className='card-body'>
                             <label>Buscar</label>

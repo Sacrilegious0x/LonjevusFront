@@ -1,15 +1,52 @@
 import React, { useState, useEffect } from "react";
+import DatePicker, { registerLocale } from "react-datepicker";
+import { es } from "date-fns/locale/es";
+import "react-datepicker/dist/react-datepicker.css";
+
 import StandardTable, { type Column } from "../../components/StandardTable";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
-import Swal from "sweetalert2";
+import {
+  succesAlert,
+  errorAlert,
+  confirmDeleteAlert,
+  confirmEditAlert,
+} from "../../js/alerts";
 import {
   getAllPurchases,
   deletePurchase,
   type Purchase,
 } from "../../services/PurchaseService";
+
+registerLocale("es", es);
+
+const formatDate = (isoString: string): string => {
+  if (!isoString) return "";
+  const [year, month, day] = isoString.split("-");
+  return `${day}/${month}/${year}`;
+};
+
+type CustomInputProps = {
+  value?: string;
+  onClick?: () => void;
+};
+
+const CustomInput = React.forwardRef<HTMLInputElement, CustomInputProps>(
+  ({ value, onClick }, ref) => (
+    <input
+      type="text"
+      className="form-control"
+      value={value}
+      onClick={onClick}
+      ref={ref}
+      placeholder="Mes/Año"
+      readOnly
+    />
+  )
+);
+
+CustomInput.displayName = "CustomInput";
 
 const PurchasePage = () => {
   const navigate = useNavigate();
@@ -18,28 +55,42 @@ const PurchasePage = () => {
     null
   );
   const [purchases, setPurchases] = useState<Purchase[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const loadPurchases = async () => {
     try {
       const data = await getAllPurchases();
-      setPurchases(data);
+      let filtered = data;
+
+      if (selectedDate) {
+        filtered = data.filter((item) => {
+          const itemDate = new Date(item.date);
+          return (
+            itemDate.getMonth() === selectedDate.getMonth() &&
+            itemDate.getFullYear() === selectedDate.getFullYear()
+          );
+        });
+      }
+
+      setPurchases(filtered);
     } catch (error) {
       console.error("Error al obtener compras:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "No se pudieron cargar las compras.",
-      });
+      errorAlert("No se pudieron cargar las compras.");
     }
   };
 
   useEffect(() => {
     loadPurchases();
-  }, [location]);
+  }, [location, selectedDate]);
 
   const columns: Column<Purchase>[] = [
     { header: "#", accessor: "date", render: (_item, index) => index + 1 },
-    { header: "Fecha", accessor: "date" },
+    { header: "ID Compra", accessor: "id" },
+    {
+      header: "Fecha",
+      accessor: "date",
+      render: (item) => formatDate(item.date),
+    },
     {
       header: "Monto",
       accessor: "amount",
@@ -53,14 +104,7 @@ const PurchasePage = () => {
   ];
 
   const handleEdit = (purchase: Purchase) => {
-    Swal.fire({
-      title: "Editar compra",
-      text: `¿Deseas editar esta compra?`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Sí, editar",
-      cancelButtonText: "Cancelar",
-    }).then((result) => {
+    confirmEditAlert("Esta compra").then((result) => {
       if (result.isConfirmed) {
         navigate(`/compras/editar/${purchase.id}`);
       }
@@ -68,31 +112,15 @@ const PurchasePage = () => {
   };
 
   const handleDelete = async (id: string) => {
-    const result = await Swal.fire({
-      title: "¿Eliminar compra?",
-      text: `Esta acción no se puede deshacer.`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
-    });
-
+    const result = await confirmDeleteAlert("la compra");
     if (result.isConfirmed) {
       try {
         await deletePurchase(id);
         setPurchases((prev) => prev.filter((p) => p.id !== id));
-        Swal.fire({
-          icon: "success",
-          title: "Eliminado",
-          text: "Compra eliminada correctamente.",
-        });
+        succesAlert("Eliminado", "Compra eliminada correctamente.");
       } catch (error) {
         console.error("Error al eliminar la compra:", error);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "No se pudo eliminar la compra.",
-        });
+        errorAlert("No se pudo eliminar la compra.");
       }
     }
   };
@@ -106,23 +134,42 @@ const PurchasePage = () => {
       <Header />
       <div className="container mt-4">
         <h2>Listado de Compras</h2>
-        <div className="d-flex justify-content-between mb-3">
-          <div>
-            <button
-              className="btn btn-outline-dark ms-2"
-              onClick={() => navigate("/compras/inactivas")}
-            >
-              Ver Compras Canceladas
-            </button>
-          </div>
-          <div>
-            <button
-              className="btn btn-success"
-              onClick={() => navigate("/compras/agregar")}
-              title="Agregar Compra"
-            >
-              <i className="bi bi-cart-plus fs-5"></i>
-            </button>
+        <div className="d-flex justify-content-end gap-2 mb-3">
+          <button
+            className="btn btn-success"
+            onClick={() => navigate("/compras/agregar")}
+            title="Agregar Compra"
+          >
+            <i className="bi bi-cart-plus fs-5"></i>
+          </button>
+          <button
+            className="btn btn-outline-dark"
+            onClick={() => navigate("/compras/inactivas")}
+          >
+            Ver Compras Canceladas
+          </button>
+        </div>
+
+        <div className="row mb-3">
+          <div className="col-md-4">
+            <label className="form-label">Filtrar por mes y año:</label>
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date) => setSelectedDate(date)}
+              dateFormat="MM/yyyy"
+              showMonthYearPicker
+              locale="es"
+              customInput={<CustomInput />}
+            />
+
+            {selectedDate && (
+              <button
+                className="btn btn-secondary mt-2"
+                onClick={() => setSelectedDate(null)}
+              >
+                Limpiar búsqueda
+              </button>
+            )}
           </div>
         </div>
 
@@ -175,7 +222,7 @@ const PurchasePage = () => {
                     <strong>Encargado:</strong> {selectedPurchase.admin?.name}
                   </p>
                   <p>
-                    <strong>Fecha:</strong> {selectedPurchase.date}
+                    <strong>Fecha:</strong> {formatDate(selectedPurchase.date)}
                   </p>
                   <p>
                     <strong>Monto Total:</strong> $
@@ -193,10 +240,10 @@ const PurchasePage = () => {
                       {selectedPurchase.items.map((item, index) => (
                         <tr key={index}>
                           <td>
-                            {item.productName || `Producto #${item.idProduct}`}
+                            {item.productName ?? "Producto no disponible"}
                           </td>
                           <td>{item.quantity}</td>
-                          <td>{item.expirationDate}</td>
+                          <td>{formatDate(item.expirationDate)}</td>
                         </tr>
                       ))}
                     </tbody>

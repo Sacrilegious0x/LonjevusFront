@@ -9,7 +9,7 @@ import {
 } from "../../services/BillingService";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
-import Swal from "sweetalert2";
+import { succesAlert, errorAlert, confirmEditAlert } from "../../js/alerts";
 
 const EditBilling = () => {
   const { id } = useParams();
@@ -28,7 +28,10 @@ const EditBilling = () => {
     endMonth: false,
   });
 
-  const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+  const months = [
+    "Ene","Feb","Mar","Abr","May","Jun",
+    "Jul","Ago","Sep","Oct","Nov","Dic",
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,13 +83,16 @@ const EditBilling = () => {
     setErrors(validationErrors);
 
     if (Object.values(validationErrors).some(Boolean)) {
-      Swal.fire({
-        icon: "warning",
-        title: "Campos incompletos",
-        text: "Por favor complete todos los campos antes de guardar.",
-      });
+      errorAlert(
+        "Campos Imcompletos. Porfavor complete los campos antes de guardar"
+      );
       return;
     }
+
+    const result = await confirmEditAlert(
+      "Esta acción actualizará la factura."
+    );
+    if (!result.isConfirmed) return;
 
     try {
       const updatedBilling: Billing = {
@@ -96,25 +102,21 @@ const EditBilling = () => {
 
       await updateBilling(billing!.id!, updatedBilling);
 
-      await Swal.fire({
-        icon: "success",
-        title: "Factura actualizada",
-        text: "La factura se actualizó correctamente.",
-      });
+      await succesAlert(
+        "Factura actualizada",
+        "La factura se actualizó correctamente."
+      );
 
       navigate("/facturas");
     } catch (error) {
       console.error("Error al actualizar la factura:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Hubo un problema al actualizar la factura.",
-      });
+      errorAlert("Hubo un problema al actualizar la factura.");
     }
   };
 
   if (loading) return <p className="text-center mt-4">Cargando factura...</p>;
-  if (!billing) return <p className="text-center mt-4">Factura no encontrada</p>;
+  if (!billing)
+    return <p className="text-center mt-4">Factura no encontrada</p>;
 
   return (
     <>
@@ -122,7 +124,6 @@ const EditBilling = () => {
       <div className="container mt-4">
         <h2>Editar Factura</h2>
         <form onSubmit={handleSubmit} className="mt-4">
-
           <div className="mb-3">
             <label className="form-label">Fecha:</label>
             <input
@@ -154,25 +155,37 @@ const EditBilling = () => {
             <label className="form-label">Período:</label>
             <div className="d-flex gap-2">
               <select
-                className={`form-control ${errors.startMonth ? "is-invalid" : ""}`}
+                className={`form-control ${
+                  errors.startMonth ? "is-invalid" : ""
+                }`}
                 value={startMonth}
                 onChange={(e) => setStartMonth(e.target.value)}
               >
                 <option value="">Mes inicio</option>
-                {months.filter((m) => m !== endMonth).map((month) => (
-                  <option key={month} value={month}>{month}</option>
-                ))}
+                {months
+                  .filter((m) => m !== endMonth)
+                  .map((month) => (
+                    <option key={month} value={month}>
+                      {month}
+                    </option>
+                  ))}
               </select>
               <span className="align-self-center">a</span>
               <select
-                className={`form-control ${errors.endMonth ? "is-invalid" : ""}`}
+                className={`form-control ${
+                  errors.endMonth ? "is-invalid" : ""
+                }`}
                 value={endMonth}
                 onChange={(e) => setEndMonth(e.target.value)}
               >
                 <option value="">Mes fin</option>
-                {months.filter((m) => m !== startMonth).map((month) => (
-                  <option key={month} value={month}>{month}</option>
-                ))}
+                {months
+                  .filter((m) => m !== startMonth)
+                  .map((month) => (
+                    <option key={month} value={month}>
+                      {month}
+                    </option>
+                  ))}
               </select>
             </div>
           </div>
@@ -181,7 +194,9 @@ const EditBilling = () => {
             <label className="form-label">Método de Pago:</label>
             <select
               name="paymentMethod"
-              className={`form-select ${errors.paymentMethod ? "is-invalid" : ""}`}
+              className={`form-select ${
+                errors.paymentMethod ? "is-invalid" : ""
+              }`}
               value={billing.paymentMethod}
               onChange={handleChange}
             >
@@ -208,15 +223,20 @@ const EditBilling = () => {
               ))}
             </select>
           </div>
+          <div className="d-flex gap-2 mt-3">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => navigate("/facturas")}
+            >
+              <i className="bi bi-reply me-1"></i>
+              Volver
+            </button>
 
-          <button type="submit" className="btn btn-primary">Guardar Cambios</button>
-          <button
-            type="button"
-            className="btn btn-secondary ms-2"
-            onClick={() => navigate("/facturas")}
-          >
-            Cancelar
-          </button>
+            <button type="submit" className="btn btn-primary">
+              Guardar Cambios
+            </button>
+          </div>
         </form>
       </div>
       <Footer />

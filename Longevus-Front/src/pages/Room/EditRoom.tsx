@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getRoomById, updateRoom } from '../../services/RoomService';
+import { getAllResidents, getResidentsByRoomId, getRoomById, updateRoom } from '../../services/RoomService';
 import Header from '../../components/HeaderAdmin';
 import Footer from '../../components/Footer';
 import { confirmEditAlert, succesAlert } from '../../js/alerts';
@@ -27,12 +27,17 @@ export default function EditRoom() {
     roomNumber: 1,
   });
 
+  const [residentCount, setResidentCount] = useState<number>(0);
+  const residents =  getAllResidents();
+
+
   //cargar datos de la habitación
   useEffect(() => {
     if (!id) return;
     (async () => {
       try {
         const room = await getRoomById(Number(id));
+        //const residents = await getResidentsByRoomId(Number(id));
         setFormData({
           id: room.id,
           statusRoom: room.statusRoom,

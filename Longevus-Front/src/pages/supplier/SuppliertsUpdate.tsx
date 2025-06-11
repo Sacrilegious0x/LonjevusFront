@@ -123,13 +123,6 @@ export default function SuppliersEdit() {
                 <input type='text' id='address' name='address' value={formData.address} onChange={handleChange} className='form-control' required />
               </div>
               <div className='mb-3'>
-                <div className='mb-3'>
-                  <img
-                    src={`http://localhost:8080/${formData.photoUrl}`}
-                    alt="Foto proveedor"
-                    style={{ width: 100, height: 100, objectFit: 'cover' }}
-                  />
-                </div>
                 <label htmlFor='photo' className='form-label'><i className="bi bi-image"></i>Fotografía:</label>
                 <input type='file' id='photo' name='photo' onChange={handleFileChange} className='form-control' accept='image/*' />
               </div>

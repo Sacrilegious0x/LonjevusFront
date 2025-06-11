@@ -298,7 +298,7 @@ const EditProduct: React.FC = () => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Seleccione una unidad</option>
+                  <option value="">Seleccione una unidad:</option>
                   {units.map((u) => (
                     // Convertimos el id (number) a string, para que coincida con formData.unitId
                     <option key={u.id} value={u.id.toString()}>
@@ -321,7 +321,7 @@ const EditProduct: React.FC = () => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Seleccione un proveedor</option>
+                  <option value="">Seleccione un proveedor:</option>
                   {suppliers.map((prov) => (
                     <option key={prov.id} value={prov.id.toString()}>
                       {prov.name}

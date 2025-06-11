@@ -92,5 +92,15 @@ export const updatePermissions = async (
   }
 };
 
+export const deleteRole = async (roleId: number): Promise<void> => {
+  try {
+    await axios.delete(`${API_BASE_URL}/roles/delete/${roleId}`);
+    console.log(`Rol con ID ${roleId} eliminado correctamente`);
+  } catch (error) {
+    console.error('Error al eliminar el rol:', error);
+    throw new Error('No se pudo eliminar el rol');
+  }
+};
+
 
 

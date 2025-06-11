@@ -90,7 +90,14 @@ export const updateRoom = async (room: IRoom): Promise<void> => {
     }
 };
 
-export const getAllResidentsByRoom = async (): Promise<IResident[]> => {
+export const getAllResidents = async (): Promise<IResident[]> => {
   const response = await axios.get<IResident[]>(`${API_BASE_URL}/residents`);
+  return response.data;
+};
+
+export const getResidentsByRoomId = async (roomId: number): Promise<IResident[]> => {
+  const response = await axios.get<IResident[]>(`${API_BASE_URL}/residents/getResidentByRoomId`, {
+    params: { roomId }
+  });
   return response.data;
 };

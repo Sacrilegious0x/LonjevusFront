@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Header from '../../components/HeaderAdmin';
 import Footer from '../../components/Footer';
 import { useNavigate } from 'react-router-dom';
-import { createRoom } from '../../services/RoomService';
+import { createRoom, getRooms, type IRoom } from '../../services/RoomService';
 import { errorAlert, succesAlert } from '../../js/alerts';
 
 export default function AddRoom(){
@@ -17,6 +17,17 @@ export default function AddRoom(){
   isActive: true,
   roomNumber: 0,
   });
+
+  const [rooms, setRooms] = useState<IRoom[]>([]);
+
+ useEffect(() => {
+    getRooms()
+      .then(data => setRooms(data))
+      .catch(err => {
+        console.error('Error al cargar habitaciones:', err);
+        errorAlert('No se pudieron cargar las habitaciones existentes');
+      });
+  }, []);
 
 const handleChange = (
   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -43,6 +54,16 @@ const handleChange = (
 const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
   try {
+
+     const existsNumber = rooms.some(
+      r => r.roomNumber === formData.roomNumber
+    );
+    if (existsNumber) {
+      return errorAlert(`Ya existe una habitación con el número ${formData.roomNumber}`
+      );
+    }
+
+
 
     succesAlert("Agregado","Habitación agregada");
     const roomJson = { ...formData };
@@ -100,16 +121,9 @@ return (
                   onChange={handleChange}
                   className="form-select"
                   required>
-                     <option value="">
-                        Seleccione un Tipo
-                    </option>
-                    <option value="Individual">
-                        Individual
-                    </option>
-                     <option value="Grupal">
-                        Grupal
-                    </option>
-                
+                    <option value="">Seleccione un Tipo</option>
+                    <option value="Individual">Individual</option>
+                    <option value="Grupal">Grupal</option>
                 </select>
               </div>
 
@@ -125,7 +139,7 @@ return (
                   onChange={handleChange}
                   className="form-control"
                   min={1}
-                  max={100}
+                  max={formData.roomType==='Individual'?1:100}
                   required
                 />
               </div>

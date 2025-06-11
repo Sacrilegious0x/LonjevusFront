@@ -5,9 +5,9 @@ import type { columnDefinition } from "../../components/TableBasic";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import Table from '../../components/TableBasic';
-import { deleteRoom, getAllResidentsByRoom, getRooms, type IResident } from "../../services/RoomService";
+import { deleteRoom, getAllResidents, getRooms, type IResident } from "../../services/RoomService";
 import { confirmDeleteAlert, succesAlert, errorAlert } from '../../js/alerts';
-import { getAllResidents } from "../../services/BillingService";
+
 
 interface IRoom{
     id:number,
@@ -55,7 +55,7 @@ const RoomList=() => {
 
     useEffect(()=>{
         loadRooms();
-        getAllResidentsByRoom()
+        getAllResidents()
         .then((data)=>setUserData(data))
         .catch((error) => console.error('Error al obtener los residentes: ',error));
     },[]);

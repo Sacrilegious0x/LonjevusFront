@@ -137,7 +137,7 @@ const AddProduct = () => {
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Precio en ₡ </label>
+                <label className="form-label">Precio en ₡:</label>
                 <input
                   name="price"
                   id="price"
@@ -152,7 +152,7 @@ const AddProduct = () => {
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Fecha de Vencimiento</label>
+                <label className="form-label">Fecha de Vencimiento:</label>
                 <input
                   id="expirationDate"
                   name="expirationDate"
@@ -165,7 +165,7 @@ const AddProduct = () => {
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Categoría</label>
+                <label className="form-label">Categoría:</label>
                 <select
                   id="category"
                   name="category"
@@ -174,7 +174,7 @@ const AddProduct = () => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Seleccione una categoría</option>
+                  <option value="">Seleccione una categoría:</option>
                   {categories.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
@@ -182,7 +182,7 @@ const AddProduct = () => {
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Unidad de Medida</label>
+                <label className="form-label">Unidad de Medida:</label>
                 <select
                   id="unitId"
                   name="unitId"
@@ -191,7 +191,7 @@ const AddProduct = () => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Seleccione una unidad</option>
+                  <option value="">Seleccione una unidad:</option>
                   {units.map((unit) => (
                     <option key={unit.id} value={unit.id}>{unit.unitType}</option>
                   ))}
@@ -210,7 +210,7 @@ const AddProduct = () => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Seleccione un proveedor</option>
+                  <option value="">Seleccione un proveedor:</option>
                   {suppliers.map((prov) => (
                     // Aquí hacemos que el value sea el id, pero lo que se muestre sea el name
                     <option key={prov.id} value={prov.id}>
@@ -219,8 +219,6 @@ const AddProduct = () => {
                   ))}
                 </select>
               </div>
-
-                            {/* Foto */}
               <div className="mb-3">
                 <label htmlFor="photoUrl" className="form-label">
                   Foto:
@@ -233,16 +231,11 @@ const AddProduct = () => {
                   onChange={handleFileChange}
                   accept="image/*"
                   required
+                  
                 />
-                {/* Si quieres mostrar un preview antes de enviar:
-                    {formData.photoUrl && (
-                      <img
-                        src={formData.photoUrl}
-                        style={{ width: 100, marginTop: "10px" }}
-                        alt="Previsualización"
-                      />
-                    )} 
-                */}
+                <small className="text-muted">
+                  La foto es obligatoria
+                </small>
               </div>
               <div className="mb-3">
                   <button type="submit" className="btn btn-primary">Agregar</button>

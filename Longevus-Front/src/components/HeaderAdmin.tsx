@@ -34,6 +34,10 @@ const Header = () => {
                                 <li className="sub_ul-actions-li">
                                     <Link className="sub_menu-options" to="/visitas">Registro Visitas</Link>
                                 </li>
+                                    <li className="sub_ul-actions-li">
+                                    <Link className="sub_menu-options" to="/habitaciones">Habitaciones</Link>
+                                    <Link className="sub_menu-options" to="/habitaciones/agregar">Agregar Habitación</Link>
+                                </li>
                             </ul>
                         )}
 
@@ -70,7 +74,8 @@ const Header = () => {
                                     <Link className="sub_menu-options" to="/inventario">Lista de Inventario</Link>
                                     <Link className="sub_menu-options" to="/compras/agregar">Agregar Compra</Link>
                                     <Link className="sub_menu-options" to="/compras">Listar Compras</Link>
-                                    
+                                    <Link className="sub_menu-options" to="/productos">Listar Productos</Link>
+                                    <Link className="sub_menu-options" to="/productos/agregar">Agregar Productos</Link>
                                 </li>
                             </ul>
                         )}

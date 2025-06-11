@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../../components/HeaderAdmin';
 import Footer from '../../components/Footer';
-import { updateSupplier,getSupplierById } from '../../services/SupplierService'
+import { updateSupplier, getSupplierById } from '../../services/SupplierService'
+import { confirmEditAlert, succesAlert } from '../../js/alerts';
 
 interface SupplierData {
   name: string;
@@ -35,7 +36,7 @@ export default function SuppliersEdit() {
         const response = getSupplierById(id);
         const data = await response;
         setFormData({
-         name: data.name,
+          name: data.name,
           phoneNumber: data.phoneNumber,
           email: data.email,
           address: data.address,
@@ -76,15 +77,23 @@ export default function SuppliersEdit() {
       data.append('address', formData.address);
       if (selectedFile) {
         data.append('photo', selectedFile);
-      } 
+      }
       data.append('isActive', formData.isActive.toString());
 
-      updateSupplier(data);
+      const response = await confirmEditAlert(formData.name);
 
-      navigate('/proveedores');
+      if (response.isConfirmed) {
+
+        await updateSupplier(data);
+        succesAlert("Actualizado", `Proveedor actualizado exitosamente`);
+        navigate("/proveedores")
+      } else {
+        console.log("No se actualizo el proveedor");
+      }
     } catch (error) {
       console.error('Error updating supplier: ', error);
     }
+
   };
 
   return (
@@ -114,19 +123,12 @@ export default function SuppliersEdit() {
                 <input type='text' id='address' name='address' value={formData.address} onChange={handleChange} className='form-control' required />
               </div>
               <div className='mb-3'>
-                <div className='mb-3'>
-                  <img
-                    src={`http://localhost:8080/${formData.photoUrl}`}
-                    alt="Foto proveedor"
-                    style={{ width: 100, height: 100, objectFit: 'cover' }}
-                  />
-                </div>
                 <label htmlFor='photo' className='form-label'><i className="bi bi-image"></i>Fotografía:</label>
                 <input type='file' id='photo' name='photo' onChange={handleFileChange} className='form-control' accept='image/*' />
               </div>
               <div className='mb-3'>
-                <button type='submit' className='btn btn-success'>Guardar cambios</button>
-                <button type='button' className='btn btn-light m-1' onClick={() => navigate('/proveedores')}>Cancelar</button>
+                <button type='submit' className='btn btn-primary'>Guardar</button>
+                <button type='button' className='btn btn-secondary m-1' onClick={() => navigate('/proveedores')}>Cancelar</button>
               </div>
             </form>
           </div>

@@ -1,75 +1,66 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
+import DatePicker from "react-datepicker";
 import axios from "axios";
-import Swal from "sweetalert2";
+import { errorAlert, succesAlert, confirmExitAlert } from "../../js/alerts";
+import {type Product, type Admin, type PurchasePayload} from "../../services/PurchaseService";
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-}
-
-interface PurchaseItem {
+interface LocalPurchaseItem {
   productId: number;
   quantity: number;
   expirationDate: string;
 }
 
-interface Admin {
-  id: number;
-  name: string;
-}
 
-interface PurchasePayload {
-  date: string;
-  amount: number;
-  admin: { id: number; name: string };
-  items: {
-    idProduct: number;
-    name: string;
-    quantity: number;
-    expirationDate: string;
-  }[];
-}
 
 const isValidDate = (dateString: string): boolean => {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return false;
-  const [year, month, day] = dateString.split("-").map(Number);
-  const date = new Date(dateString);
+  if (!/^\d{2}-\d{2}-\d{4}$/.test(dateString)) return false;
+  const [day, month, year] = dateString.split("-").map(Number);
+  if (month < 1 || month > 12 || day < 1 || day > 31) return false;
+
+  const date = new Date(year, month - 1, day);
   return (
     date.getFullYear() === year &&
-    date.getMonth() + 1 === month &&
+    date.getMonth() === month - 1 &&
     date.getDate() === day
   );
 };
 
+const convertToISODate = (dateString: string): string => {
+  const [day, month, year] = dateString.split("-");
+  return `${year}-${month}-${day}`;
+};
+
+const parseLocalDate = (dateStr: string): Date => {
+  const [day, month, year] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day); // mes va de 0 a 11
+};
+
+
 const AddPurchase = () => {
   const navigate = useNavigate();
-
   const [products, setProducts] = useState<Product[]>([]);
-  const [date, setDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [date, setDate] = useState(() => {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+});
+
   const [admin, setAdmin] = useState<Admin | null>(null);
-  const [items, setItems] = useState<PurchaseItem[]>([]);
+  const [items, setItems] = useState<LocalPurchaseItem[]>([]);
+  const [isModified, setIsModified] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get("http://localhost:8080/products/list");
         setProducts(response.data.products);
-        if (response.data.products.length > 0) {
-          setItems([
-            {
-              productId: response.data.products[0].id,
-              quantity: 1,
-              expirationDate: "",
-            },
-          ]);
-        }
-      } catch (error) {
-        Swal.fire("Error", "No se pudieron cargar los productos.", "error");
+      } catch {
+        errorAlert("No se pudieron cargar los productos.");
       }
     };
 
@@ -79,8 +70,8 @@ const AddPurchase = () => {
           "http://localhost:8080/admin/getAdmin/1"
         );
         setAdmin(response.data);
-      } catch (err) {
-        Swal.fire("Error", "No se pudo cargar el administrador.", "error");
+      } catch {
+        errorAlert("No se pudo obtener el administrador.");
       }
     };
 
@@ -90,6 +81,7 @@ const AddPurchase = () => {
 
   const handleAddProduct = () => {
     if (products.length === 0) return;
+    setIsModified(true);
     setItems([
       ...items,
       { productId: products[0].id, quantity: 1, expirationDate: "" },
@@ -98,15 +90,17 @@ const AddPurchase = () => {
 
   const handleChange = (
     index: number,
-    field: keyof PurchaseItem,
+    field: keyof LocalPurchaseItem,
     value: string | number
   ) => {
+    setIsModified(true);
     setItems((prev) =>
       prev.map((item, i) =>
         i === index
           ? {
               ...item,
-              [field]: field === "expirationDate" ? String(value) : Number(value),
+              [field]:
+                field === "expirationDate" ? String(value) : Number(value),
             }
           : item
       )
@@ -128,12 +122,23 @@ const AddPurchase = () => {
     e.preventDefault();
 
     if (!admin) {
-      Swal.fire("Error", "No se pudo obtener el administrador.", "error");
+      errorAlert("No se pudo obtener el administrador.");
       return;
     }
 
     if (items.some((item) => !isValidDate(item.expirationDate))) {
-      Swal.fire("Advertencia", "Hay una o más fechas inválidas.", "warning");
+      errorAlert("Hay una o más fechas inválidas");
+      return;
+    }
+    if (items.some((item) => !item.expirationDate)) {
+      errorAlert(
+        "Debes seleccionar la fecha de vencimiento de todos los productos."
+      );
+      return;
+    }
+
+    if (items.length === 0) {
+      errorAlert("Debes agregar al menos un producto a la compra.");
       return;
     }
 
@@ -145,17 +150,17 @@ const AddPurchase = () => {
         idProduct: item.productId,
         name: "",
         quantity: item.quantity,
-        expirationDate: item.expirationDate,
+        expirationDate: convertToISODate(item.expirationDate),
       })),
     };
 
     try {
       await axios.post("http://localhost:8080/api/purchases/add", payload);
-      await Swal.fire("Éxito", "Compra registrada correctamente", "success");
+      succesAlert("Éxito", "Compra registrada correctamente");
       navigate("/compras");
     } catch (error) {
       console.error("Error al guardar la compra:", error);
-      Swal.fire("Error", "Ocurrió un error al registrar la compra.", "error");
+      errorAlert("Ocurrió un error al registrar la compra.");
     }
   };
 
@@ -203,8 +208,6 @@ const AddPurchase = () => {
               {items.map((item, index) => {
                 const product = products.find((p) => p.id === item.productId);
                 const price = product?.price ?? 0;
-                const fechaInvalida =
-                  item.expirationDate && !isValidDate(item.expirationDate);
 
                 return (
                   <tr key={index}>
@@ -244,23 +247,38 @@ const AddPurchase = () => {
                       />
                     </td>
                     <td>
-                      <input
-                        type="date"
+                      <DatePicker
+                                selected={item.expirationDate ? parseLocalDate(item.expirationDate) : null}
+                        
+                        onChange={(date: Date | null) => {
+                          const formatted = date
+                            ? `${String(date.getDate()).padStart(
+                                2,
+                                "0"
+                              )}-${String(date.getMonth() + 1).padStart(
+                                2,
+                                "0"
+                              )}-${date.getFullYear()}`
+                            : "";
+                          handleChange(index, "expirationDate", formatted);
+                        }}
+                        dateFormat="dd-MM-yyyy"
                         className={`form-control ${
-                          fechaInvalida ? "is-invalid" : ""
+                          !isValidDate(item.expirationDate) ? "is-invalid" : ""
                         }`}
-                        value={item.expirationDate}
-                        onChange={(e) =>
-                          handleChange(index, "expirationDate", e.target.value)
-                        }
-                        required
+                        placeholderText="Selecciona una fecha"
+                        showMonthDropdown
+                        showYearDropdown
+                        dropdownMode="select"
+                        onKeyDown={(e) => e.preventDefault()}
                       />
-                      {fechaInvalida && (
+                      {!isValidDate(item.expirationDate) && (
                         <div className="invalid-feedback">
-                          Por favor ingrese una fecha válida (AAAA-MM-DD).
+                          Por favor ingrese una fecha válida (DD-MM-AAAA).
                         </div>
                       )}
                     </td>
+
                     <td>${(price * item.quantity).toFixed(2)}</td>
                     <td>
                       <button
@@ -291,13 +309,25 @@ const AddPurchase = () => {
             <strong>Total: ${getTotal().toFixed(2)}</strong>
           </div>
 
-          <div className="d-flex justify-content-between mt-4">
+          <div className="d-flex gap-2 mt-3">
             <button
               type="button"
               className="btn btn-secondary"
-              onClick={() => navigate("/compras")}
+              onClick={async () => {
+                if (!isModified) {
+                  navigate("/compras");
+                } else {
+                  const result = await confirmExitAlert(
+                    "Perderás los cambios no guardados."
+                  );
+                  if (result.isConfirmed) {
+                    navigate("/compras");
+                  }
+                }
+              }}
             >
-              ← Volver
+              <i className="bi bi-reply me-1"></i>
+              Volver
             </button>
             <button type="submit" className="btn btn-primary">
               Guardar Compra

@@ -6,7 +6,7 @@ import { createProduct, getUnits, type IUnit } from "../../services/ProductServi
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import { getSuppliers, type ISupplier } from "../../services/SupplierService";
-
+import { succesAlert, errorAlert } from '../../js/alerts';
 
 const categories = ["Salud", "Limpieza", "Alimento", "Otro"];
 
@@ -65,6 +65,11 @@ const AddProduct = () => {
     
   }, []);
 
+  //manejar que adan no intente meter la letra 'e' en el input de tipo numero
+  const handlePriceKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  if (['e','E','+','-'].includes(e.key)) {e.preventDefault();}
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -99,9 +104,10 @@ const AddProduct = () => {
 
 
       await createProduct(data);
+      succesAlert("Agregado","Producto agregado correctamente");
       navigate('/productos');
     } catch (error) {
-      console.error('Error saving product:', error);
+      console.error('Error al guardar prodcuto:', error);
     }
   };
 
@@ -131,7 +137,7 @@ const AddProduct = () => {
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Precio en ₡ </label>
+                <label className="form-label">Precio en ₡:</label>
                 <input
                   name="price"
                   id="price"
@@ -139,13 +145,14 @@ const AddProduct = () => {
                   className="form-control"
                   value= {formData.price}
                   onChange={handleChange}
+                  onKeyDown={handlePriceKeyDown} 
                   required
                   
                 />
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Fecha de Vencimiento</label>
+                <label className="form-label">Fecha de Vencimiento:</label>
                 <input
                   id="expirationDate"
                   name="expirationDate"
@@ -158,7 +165,7 @@ const AddProduct = () => {
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Categoría</label>
+                <label className="form-label">Categoría:</label>
                 <select
                   id="category"
                   name="category"
@@ -167,7 +174,7 @@ const AddProduct = () => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Seleccione una categoría</option>
+                  <option value="">Seleccione una categoría:</option>
                   {categories.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
@@ -175,7 +182,7 @@ const AddProduct = () => {
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Unidad de Medida</label>
+                <label className="form-label">Unidad de Medida:</label>
                 <select
                   id="unitId"
                   name="unitId"
@@ -184,7 +191,7 @@ const AddProduct = () => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Seleccione una unidad</option>
+                  <option value="">Seleccione una unidad:</option>
                   {units.map((unit) => (
                     <option key={unit.id} value={unit.id}>{unit.unitType}</option>
                   ))}
@@ -203,7 +210,7 @@ const AddProduct = () => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Seleccione un proveedor</option>
+                  <option value="">Seleccione un proveedor:</option>
                   {suppliers.map((prov) => (
                     // Aquí hacemos que el value sea el id, pero lo que se muestre sea el name
                     <option key={prov.id} value={prov.id}>
@@ -212,8 +219,6 @@ const AddProduct = () => {
                   ))}
                 </select>
               </div>
-
-                            {/* Foto */}
               <div className="mb-3">
                 <label htmlFor="photoUrl" className="form-label">
                   Foto:
@@ -226,16 +231,11 @@ const AddProduct = () => {
                   onChange={handleFileChange}
                   accept="image/*"
                   required
+                  
                 />
-                {/* Si quieres mostrar un preview antes de enviar:
-                    {formData.photoUrl && (
-                      <img
-                        src={formData.photoUrl}
-                        style={{ width: 100, marginTop: "10px" }}
-                        alt="Previsualización"
-                      />
-                    )} 
-                */}
+                <small className="text-muted">
+                  La foto es obligatoria
+                </small>
               </div>
               <div className="mb-3">
                   <button type="submit" className="btn btn-primary">Agregar</button>

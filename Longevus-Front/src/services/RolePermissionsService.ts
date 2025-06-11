@@ -38,6 +38,19 @@ export const getAllRoles = async (): Promise<IRole[]> => {
     }
 };
 
+
+export const createRole = async (role: Omit<IRole, 'id'>): Promise<IRole> => {
+    try {
+        const response = await axios.post<IRole>(
+            `${API_BASE_URL}/roles/save`,role
+        );
+        return response.data;
+    } catch (error) {
+        console.error('Error al crear el rol:', error);
+        throw new Error('No se pudo crear el rol');
+    }
+};
+
 //Permisos
 export const getAllPermissions = async (): Promise<IPermissionModule[]> => {
     try {
@@ -76,6 +89,16 @@ export const updatePermissions = async (
   } catch (error) {
     console.error('Error al actualizar permisos:', error);
     throw new Error('No se pudo editar el permiso');
+  }
+};
+
+export const deleteRole = async (roleId: number): Promise<void> => {
+  try {
+    await axios.delete(`${API_BASE_URL}/roles/delete/${roleId}`);
+    console.log(`Rol con ID ${roleId} eliminado correctamente`);
+  } catch (error) {
+    console.error('Error al eliminar el rol:', error);
+    throw new Error('No se pudo eliminar el rol');
   }
 };
 

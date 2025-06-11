@@ -3,15 +3,19 @@ import { createBilling, getAllResidents } from "../../services/BillingService";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
-import Swal from "sweetalert2"; // <-- Importación de SweetAlert
+import { succesAlert, errorAlert, infoAlert } from "../../js/alerts";
 import type { Resident } from "../../services/BillingService";
 
 const AddBilling = () => {
-  const [date, setDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [date, setDate] = useState(
+    () => new Date().toISOString().split("T")[0]
+  );
   const [amount, setAmount] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [residents, setResidents] = useState<Resident[]>([]);
-  const [selectedResidentId, setSelectedResidentId] = useState<number | null>(null);
+  const [selectedResidentId, setSelectedResidentId] = useState<number | null>(
+    null
+  );
   const [startMonth, setStartMonth] = useState("");
   const [endMonth, setEndMonth] = useState("");
   const [errors, setErrors] = useState({
@@ -20,12 +24,15 @@ const AddBilling = () => {
     paymentMethod: false,
     selectedResidentId: false,
     startMonth: false,
-    endMonth: false
+    endMonth: false,
   });
 
   const navigate = useNavigate();
 
-  const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+  const months = [
+    "Ene","Feb","Mar","Abr","May","Jun",
+    "Jul","Ago","Sep","Oct","Nov","Dic",
+  ];
 
   useEffect(() => {
     const loadResidents = async () => {
@@ -34,6 +41,7 @@ const AddBilling = () => {
         setResidents(data);
       } catch (error) {
         console.error("Error cargando residentes:", error);
+        errorAlert("Hubo un problema al cargar los residentes. Intente de nuevo.");
       }
     };
     loadResidents();
@@ -49,16 +57,15 @@ const AddBilling = () => {
       paymentMethod: !paymentMethod,
       selectedResidentId: !selectedResidentId,
       startMonth: !startMonth,
-      endMonth: !endMonth
+      endMonth: !endMonth,
     };
     setErrors(newErrors);
 
     if (Object.values(newErrors).some(Boolean)) {
-      Swal.fire({
-        icon: "warning",
-        title: "Campos incompletos",
-        text: "Por favor complete todos los campos antes de guardar."
-      });
+      infoAlert(
+        "Campos incompletos",
+        "Por favor complete todos los campos antes de guardar."
+      );
       return;
     }
 
@@ -68,25 +75,19 @@ const AddBilling = () => {
       period,
       paymentMethod,
       administrator: { id: 1 },
-      resident: { id: selectedResidentId! }
+      resident: { id: selectedResidentId! },
     };
 
     try {
       await createBilling(billing);
-      await Swal.fire({
-        icon: "success",
-        title: "¡Factura agregada!",
-        text: "La factura se ha guardado correctamente.",
-        confirmButtonText: "Aceptar"
-      });
+      await succesAlert(
+        "¡Factura agregada!",
+        "La factura se ha guardado correctamente."
+      );
       navigate("/facturas");
     } catch (error) {
       console.error("Error guardando factura:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Hubo un problema al guardar la factura. Intente de nuevo."
-      });
+      errorAlert("Hubo un problema al guardar la factura. Intente de nuevo.");
     }
   };
 
@@ -96,7 +97,6 @@ const AddBilling = () => {
       <div className="container mt-4">
         <h2>Agregar Nueva Factura</h2>
         <form onSubmit={handleSubmit}>
-
           <div className="mb-3">
             <label>Fecha:</label>
             <input
@@ -127,25 +127,37 @@ const AddBilling = () => {
             <label>Período:</label>
             <div className="d-flex gap-2">
               <select
-                className={`form-control ${errors.startMonth ? "is-invalid" : ""}`}
+                className={`form-control ${
+                  errors.startMonth ? "is-invalid" : ""
+                }`}
                 value={startMonth}
                 onChange={(e) => setStartMonth(e.target.value)}
               >
                 <option value="">Mes inicio</option>
-                {months.filter((m) => m !== endMonth).map((month) => (
-                  <option key={month} value={month}>{month}</option>
-                ))}
+                {months
+                  .filter((m) => m !== endMonth)
+                  .map((month) => (
+                    <option key={month} value={month}>
+                      {month}
+                    </option>
+                  ))}
               </select>
               <span className="align-self-center">a</span>
               <select
-                className={`form-control ${errors.endMonth ? "is-invalid" : ""}`}
+                className={`form-control ${
+                  errors.endMonth ? "is-invalid" : ""
+                }`}
                 value={endMonth}
                 onChange={(e) => setEndMonth(e.target.value)}
               >
                 <option value="">Mes fin</option>
-                {months.filter((m) => m !== startMonth).map((month) => (
-                  <option key={month} value={month}>{month}</option>
-                ))}
+                {months
+                  .filter((m) => m !== startMonth)
+                  .map((month) => (
+                    <option key={month} value={month}>
+                      {month}
+                    </option>
+                  ))}
               </select>
             </div>
           </div>
@@ -153,7 +165,9 @@ const AddBilling = () => {
           <div className="mb-3">
             <label>Método de Pago:</label>
             <select
-              className={`form-control ${errors.paymentMethod ? "is-invalid" : ""}`}
+              className={`form-control ${
+                errors.paymentMethod ? "is-invalid" : ""
+              }`}
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}
             >
@@ -168,20 +182,31 @@ const AddBilling = () => {
           <div className="mb-3">
             <label>Residente:</label>
             <select
-              className={`form-control ${errors.selectedResidentId ? "is-invalid" : ""}`}
+              className={`form-control ${
+                errors.selectedResidentId ? "is-invalid" : ""
+              }`}
               value={selectedResidentId ?? ""}
               onChange={(e) => setSelectedResidentId(Number(e.target.value))}
             >
               <option value="">Seleccionar Residente</option>
               {residents.map((r) => (
-                <option key={r.id} value={r.id}>{r.name}</option>
+                <option key={r.id} value={r.id}>
+                  {r.name}
+                </option>
               ))}
             </select>
           </div>
 
-          <button type="submit" className="btn btn-success me-2">Guardar Factura</button>
-          <button type="button" className="btn btn-secondary" onClick={() => navigate("/facturas")}>
-            Cancelar
+          <button
+            type="button"
+            className="btn btn-secondary me-2"
+            onClick={() => navigate("/facturas")}
+          >
+            <i className="bi bi-reply me-1"></i>
+            Volver
+          </button>
+          <button type="submit" className="btn btn-success">
+            Guardar Factura
           </button>
         </form>
       </div>

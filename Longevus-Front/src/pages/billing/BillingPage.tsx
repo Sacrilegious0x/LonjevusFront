@@ -1,50 +1,56 @@
 import React, { useEffect, useState } from "react";
+import type { Billing, Resident } from "../../services/BillingService";
 import {
   getAllBillings,
   deleteBilling,
   getAllResidents,
   getBillingsByResident,
-  getBillingsByResidentAndDate,
   getBillingsByInactiveResidents,
 } from "../../services/BillingService";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
-import Swal from "sweetalert2";
+import {
+  succesAlert,
+  errorAlert,
+  confirmDeleteAlert,
+  infoAlert,
+  confirmEditAlert,
+} from "../../js/alerts";
 
-type Resident = {
-  id: number;
-  name: string;
-  active: boolean;
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
 };
 
-type Billing = {
-  id?: number;
-  consecutive?: string;
-  date: string;
-  amount: number;
-  period: string;
-  paymentMethod: string;
-  isActive?: boolean;
-  administrator: { id: number; name?: string };
-  resident: { id: number; name?: string };
-};
+const monthNames = [
+  "Enero","Febrero","Marzo","Abril","Mayo","Junio",
+  "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre",
+];
 
 const BillingPage = () => {
   const [billings, setBillings] = useState<Billing[]>([]);
+  const [allBillings, setAllBillings] = useState<Billing[]>([]);
   const [residents, setResidents] = useState<Resident[]>([]);
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedResidentId, setSelectedResidentId] = useState<number | null>(null);
+  const [selectedResidentId, setSelectedResidentId] = useState<number | null>(
+    null
+  );
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedBilling, setSelectedBilling] = useState<Billing | null>(null);
   const navigate = useNavigate();
 
   const loadBillings = async () => {
     try {
       const data = await getAllBillings();
+      setAllBillings(data);
       setBillings(data);
     } catch (error) {
       console.error("Error cargando facturas:", error);
-      Swal.fire("Error", "No se pudieron cargar las facturas.", "error");
+      errorAlert("No se pudieron cargar las facturas.");
     }
   };
 
@@ -59,7 +65,7 @@ const BillingPage = () => {
       setResidents(enriched);
     } catch (error) {
       console.error("Error cargando residentes:", error);
-      Swal.fire("Error", "No se pudieron cargar los residentes.", "error");
+      errorAlert("No se pudieron cargar los residentes.");
     }
   };
 
@@ -68,55 +74,63 @@ const BillingPage = () => {
     loadResidents();
   }, []);
 
-  const handleDelete = async (id: number) => {
-    const result = await Swal.fire({
-      title: "¿Eliminar factura?",
-      text: "Esta acción no se puede deshacer.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
-    });
+  const handleFilter = async () => {
+    if (selectedResidentId === null) {
+      infoAlert("Atención", "Debe seleccionar un residente para buscar.");
+      return;
+    }
 
+    let data: Billing[] = [];
+
+    if (selectedResidentId === -1) {
+      data = (await getBillingsByInactiveResidents()).filter((b) => b.isActive);
+    } else {
+      data = await getBillingsByResident(selectedResidentId);
+    }
+
+    if (selectedYear) {
+      data = data.filter((b) => {
+        const date = new Date(b.date);
+        const yearMatch = String(date.getFullYear()) === selectedYear;
+        const monthMatch = selectedMonth
+          ? String(date.getMonth() + 1).padStart(2, "0") === selectedMonth
+          : true;
+        return yearMatch && monthMatch;
+      });
+    }
+
+    setBillings(data);
+  };
+
+  const handleClearFilters = async () => {
+    setSelectedResidentId(null);
+    setSelectedYear("");
+    setSelectedMonth("");
+    await loadBillings();
+  };
+
+  const handleDelete = async (id: number) => {
+    const result = await confirmDeleteAlert("la factura");
     if (result.isConfirmed) {
       try {
         await deleteBilling(id);
         await loadBillings();
-        Swal.fire("Eliminada", "La factura fue eliminada exitosamente.", "success");
+        succesAlert(
+          "Factura eliminada",
+          "La factura fue eliminada exitosamente."
+        );
       } catch (error) {
         console.error("Error al eliminar factura:", error);
-        Swal.fire("Error", "No se pudo eliminar la factura.", "error");
+        errorAlert("No se pudo eliminar la factura");
       }
     }
   };
 
-  const handleSearchByResident = async () => {
-    try {
-      if (selectedResidentId === -1) {
-        const data = await getBillingsByInactiveResidents();
-        setBillings(data);
-      } else if (selectedResidentId) {
-        if (selectedDate) {
-          const data = await getBillingsByResidentAndDate(selectedResidentId, selectedDate);
-          setBillings(data);
-        } else {
-          const data = await getBillingsByResident(selectedResidentId);
-          setBillings(data);
-        }
-      } else {
-        Swal.fire("Atención", "Debe seleccionar un residente para buscar.", "info");
-      }
-    } catch (error) {
-      console.error("Error en búsqueda:", error);
-      Swal.fire("Error", "Ocurrió un problema al buscar las facturas.", "error");
-    }
-  };
-
-  const handleClearFilters = async () => {
-    setSelectedDate("");
-    setSelectedResidentId(null);
-    await loadBillings();
-  };
+  const availableYears = [
+    ...new Set(allBillings.map((b) => new Date(b.date).getFullYear())),
+  ]
+    .map(String)
+    .sort();
 
   return (
     <>
@@ -125,7 +139,7 @@ const BillingPage = () => {
         <h2>Facturas</h2>
 
         <div className="row g-3 mb-4">
-          <div className="col-md-4">
+          <div className="col-md-3">
             <select
               className="form-control"
               value={selectedResidentId ?? ""}
@@ -142,39 +156,48 @@ const BillingPage = () => {
                 ))}
             </select>
           </div>
-
-          {selectedResidentId !== null && (
+          {selectedResidentId !== null && !isNaN(selectedResidentId) && (
             <>
-              <div className="col-md-4">
-                <input
-                  type="date"
+              <div className="col-md-3">
+                <select
                   className="form-control"
-                  value={selectedDate}
-                  onChange={async (e) => {
-                    const newDate = e.target.value;
-                    setSelectedDate(newDate);
-
-                    try {
-                      if (selectedResidentId) {
-                        const data = await getBillingsByResidentAndDate(
-                          selectedResidentId,
-                          newDate
-                        );
-                        setBillings(data);
-                      }
-                    } catch (error) {
-                      console.error("Error filtrando por fecha:", error);
-                      Swal.fire("Error", "No se pudieron filtrar por fecha.", "error");
-                    }
-                  }}
-                />
-              </div>
-              <div className="col-md-4">
-                <button
-                  className="btn btn-primary"
-                  onClick={handleSearchByResident}
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(e.target.value)}
                 >
-                  Buscar Facturas del Residente
+                  <option value="">Año</option>
+                  {availableYears.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="col-md-3">
+                <select
+                  className="form-control"
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  disabled={!selectedYear}
+                >
+                  <option value="">Mes</option>
+                  {monthNames.map((name, index) => (
+                    <option
+                      key={index}
+                      value={String(index + 1).padStart(2, "0")}
+                    >
+                      {name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="col-md-3">
+                <button
+                  className="btn btn-primary w-100"
+                  onClick={handleFilter}
+                >
+                  Buscar
                 </button>
               </div>
             </>
@@ -192,13 +215,15 @@ const BillingPage = () => {
             className="btn btn-success"
             onClick={() => navigate("/facturas/nueva")}
           >
-            + Nueva Factura
+            <i className="bi bi-journal-plus"></i>
+
+            Nueva
           </button>
           <button
             className="btn btn-outline-dark ms-2"
             onClick={() => navigate("/facturas/inactivas")}
           >
-            Ver Facturas Canceladas
+            Facturas Canceladas
           </button>
         </div>
 
@@ -217,7 +242,7 @@ const BillingPage = () => {
               <tr key={billing.id}>
                 <td>{index + 1}</td>
                 <td>{billing.consecutive}</td>
-                <td>{billing.date}</td>
+                <td>{formatDate(billing.date)}</td>
                 <td>₡{billing.amount.toFixed(2)}</td>
                 <td className="d-flex flex-row justify-content-center gap-1">
                   <button
@@ -229,7 +254,12 @@ const BillingPage = () => {
                   </button>
                   <button
                     className="btn btn-warning p-2"
-                    onClick={() => navigate(`/facturas/editar/${billing.id}`)}
+                    onClick={async () => {
+                      const result = await confirmEditAlert("Esta factura");
+                      if (result.isConfirmed) {
+                        navigate(`/facturas/editar/${billing.id}`);
+                      }
+                    }}
                     title="Editar"
                   >
                     <i className="bi bi-pencil-square"></i>
@@ -265,14 +295,30 @@ const BillingPage = () => {
                   />
                 </div>
                 <div className="modal-body">
-                  <p><strong>Consecutivo:</strong> {selectedBilling.consecutive}</p>
-                  <p><strong>Fecha:</strong> {selectedBilling.date}</p>
-                  <p><strong>Monto:</strong> ₡{selectedBilling.amount.toFixed(2)}</p>
-                  <p><strong>Método de Pago:</strong> {selectedBilling.paymentMethod}</p>
-                  <p><strong>Periodo:</strong> {selectedBilling.period}</p>
+                  <p>
+                    <strong>Consecutivo:</strong> {selectedBilling.consecutive}
+                  </p>
+                  <p>
+                    <strong>Fecha:</strong> {formatDate(selectedBilling.date)}
+                  </p>
+                  <p>
+                    <strong>Monto:</strong> ₡{selectedBilling.amount.toFixed(2)}
+                  </p>
+                  <p>
+                    <strong>Método de Pago:</strong>{" "}
+                    {selectedBilling.paymentMethod}
+                  </p>
+                  <p>
+                    <strong>Periodo:</strong> {selectedBilling.period}
+                  </p>
                   <hr />
-                  <p><strong>Administrador:</strong> {selectedBilling.administrator?.name}</p>
-                  <p><strong>Residente:</strong> {selectedBilling.resident?.name}</p>
+                  <p>
+                    <strong>Administrador:</strong>{" "}
+                    {selectedBilling.administrator?.name}
+                  </p>
+                  <p>
+                    <strong>Residente:</strong> {selectedBilling.resident?.name}
+                  </p>
                 </div>
                 <div className="modal-footer">
                   <button

@@ -5,7 +5,7 @@ export type InventoryItem = {
   photoURL: string;
   product: {
     name: string;
-    expirationDate: string | null;
+    category: string;
     supplier: {
       name: string;
     };
@@ -13,6 +13,7 @@ export type InventoryItem = {
   purchase: {
     id: string;
   };
+  expirationDate: string | null;
 };
 
 const BASE_URL = "http://localhost:8080/api/inventory";

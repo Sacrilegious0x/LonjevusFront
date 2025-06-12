@@ -4,28 +4,10 @@ import Table from '../../components/TableBasic';
 import type { columnDefinition } from '../../components/TableBasic';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
-<<<<<<< HEAD
-import axios from "axios";
-import { useAuth } from "../../context/AuthContext";
-interface Resident {
-    id: number,
-    identification: string,
-    name: string,
-    age: number,
-    numberRoom: number,
-}
-
-/*const userData: IPerson[] = [
-  { id: 1, name: 'Maribel',identification: '3423242', age: 78, room:1},
-  { id: 2, name: 'Carlos',identification: '62423534', age: 76, room:1},
-  { id: 3, name: 'Jose',identification: '3423242', age: 89, room:2},
-  { id: 4, name: 'Sandra',identification: '3423242', age: 98, room:4}
-];*/
-=======
 import { getResidents, deleteResident } from "../../services/ResidentService";
 import type { Resident } from "../../services/ResidentService";
 import { confirmDeleteAlert, succesAlert, errorAlert } from "../../js/alerts";
->>>>>>> developer
+import { useAuth } from "../../context/AuthContext";
 
 const Residents = () => {
     const { hasAuthority } = useAuth();
@@ -105,7 +87,7 @@ const Residents = () => {
 
     return (
         <>
-            <HeaderA />
+            {/* <HeaderA /> */}
             <div className='container'>
                 <div className='row'>
                     <div className='card mt-5 mb-5'>
@@ -126,7 +108,7 @@ const Residents = () => {
                 </div>
 
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </>
 
 

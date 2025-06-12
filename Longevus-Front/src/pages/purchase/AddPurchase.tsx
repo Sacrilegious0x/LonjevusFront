@@ -166,7 +166,7 @@ const AddPurchase = () => {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className="container mt-4">
         <h2>Agregar Nueva Compra</h2>
 
@@ -335,7 +335,7 @@ const AddPurchase = () => {
           </div>
         </form>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

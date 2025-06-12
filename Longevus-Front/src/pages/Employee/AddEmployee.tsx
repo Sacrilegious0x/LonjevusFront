@@ -40,7 +40,7 @@ const AddEmployee = () => {
 
     return (
         <>
-            <Header />
+            {/* <Header /> */}
             <div className="container mt-4">
 
                 {isLoading && (
@@ -68,7 +68,7 @@ const AddEmployee = () => {
                     showHourSelector={true}
                     showOfficeContactField={false} />
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </>
 
     )

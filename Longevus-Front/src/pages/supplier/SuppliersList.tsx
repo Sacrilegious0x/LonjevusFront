@@ -6,12 +6,8 @@ import { Link } from 'react-router-dom';
 import Table from '../../components/TableBasic';
 import { useState, useEffect } from "react";
 import { deleteSupplier, getSuppliers } from "../../services/SupplierService";
-<<<<<<< HEAD
-import { useAuth } from "../../context/AuthContext";
-=======
 import { confirmDeleteAlert, succesAlert, errorAlert } from '../../js/alerts';
->>>>>>> developer
-
+import { useAuth } from "../../context/AuthContext";
 interface ISupplier{
     id: number,
     name: string,
@@ -127,7 +123,7 @@ return (
 
     
   <>  
-    <Header/>
+    {/* <Header/> */}
       <div className="container ">
         <div className='row'>
             <div className='card mt-5 mb-5'>
@@ -143,7 +139,7 @@ return (
             </div>
         </div>
       </div>
-    <Footer/>
+    {/* <Footer/> */}
   </>  
   
     )

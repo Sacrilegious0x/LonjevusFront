@@ -75,7 +75,7 @@ const Activities = () => {
 
     return (
         <>
-            <Header />
+            {/* <Header /> */}
 
             <center id="getDate" className="mt-4">
                 <label className="me-2">Seleccione la fecha</label>
@@ -113,7 +113,7 @@ const Activities = () => {
                 </div>
 
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </>
     )
 }

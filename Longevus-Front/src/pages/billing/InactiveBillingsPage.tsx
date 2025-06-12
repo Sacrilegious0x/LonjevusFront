@@ -67,7 +67,7 @@ const InactiveBillingsPage = () => {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className="container mt-4">
         <h2>Facturas Canceladas</h2>
 
@@ -212,7 +212,7 @@ const InactiveBillingsPage = () => {
           </div>
         )}
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

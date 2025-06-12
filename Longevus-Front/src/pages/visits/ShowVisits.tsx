@@ -145,7 +145,7 @@ const showVisits = () => {
     if (loading) return <div className="container mt-5">Cargando visitas...</div>;
     return (
         <>
-            <Header />
+            {/* <Header /> */}
             <div className='container'>
                 <div className='row'>
                     <div className='card mt-5 mb-5'>
@@ -162,7 +162,7 @@ const showVisits = () => {
 
             </div>
 
-            <Footer />
+            {/* <Footer /> */}
         </>
     )
 

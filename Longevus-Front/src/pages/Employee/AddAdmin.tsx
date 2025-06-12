@@ -23,7 +23,7 @@ const AddAdmin = ()=>{
 
     return(
         <>
-            <Header/>
+            {/* <Header/> */}
             <EmployeeForm       
             onSubmit={handleFormSubmit} 
             onCancel={handleCancel}
@@ -32,7 +32,7 @@ const AddAdmin = ()=>{
             showHourSelector={true}
             showOfficeContactField={true}
             /> 
-            <Footer />  
+            {/* <Footer />   */}
         </>
         
     )

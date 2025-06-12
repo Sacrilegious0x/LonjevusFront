@@ -48,6 +48,12 @@ const Header = () => {
                                                 <Link className="sub_menu-options" to="/residente/visitas">Registro Visitas</Link>
                                             </li>
                                         )}
+                                        <li className="sub_ul-actions-li">
+                                            <Link className="sub_menu-options" to="/habitaciones">Habitaciones</Link>
+                                        </li>
+                                        <li className="sub_ul-actions-li">
+                                            <Link className="sub_menu-options" to="/habitaciones/agregar">Agregar Habitación</Link>
+                                        </li>
                                     </ul>
                                 )}
 
@@ -96,6 +102,8 @@ const Header = () => {
                                             {hasAuthority('PERMISSION_COMPRAS_CREATE') && (
                                                 <Link className="sub_menu-options" to="/compras/agregar">Agregar Compra</Link>
                                             )}
+                                            <Link className="sub_menu-options" to="/productos">Listar Productos</Link>
+                                            <Link className="sub_menu-options" to="/productos/agregar">Agregar Productos</Link>
                                         </li>
                                     </ul>
                                 )}
@@ -142,24 +150,7 @@ const Header = () => {
                                 )}
 
                             </li>
-                        {menuActive === 'residents' && (
-                            <ul className="sub_ul-actions">
-                                <li className="sub_ul-actions-li">
-                                    <Link className="sub_menu-options" to="/residente/mostrar">Lista de Residentes</Link>
-                                </li>
-                                <li className="sub_ul-actions-li">
-                                    <Link className="sub_menu-options" to="/residente/agregar">Agregar Residente</Link>
-                                </li>
-                                <li className="sub_ul-actions-li">
-                                    <Link className="sub_menu-options" to="/visitas">Registro Visitas</Link>
-                                </li>
-                                    <li className="sub_ul-actions-li">
-                                    <Link className="sub_menu-options" to="/habitaciones">Habitaciones</Link>
-                                    <Link className="sub_menu-options" to="/habitaciones/agregar">Agregar Habitación</Link>
-                                </li>
-                            </ul>
                         )}
-
                         <li className="ul-actions-li"
                             onMouseEnter={() => setMenuActive('user')}
                             onMouseLeave={() => setMenuActive(null)}>
@@ -181,64 +172,9 @@ const Header = () => {
 
                     </ul>
                 </nav>
-                    <li className="ul-actions-li"
-                        onMouseEnter={() => setMenuActive('inventory')}
-                        onMouseLeave={() => setMenuActive(null)}>
 
-                        Inventario y Compras
-
-                        {menuActive === 'inventory' && (
-                            <ul className="sub_ul-actions">
-                                <li className="sub_ul-actions-li">
-                                    <Link className="sub_menu-options" to="/inventario">Lista de Inventario</Link>
-                                    <Link className="sub_menu-options" to="/compras/agregar">Agregar Compra</Link>
-                                    <Link className="sub_menu-options" to="/compras">Listar Compras</Link>
-                                    <Link className="sub_menu-options" to="/productos">Listar Productos</Link>
-                                    <Link className="sub_menu-options" to="/productos/agregar">Agregar Productos</Link>
-                                </li>
-                            </ul>
-                        )}
-
-                    </li>
-
-                    <li className="ul-actions-li"
-                        onMouseEnter={() => setMenuActive('permissions')}
-                        onMouseLeave={() => setMenuActive(null)}>
-
-                        Permisos
-
-                        {menuActive === 'permissions' && (
-                            <ul className="sub_ul-actions">
-                                <li className="sub_ul-actions-li">
-                                    <Link className="sub_menu-options" to="/roles_permisos">Mostrar permisos</Link>
-                                </li>
-                            </ul>
-                        )}
-
-                    </li>
-
-                     <li className="ul-actions-li"
-                        onMouseEnter={() => setMenuActive('suppliers')}
-                        onMouseLeave={() => setMenuActive(null)}>
-
-                        Proveedores
-
-                        {menuActive === 'suppliers' && (
-                            <ul className="sub_ul-actions">
-                                <li className="sub_ul-actions-li">
-                                    <Link className="sub_menu-options" to="/proveedores">Listar Proveedores</Link>
-                                </li>
-                                <li className="sub_ul-actions-li">
-                                    <Link className="sub_menu-options" to="/proveedores/agregar">Agregar Proveedores</Link>
-                                </li>
-                            </ul>
-                        )}
-
-                    </li>
-                    
-                </ul>
-            </nav>
             </div>
+
         </header>
         </>
     );

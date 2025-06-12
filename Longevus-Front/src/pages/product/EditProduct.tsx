@@ -207,7 +207,7 @@ const EditProduct: React.FC = () => {
   // Formulario ya listo para editar
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className="container mt-5 form-container">
         <div className="row">
           <div className="col-12">
@@ -361,7 +361,7 @@ const EditProduct: React.FC = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

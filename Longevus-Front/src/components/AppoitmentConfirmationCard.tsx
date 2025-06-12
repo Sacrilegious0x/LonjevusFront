@@ -32,7 +32,7 @@ const ConfirmationScreen = ({
 
     return (
         <>
-            <Header/>
+            {/* <Header/> */}
             <div className="min-vh-100">
                 <div className="container py-5">
                     <div className="row justify-content-center">
@@ -104,7 +104,7 @@ const ConfirmationScreen = ({
                     </div>
                 </div>
             </div>
-            <Footer/>
+            {/* <Footer/> */}
         </>
     )
 }

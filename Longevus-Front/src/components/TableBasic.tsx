@@ -22,7 +22,7 @@ export interface GenericTableProps<T>{
 
 }
 
-function GenericTable<T extends {id: number}>({data,columns,selectedRows,onSelectAll,renderActions}: GenericTableProps<T>) {
+function GenericTable<T extends {id: number}>({data,columns,selectedRows,onSelectAll, onToggleRow,renderActions}: GenericTableProps<T>) {
 
     // Calculamos si todas las filas están seleccionadas para pasarlo a la cabecera
     const isSelectedAll = data.length > 0 && selectedRows.size === data.length;

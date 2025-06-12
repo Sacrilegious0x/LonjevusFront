@@ -34,7 +34,7 @@ const ViewActivity: React.FC = () => {
 
     return (
         <>
-            <Header />
+            {/* <Header /> */}
             <div className="container mt-5 mb-5">
                 <div className="card shadow p-4">
                     <div className='card-title d-flex justify-content-between align-items-center mt-3'>
@@ -63,7 +63,7 @@ const ViewActivity: React.FC = () => {
 
                 </div>
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </>
     );
 

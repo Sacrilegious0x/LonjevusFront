@@ -1,34 +1,15 @@
-<<<<<<< HEAD
-import React, { useState, useEffect, use } from "react";
-=======
 import React, { useState, useEffect } from "react";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { es } from "date-fns/locale/es";
 import "react-datepicker/dist/react-datepicker.css";
-
->>>>>>> developer
 import StandardTable, { type Column } from "../../components/StandardTable";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
-<<<<<<< HEAD
-import axios from "axios";
+import {succesAlert,errorAlert,confirmDeleteAlert,confirmEditAlert,} from "../../js/alerts";
+import {getAllPurchases,deletePurchase,type Purchase,} from "../../services/PurchaseService";
 import { useAuth } from "../../context/AuthContext";
-=======
-import {
-  succesAlert,
-  errorAlert,
-  confirmDeleteAlert,
-  confirmEditAlert,
-} from "../../js/alerts";
-import {
-  getAllPurchases,
-  deletePurchase,
-  type Purchase,
-} from "../../services/PurchaseService";
-
 registerLocale("es", es);
->>>>>>> developer
 
 const formatDate = (isoString: string): string => {
   if (!isoString) return "";
@@ -141,7 +122,7 @@ const PurchasePage = () => {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className="container mt-4">
         <h2>Listado de Compras</h2>
         <div className="d-flex justify-content-end gap-2 mb-3">
@@ -272,7 +253,7 @@ const PurchasePage = () => {
           </div>
         )}
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

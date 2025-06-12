@@ -209,7 +209,7 @@ const EditPurchase = () => {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className="container mt-4">
         <h2>Editar Compra</h2>
 
@@ -383,7 +383,7 @@ const EditPurchase = () => {
           </div>
         </form>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

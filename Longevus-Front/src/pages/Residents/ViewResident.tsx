@@ -7,14 +7,10 @@ import { useParams } from "react-router-dom";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import { Link } from 'react-router-dom';
-<<<<<<< HEAD
-import { useAuth } from "../../context/AuthContext";
-=======
 import { getResidentById } from "../../services/ResidentService";
 import { getContactsByResidentId, addContact, updateContact, deleteContact } from "../../services/ContactService";
 import { confirmDeleteAlert, succesAlert, errorAlert } from "../../js/alerts";
->>>>>>> developer
-
+import { useAuth } from "../../context/AuthContext";
 const ViewResident: React.FC = () => {
     const {hasAuthority} = useAuth();
     const { id } = useParams();
@@ -90,7 +86,7 @@ const ViewResident: React.FC = () => {
 
     return (
         <>
-            <Header />
+            {/* <Header /> */}
             <div className="container mt-5 mb-5">
                 <div className="card shadow p-4">
                     <div className='card-title d-flex justify-content-between align-items-center mt-3'>
@@ -123,11 +119,8 @@ const ViewResident: React.FC = () => {
                         <button className="btn btn-info mt-3 ms-2" onClick={() => setShowContactModal(true)}>
                             Ver contactos
                         </button>
-<<<<<<< HEAD
                         )}
                         <Link className='btn btn-secondary float-end' to="/residente/mostrar"><i className="bi bi-reply"/> Volver</Link>
-=======
->>>>>>> developer
                     </center>
 
                 </div>
@@ -149,7 +142,7 @@ const ViewResident: React.FC = () => {
                     onAddContact={handleAddContact}
                 />
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </>
     );
 };

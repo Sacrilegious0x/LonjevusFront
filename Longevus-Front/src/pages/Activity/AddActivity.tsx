@@ -22,7 +22,7 @@ const AddActivity: React.FC = () => {
 
     return (
         <>
-            <Header />
+            {/* <Header /> */}
             <div className="container">
                 <div className="row">
                     <div className="div_ResidentForm card mt-5 mb-5 border-primary">
@@ -31,7 +31,7 @@ const AddActivity: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </>
     );
 }

@@ -114,7 +114,7 @@ const AddProduct = () => {
   return (
 
     <>
-      <Header />
+      {/* <Header /> */}
       <div className='container mt-5 form-container'>
         <div className='row'>
           <div className="col-12">
@@ -245,7 +245,7 @@ const AddProduct = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

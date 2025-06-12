@@ -134,7 +134,7 @@ const BillingPage = () => {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className="container mt-4">
         <h2>Facturas</h2>
 
@@ -333,7 +333,7 @@ const BillingPage = () => {
           </div>
         )}
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

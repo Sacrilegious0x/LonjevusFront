@@ -93,7 +93,7 @@ const AddBilling = () => {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className="container mt-4">
         <h2>Agregar Nueva Factura</h2>
         <form onSubmit={handleSubmit}>
@@ -210,7 +210,7 @@ const AddBilling = () => {
           </button>
         </form>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

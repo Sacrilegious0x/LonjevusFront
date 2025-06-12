@@ -98,9 +98,9 @@ useEffect(() => {
     if (loading) {
     return (
       <>
-        <Header />
+        {/* <Header /> */}
         <div className="container mt-5">Cargando proveedores…</div>
-        <Footer />
+        {/* <Footer /> */}
       </>
     );
   }
@@ -108,9 +108,9 @@ useEffect(() => {
     if (error) {
     return (
       <>
-        <Header />
+        {/* <Header /> */}
         <div className="container mt-5 text-danger">{error}</div>
-        <Footer />
+        {/* <Footer /> */}
       </>
     );
   }
@@ -139,7 +139,7 @@ useEffect(() => {
   return (
 
      <>  
-    <Header/>
+    {/* <Header/> */}
       <div className="container ">
         <div className='row'>
             <div className='card mt-5 mb-5'>
@@ -155,7 +155,7 @@ useEffect(() => {
             </div>
         </div>
       </div>
-    <Footer/>
+    {/* <Footer/> */}
   </>  
 
   );

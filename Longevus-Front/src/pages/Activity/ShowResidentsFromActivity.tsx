@@ -133,7 +133,7 @@ const ResidentsFromActivity = () => {
 
     return (
         <>
-            <HeaderA />
+            {/* <HeaderA /> */}
             <div className='container'>
                 <div className='row'>
                     <div className='card mt-5 mb-5'>
@@ -177,7 +177,7 @@ const ResidentsFromActivity = () => {
                 </div>
 
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </>
 
 

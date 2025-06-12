@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import EditResidentForm from "../../components/ResidentForm";
 import HeaderA from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
-import type { ResidentData } from "../../components/ResidentForm";
+import type { ResidentData } from '../../services/ResidentService';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { updateResident, getResidentById } from '../../services/ResidentService';
@@ -37,7 +37,7 @@ const EditResidentPage: React.FC = () => {
 
     return (
         <>
-            <HeaderA />
+            {/* <HeaderA /> */}
             <div className="container">
                 <div className="row">
                     <div className="div_ResidentForm card mt-5 mb-5 border-primary">
@@ -50,7 +50,7 @@ const EditResidentPage: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </>
     );
 };

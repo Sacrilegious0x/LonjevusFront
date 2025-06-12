@@ -120,7 +120,7 @@ const EditBilling = () => {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className="container mt-4">
         <h2>Editar Factura</h2>
         <form onSubmit={handleSubmit} className="mt-4">
@@ -239,7 +239,7 @@ const EditBilling = () => {
           </div>
         </form>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

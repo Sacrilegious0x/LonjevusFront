@@ -164,7 +164,7 @@ const InventoryPage = () => {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className="container mt-4">
         <h1>Inventario</h1>
 
@@ -281,7 +281,7 @@ const InventoryPage = () => {
         </div>
       )}
 
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

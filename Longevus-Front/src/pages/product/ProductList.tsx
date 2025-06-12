@@ -7,6 +7,7 @@ import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import Table from '../../components/TableBasic';
 import { deleteProduct, getProducts } from "../../services/ProductService";
+import { confirmDeleteAlert, succesAlert, errorAlert } from '../../js/alerts';
 
 interface IProduct {
   id:number,
@@ -68,7 +69,7 @@ const productColumns: columnDefinition<IProduct>[]=[
         Cell: (product) =>(
             <>
             <Link className="btn btn-warning me-2" to={`/productos/editar/${product.id}`}><i className='bi bi-pencil-square' /></Link>
-            <a className='btn btn-danger me-2' onClick={()=>handleDelete(product.id)}>
+            <a className='btn btn-danger me-2' onClick={()=>handleDelete(product.id,product.name)}>
                 <i className="bi bi-trash"/>
             </a>  
             </>
@@ -115,19 +116,26 @@ useEffect(() => {
   }
 
 
-    const handleDelete = async (id: number) => {
-    const confirmDelete = window.confirm("¿Seguro que deseas eliminar este proveedor?");
-    if (!confirmDelete) return;
-  
+    const handleDelete = async (id: number,productName:string) => {
+    //const confirmDelete = window.confirm("¿Seguro que deseas eliminar este proveedor?");
+    const response = await confirmDeleteAlert(productName);
+    if (response.isConfirmed){
+        setLoading(true);
+        setError(null);
+
      try {
         await deleteProduct(id);
         setProductData((prev) => prev.filter((p) => p.id !== id));
-        alert("Proveedor eliminado correctamente");
+        succesAlert("Eliminado","Producto eliminado exitosamente");
       } catch (err) {
         alert(err instanceof Error ? err.message : "Error desconocido al eliminar proveedor");
+      }finally{
+        setLoading(false);
       }
-    };
-
+    }else{
+      return;
+    }
+  }
   return (
 
      <>  

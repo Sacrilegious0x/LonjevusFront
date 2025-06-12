@@ -1,90 +1,119 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
+import DatePicker from "react-datepicker";
 import axios from "axios";
+import { errorAlert, succesAlert, confirmExitAlert } from "../../js/alerts";
+import {type Product, type Admin, type PurchasePayload} from "../../services/PurchaseService";
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
+interface LocalPurchaseItem {
+  productId: number;
+  quantity: number;
+  expirationDate: string;
 }
+
+
+
+const isValidDate = (dateString: string): boolean => {
+  if (!/^\d{2}-\d{2}-\d{4}$/.test(dateString)) return false;
+  const [day, month, year] = dateString.split("-").map(Number);
+  if (month < 1 || month > 12 || day < 1 || day > 31) return false;
+
+  const date = new Date(year, month - 1, day);
+  return (
+    date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day
+  );
+};
+
+const convertToISODate = (dateString: string): string => {
+  const [day, month, year] = dateString.split("-");
+  return `${year}-${month}-${day}`;
+};
+
+const parseLocalDate = (dateStr: string): Date => {
+  const [day, month, year] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day); // mes va de 0 a 11
+};
+
 
 const AddPurchase = () => {
   const navigate = useNavigate();
-
   const [products, setProducts] = useState<Product[]>([]);
   const [date, setDate] = useState(() => {
-    const today = new Date();
-    return today.toISOString().split("T")[0];
-  });
-  const [managerName, setManagerName] = useState('');
-  const [items, setItems] = useState<{ productId: number; quantity: number; expirationDate: string }[]>([]);
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+});
 
-  const getAllProducts = async (): Promise<Product[]> => {
-    const response = await axios.get("http://localhost:8080/api/products/all");
-    return response.data;
-  };
-
-  const getAdminName = async (): Promise<string> => {
-    const response = await axios.get("http://localhost:8080/api/admin/name");
-    return response.data;
-  };
-
-  const createPurchase = async (purchase: any) => {
-    await axios.post("http://localhost:8080/api/purchases/add", purchase);
-  };
-
-  const handleRemoveProduct = (index: number) => {
-    setItems(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const handleExpirationChange = (index: number, value: string) => {
-    setItems(items.map((item, i) =>
-      i === index ? { ...item, expirationDate: value } : item
-    ));
-  };
+  const [admin, setAdmin] = useState<Admin | null>(null);
+  const [items, setItems] = useState<LocalPurchaseItem[]>([]);
+  const [isModified, setIsModified] = useState(false);
 
   useEffect(() => {
-    getAllProducts()
-      .then(data => {
-        setProducts(data);
-        if (data.length > 0) {
-          setItems([{ productId: data[0].id, quantity: 1, expirationDate: "" }]);
-        }
-      })
-      .catch(error => {
-        console.error("Error cargando productos:", error);
-      });
-  }, []);
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/products/list");
+        setProducts(response.data.products);
+      } catch {
+        errorAlert("No se pudieron cargar los productos.");
+      }
+    };
 
-  useEffect(() => {
-    getAdminName()
-      .then(name => setManagerName(name))
-      .catch(err => console.error("Error obteniendo administrador:", err));
+    const fetchAdmin = async () => {
+      try {
+        const response = await axios.get<Admin>(
+          "http://localhost:8080/admin/getAdmin/1"
+        );
+        setAdmin(response.data);
+      } catch {
+        errorAlert("No se pudo obtener el administrador.");
+      }
+    };
+
+    fetchProducts();
+    fetchAdmin();
   }, []);
 
   const handleAddProduct = () => {
     if (products.length === 0) return;
-    setItems([...items, { productId: products[0].id, quantity: 1, expirationDate: "" }]);
+    setIsModified(true);
+    setItems([
+      ...items,
+      { productId: products[0].id, quantity: 1, expirationDate: "" },
+    ]);
   };
 
-  const handleProductChange = (index: number, newProductId: number) => {
-    setItems(items.map((item, i) =>
-      i === index ? { ...item, productId: newProductId } : item
-    ));
+  const handleChange = (
+    index: number,
+    field: keyof LocalPurchaseItem,
+    value: string | number
+  ) => {
+    setIsModified(true);
+    setItems((prev) =>
+      prev.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              [field]:
+                field === "expirationDate" ? String(value) : Number(value),
+            }
+          : item
+      )
+    );
   };
 
-  const handleQuantityChange = (index: number, quantity: number) => {
-    setItems(items.map((item, i) =>
-      i === index ? { ...item, quantity } : item
-    ));
+  const handleRemoveProduct = (index: number) => {
+    setItems((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const getTotal = () => {
+  const getTotal = (): number => {
     return items.reduce((sum, item) => {
-      const product = products.find(p => p.id === item.productId);
+      const product = products.find((p) => p.id === item.productId);
       return sum + (product ? product.price * item.quantity : 0);
     }, 0);
   };
@@ -92,139 +121,221 @@ const AddPurchase = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const purchasePayload = {
+    if (!admin) {
+      errorAlert("No se pudo obtener el administrador.");
+      return;
+    }
+
+    if (items.some((item) => !isValidDate(item.expirationDate))) {
+      errorAlert("Hay una o más fechas inválidas");
+      return;
+    }
+    if (items.some((item) => !item.expirationDate)) {
+      errorAlert(
+        "Debes seleccionar la fecha de vencimiento de todos los productos."
+      );
+      return;
+    }
+
+    if (items.length === 0) {
+      errorAlert("Debes agregar al menos un producto a la compra.");
+      return;
+    }
+
+    const payload: PurchasePayload = {
       date,
       amount: getTotal(),
-      admin: { id: 1 },
-      items: items.map(item => ({
+      admin: { id: admin.id, name: admin.name },
+      items: items.map((item) => ({
         idProduct: item.productId,
+        name: "",
         quantity: item.quantity,
-        expirationDate: item.expirationDate
-      }))
+        expirationDate: convertToISODate(item.expirationDate),
+      })),
     };
 
     try {
-      await createPurchase(purchasePayload);
-      alert("Compra registrada correctamente");
+      await axios.post("http://localhost:8080/api/purchases/add", payload);
+      succesAlert("Éxito", "Compra registrada correctamente");
       navigate("/compras");
     } catch (error) {
       console.error("Error al guardar la compra:", error);
-      alert("Ocurrió un error al registrar la compra.");
+      errorAlert("Ocurrió un error al registrar la compra.");
     }
   };
 
   return (
     <>
-  <Header/>
-    <div className="container mt-4">
-      <h2>Agregar Nueva Compra</h2>
+      <Header />
+      <div className="container mt-4">
+        <h2>Agregar Nueva Compra</h2>
 
-      <button className="btn btn-secondary mb-3" onClick={() => navigate('/compras')}>
-        ← Volver
-      </button>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label className="form-label">Fecha</label>
+            <input
+              type="date"
+              className="form-control"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
+          </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="form-label">Fecha</label>
-          <input
-            type="date"
-            className="form-control"
-            value={date}
-            onChange={e => setDate(e.target.value)}
-            required
-          />
-        </div>
+          <div className="mb-3">
+            <label className="form-label">Encargado</label>
+            <input
+              type="text"
+              className="form-control"
+              value={admin?.name ?? ""}
+              readOnly
+            />
+          </div>
 
-        <div className="mb-3">
-          <label className="form-label">Encargado</label>
-          <input
-            type="text"
-            className="form-control"
-            value={managerName}
-            readOnly
-          />
-        </div>
+          <h5>Productos</h5>
+          <table className="table table-bordered">
+            <thead className="table-secondary">
+              <tr>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+                <th>Fecha de Vencimiento</th>
+                <th>Subtotal</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item, index) => {
+                const product = products.find((p) => p.id === item.productId);
+                const price = product?.price ?? 0;
 
-        <h5>Productos</h5>
-        <table className="table table-bordered">
-          <thead className="table-secondary">
-            <tr>
-              <th>Producto</th>
-              <th>Precio</th>
-              <th>Cantidad</th>
-              <th>Fecha de Vencimiento</th>
-              <th>Subtotal</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item, index) => {
-              const product = products.find(p => p.id === item.productId);
-              const price = product?.price ?? 0;
-              return (
-                <tr key={index}>
-                  <td>
-                    <select
-                      className="form-select"
-                      value={item.productId}
-                      onChange={e => handleProductChange(index, parseInt(e.target.value))}
-                    >
-                      {products
-                        .filter(p => !items.some(it => it.productId === p.id) || item.productId === p.id)
-                        .map(p => (
-                          <option key={p.id} value={p.id}>{p.name}</option>
+                return (
+                  <tr key={index}>
+                    <td>
+                      <select
+                        className="form-select"
+                        value={item.productId}
+                        onChange={(e) =>
+                          handleChange(
+                            index,
+                            "productId",
+                            parseInt(e.target.value)
+                          )
+                        }
+                      >
+                        {products.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name}
+                          </option>
                         ))}
-                    </select>
-                  </td>
-                  <td>${price.toFixed(2)}</td>
-                  <td>
-                    <input
-                      type="number"
-                      className="form-control"
-                      min={1}
-                      value={item.quantity}
-                      onChange={e => handleQuantityChange(index, parseInt(e.target.value))}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="date"
-                      className="form-control"
-                      value={item.expirationDate}
-                      onChange={e => handleExpirationChange(index, e.target.value)}
-                      required
-                    />
-                  </td>
-                  <td>${(price * item.quantity).toFixed(2)}</td>
-                  <td>
-                    <button
-                      type="button"
-                      className="btn btn-danger btn-sm"
-                      onClick={() => handleRemoveProduct(index)}
-                    >
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                      </select>
+                    </td>
+                    <td>${price.toFixed(2)}</td>
+                    <td>
+                      <input
+                        type="number"
+                        className="form-control"
+                        min={1}
+                        value={item.quantity}
+                        onChange={(e) =>
+                          handleChange(
+                            index,
+                            "quantity",
+                            parseInt(e.target.value)
+                          )
+                        }
+                      />
+                    </td>
+                    <td>
+                      <DatePicker
+                                selected={item.expirationDate ? parseLocalDate(item.expirationDate) : null}
+                        
+                        onChange={(date: Date | null) => {
+                          const formatted = date
+                            ? `${String(date.getDate()).padStart(
+                                2,
+                                "0"
+                              )}-${String(date.getMonth() + 1).padStart(
+                                2,
+                                "0"
+                              )}-${date.getFullYear()}`
+                            : "";
+                          handleChange(index, "expirationDate", formatted);
+                        }}
+                        dateFormat="dd-MM-yyyy"
+                        className={`form-control ${
+                          !isValidDate(item.expirationDate) ? "is-invalid" : ""
+                        }`}
+                        placeholderText="Selecciona una fecha"
+                        showMonthDropdown
+                        showYearDropdown
+                        dropdownMode="select"
+                        onKeyDown={(e) => e.preventDefault()}
+                      />
+                      {!isValidDate(item.expirationDate) && (
+                        <div className="invalid-feedback">
+                          Por favor ingrese una fecha válida (DD-MM-AAAA).
+                        </div>
+                      )}
+                    </td>
 
-        <div className="mb-3">
-          <button type="button" className="btn btn-outline-success" onClick={handleAddProduct}>
-            + Agregar Producto
-          </button>
-        </div>
+                    <td>${(price * item.quantity).toFixed(2)}</td>
+                    <td>
+                      <button
+                        type="button"
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleRemoveProduct(index)}
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
 
-        <div className="text-end mb-3">
-          <strong>Total: ${getTotal().toFixed(2)}</strong>
-        </div>
+          <div className="mb-3">
+            <button
+              type="button"
+              className="btn btn-outline-success"
+              onClick={handleAddProduct}
+            >
+              + Agregar Producto
+            </button>
+          </div>
 
-        <button type="submit" className="btn btn-primary">Guardar Compra</button>
-      </form>
-    </div>
-    <Footer/>
+          <div className="text-end mb-3">
+            <strong>Total: ${getTotal().toFixed(2)}</strong>
+          </div>
+
+          <div className="d-flex gap-2 mt-3">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={async () => {
+                if (!isModified) {
+                  navigate("/compras");
+                } else {
+                  const result = await confirmExitAlert(
+                    "Perderás los cambios no guardados."
+                  );
+                  if (result.isConfirmed) {
+                    navigate("/compras");
+                  }
+                }
+              }}
+            >
+              <i className="bi bi-reply me-1"></i>
+              Volver
+            </button>
+            <button type="submit" className="btn btn-primary">
+              Guardar Compra
+            </button>
+          </div>
+        </form>
+      </div>
+      <Footer />
     </>
   );
 };

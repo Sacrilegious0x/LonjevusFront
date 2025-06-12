@@ -1,45 +1,49 @@
-import type { Contact } from "./ViewContactModal";
+import type { Contact } from "../services/ContactService"
 import { useState, useEffect } from "react";
 import { useAuth } from '../context/AuthContext';
 interface AddContactProps {
     show: boolean;
     onClose: () => void;
     residentName?: string;
-    residentId: number;
+    residentId: number | undefined;
     onAddContact: (contact: Contact) => void; //para agregar un contacto
-    editingContact: Contact;
+    editingContact?: Contact;
 }
 
 const AddContactModal: React.FC<AddContactProps> = ({ show, onClose, residentName, residentId, onAddContact, editingContact }) => {
     if (!show)
         return null
     const { hasAuthority } = useAuth();
+
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
     const [relationShip, setRelationship] = useState("");
 
-    useEffect(() =>{
-        if(editingContact){
+    useEffect(() => {
+        if (editingContact) {
             setName(editingContact.name);
             setPhone(editingContact.phoneNumber);
             setRelationship(editingContact.relationShip);
-        }else{
+        } else {
             setName("");
             setPhone("");
             setRelationship("");
         }
     }, [editingContact, show])
 
-    const handleSubmit = () => {
+   const handleSubmit = () => {
         if (!name || !phone || !relationShip) return alert("Completa todos los campos");
 
         const newContact: Contact = {
             id: editingContact?.id ?? 0,
-            idResident: residentId,
             name,
             phoneNumber: phone,
             relationShip,
+            resident: editingContact?.resident ?? { id: residentId! }
         };
+
+          console.log("Enviando contacto al backend:", JSON.stringify(newContact, null, 2));
+
 
         onAddContact(newContact);
         onClose();

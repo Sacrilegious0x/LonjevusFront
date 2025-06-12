@@ -1,16 +1,6 @@
 import React, { useState, useEffect, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
-
-export interface ResidentData {
-  id: number;
-  identification: string;
-  name: string;
-  birthdate: string,
-  age: number;
-  healthStatus: string;
-  numberRoom: number;
-  photo: File | null;
-}
+import type { ResidentData } from "../services/ResidentService";
 
 interface ResidentProps {
   onSubmit: (data: ResidentData) => void;
@@ -20,15 +10,15 @@ interface ResidentProps {
 const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
   const [data, setData] = useState<ResidentData>(
     initialData !== null && initialData !== undefined ? initialData : {
-    id: 0,
-    identification: '',
-    name: '',
-    birthdate: '',
-    age: 0,
-    healthStatus: '',
-    numberRoom: 0,
-    photo: null,
-  });
+      id: 0,
+      identification: '',
+      name: '',
+      birthdate: '',
+      age: 0,
+      healthStatus: 'Bueno',
+      numberRoom: 0,
+      photo: null,
+    });
 
   const isEditing = !!initialData;
 
@@ -40,7 +30,9 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
   }, [initialData]);
 
   const handleForm = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, type, value, checked, files } = e.target;
+
+    const target = e.target as HTMLInputElement;
+    const { name, type, value, checked, files } = target;
 
     setData(prev => ({
       ...prev, //version anterior del form
@@ -66,7 +58,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           type="text"
           name="identification"
           value={data.identification}
-          
+          readOnly={isEditing}
           onChange={handleForm}
           className="form-control"
         />
@@ -78,7 +70,6 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           type="text"
           name="name"
           value={data.name}
-         
           onChange={handleForm}
           className="form-control"
         />
@@ -90,7 +81,6 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           type="date"
           name="birthdate"
           value={data.birthdate}
-          
           onChange={handleForm}
           className="form-control"
         />
@@ -138,3 +128,5 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
 };
 
 export default ResidentForm;
+
+

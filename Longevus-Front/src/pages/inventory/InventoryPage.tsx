@@ -1,67 +1,67 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import TableBasic from "../../components/TableBasic";
-import type { columnDefinition } from "../../components/TableBasic";
-import CategoryFilter from "../../components/CategoryFilter";
-import DateFilter from "../../components/DateFilter";
-import Footer from "../../components/Footer";
-import Header from "../../components/HeaderAdmin";
-import "bootstrap/dist/css/bootstrap.min.css";
+import type { ForwardedRef } from "react";
+import TableBasic, { type columnDefinition } from "../../components/TableBasic";
+import DatePicker, { registerLocale } from "react-datepicker";
+import { es } from "date-fns/locale/es";
+import "react-datepicker/dist/react-datepicker.css";
 
-type InventoryItem = {
-  id: number;
-  quantity: number;
-  category: string;
-  photoURL: string;
-  product: {
-    name: string;
-    expirationDate: string | null;
-    supplier: {
-      name: string;
-    };
-  };
-  purchase: {
-    id: string;
-  };
-};
+import Header from "../../components/HeaderAdmin";
+import Footer from "../../components/Footer";
+import {
+  getAllInventory,
+  deleteInventory,
+  type InventoryItem,
+} from "../../services/InventoryService";
+
+import { confirmDeleteAlert, succesAlert, errorAlert } from "../../js/alerts";
+
+registerLocale("es", es);
+
+interface CustomInputProps {
+  value?: string;
+  onClick?: () => void;
+}
+
+const CustomInput = React.forwardRef<HTMLInputElement, CustomInputProps>(
+  ({ value, onClick }, ref: ForwardedRef<HTMLInputElement>) => (
+    <input
+      className="form-control"
+      onClick={onClick}
+      value={value}
+      readOnly
+      ref={ref}
+      placeholder="Seleccione un mes"
+    />
+  )
+);
 
 const InventoryPage = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("Todos");
-  const [selectedDate, setSelectedDate] = useState<string>("");
   const [inventoryData, setInventoryData] = useState<InventoryItem[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
-
-  const navigate = useNavigate();
-
-  const getAllInventory = async (): Promise<InventoryItem[]> => {
-    const res = await fetch("http://localhost:8080/api/inventory/all");
-    if (!res.ok) {
-      throw new Error("Error al obtener inventario");
-    }
-    return res.json();
-  };
+  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
 
   useEffect(() => {
     getAllInventory()
-      .then((data) => {
-        setInventoryData(data);
-      })
-      .catch((err) => console.error("Error cargando inventario:", err));
+      .then((data) => setInventoryData(data))
+      .catch((err) => {
+        console.error("Error cargando inventario:", err);
+        errorAlert("No se pudo cargar el inventario.");
+      });
   }, []);
 
-  const handleDelete = async (id: number) => {
-    const confirmed = window.confirm("¿Estás seguro de que deseas eliminar este ítem del inventario?");
-    if (confirmed) {
-      try {
-        const res = await fetch(`http://localhost:8080/api/inventory/delete/${id}`, {
-          method: "DELETE",
-        });
-        if (!res.ok) throw new Error("Error al eliminar");
+  const handleDelete = async (id: number, name: string) => {
+    const result = await confirmDeleteAlert(name);
+    if (!result.isConfirmed) return;
 
-        setInventoryData((prev) => prev.filter((item) => item.id !== id));
-      } catch (err) {
-        console.error("Error al eliminar inventario:", err);
-      }
+    try {
+      await deleteInventory(id);
+      setInventoryData((prev) => prev.filter((item) => item.id !== id));
+      succesAlert("Eliminado", "El producto fue eliminado correctamente.");
+    } catch (err) {
+      console.error("Error al eliminar inventario:", err);
+      errorAlert("No se pudo eliminar el producto.");
     }
   };
 
@@ -72,16 +72,36 @@ const InventoryPage = () => {
     } else {
       newSelection.add(id);
     }
+
     setSelectedRows(newSelection);
   };
 
   const selectAll = (isSelected: boolean) => {
-    if (isSelected) {
-      setSelectedRows(new Set(inventoryData.map((item) => item.id)));
-    } else {
-      setSelectedRows(new Set());
-    }
+    setSelectedRows(
+      isSelected ? new Set(filteredData.map((i) => i.id)) : new Set()
+    );
   };
+
+  const formatDate = (isoString: string | null): string => {
+    if (!isoString) return "N/A";
+    const [year, month, day] = isoString.split("-");
+    return `${day}/${month}/${year}`;
+  };
+
+  const filteredData = inventoryData.filter((item) => {
+    const matchCategory = selectedCategory
+      ? item.product.category === selectedCategory
+      : true;
+
+    const matchDate = selectedDate
+      ? item.expirationDate &&
+        new Date(item.expirationDate).getMonth() === selectedDate.getMonth() &&
+        new Date(item.expirationDate).getFullYear() ===
+          selectedDate.getFullYear()
+      : true;
+
+    return matchCategory && matchDate;
+  });
 
   const columns: columnDefinition<InventoryItem>[] = [
     {
@@ -89,88 +109,117 @@ const InventoryPage = () => {
       accessor: () => "",
       Cell: (_item, index) => index + 1,
     },
-    { header: "Producto", accessor: (item) => item.product.name },
+    {
+      header: "Producto",
+      accessor: (item) => item.product.name,
+    },
     {
       header: "Fecha de Vencimiento",
-      accessor: (item) => item.product.expirationDate ?? "N/A",
+      accessor: (item) => item.expirationDate ?? "N/A",
+      Cell: (item) => formatDate(item.expirationDate),
     },
     {
-      header: "Proveedor",
-      accessor: (item) => item.product.supplier.name,
-    },
-    {
-      header: "Id de la compra",
-      accessor: (item) => item.purchase.id,
-    },
-    {
-      header: "Fotografía",
+      header: "Foto",
       accessor: () => "",
-      Cell: (item) => (
-        <img
-          src={item.photoURL}
-          alt={item.product.name}
-          className="img-thumbnail"
-          width="60"
-          height="60"
-          style={{ objectFit: "cover" }}
-        />
-      ),
+      Cell: (item) => {
+        const url = `http://localhost:8080/${item.photoURL}`;
+        return (
+          <img
+            src={url}
+            alt={`Foto de ${item.product.name}`}
+            width="60"
+            height="60"
+            className="img-thumbnail"
+            style={{ objectFit: "cover" }}
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "/placeholder.png"; // reemplazo si imagen rota
+            }}
+          />
+        );
+      },
     },
     {
       header: "Acciones",
       accessor: () => "",
       Cell: (item) => (
-        <button
-          className="btn btn-danger btn-sm"
-          onClick={() => handleDelete(item.id)}
-        >
-          Eliminar
-        </button>
+        <>
+          <button
+            className="btn btn-info btn-sm me-1"
+            onClick={() => setSelectedItem(item)}
+            title="Ver detalles"
+          >
+            <i className="bi bi-eye"></i>
+          </button>
+          <button
+            className="btn btn-danger btn-sm"
+            onClick={() => handleDelete(item.id, item.product.name)}
+            title="Eliminar"
+          >
+            <i className="bi bi-trash"></i>
+          </button>
+        </>
       ),
     },
   ];
-
-  const categoryOptions = Array.from(
-    new Set(inventoryData.map((item) => item.category).filter(Boolean))
-  );
-
-  const filteredData = inventoryData.filter((item) => {
-    const categoryMatch =
-      selectedCategory === "Todos" || item.category === selectedCategory;
-    const dateMatch =
-      !selectedDate || item.product.expirationDate === selectedDate;
-    return categoryMatch && dateMatch;
-  });
 
   return (
     <>
       <Header />
       <div className="container mt-4">
         <h1>Inventario</h1>
+
         <div className="row mb-3">
-         
           <div className="col-md-6">
-            <DateFilter
-              value={selectedDate}
-              onChange={(dateStr) => {
-                // Convertir a formato YYYY-MM-DD
-                const isoDate = new Date(dateStr).toISOString().split("T")[0];
-                setSelectedDate(isoDate);
+            <label className="form-label">Filtrar por categoría:</label>
+            <select
+              className="form-select"
+              value={selectedCategory}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value);
+                setSelectedDate(null);
               }}
-            />
+            >
+              <option value="">-- Seleccionar Categoría --</option>
+              <option value="Salud">Salud</option>
+              <option value="Limpieza">Limpieza</option>
+              <option value="Alimento">Alimento</option>
+              <option value="Otro">Otro</option>
+            </select>
           </div>
         </div>
+
+        {selectedCategory && (
+          <div className="row mb-3">
+            <div className="col-md-6">
+              <label className="form-label">
+                Filtrar por fecha de vencimiento:
+              </label>
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                dateFormat="MM/yyyy"
+                showMonthYearPicker
+                locale="es"
+                customInput={<CustomInput />}
+              />
+            </div>
+          </div>
+        )}
+
         <button
-  className="btn btn-secondary mt-2"
-  onClick={() => setSelectedDate("")}
->
-  Limpiar búsqueda
-</button>
+          className="btn btn-secondary mb-3"
+          onClick={() => {
+            setSelectedCategory("");
+            setSelectedDate(null);
+          }}
+        >
+          Limpiar búsqueda
+        </button>
 
         <p>
-          Total de unidades en inventario:{" "}
-          <strong>{filteredData.length}</strong>
+          Total de productos: <strong>{filteredData.length}</strong>
         </p>
+
         <TableBasic<InventoryItem>
           data={filteredData}
           columns={columns}
@@ -179,6 +228,59 @@ const InventoryPage = () => {
           onSelectAll={selectAll}
         />
       </div>
+      {selectedItem && (
+        <div className="modal show d-block" tabIndex={-1}>
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Detalle del Producto</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setSelectedItem(null)}
+                />
+              </div>
+              <div className="modal-body">
+                <p>
+                  <strong>Nombre:</strong> {selectedItem.product.name}
+                </p>
+                <p>
+                  <strong>Categoría:</strong> {selectedItem.product.category}
+                </p>
+                <p>
+                  <strong>Fecha de vencimiento:</strong>{" "}
+                  {formatDate(selectedItem.expirationDate)}
+                </p>
+                <p>
+                  <strong>Proveedor:</strong>{" "}
+                  {selectedItem.product.supplier.name}
+                </p>
+                <p>
+                  <strong>ID de compra:</strong> {selectedItem.purchase.id}
+                </p>
+                <img
+                  src={`http://localhost:8080/${selectedItem.photoURL}`}
+                  alt="Foto producto"
+                  className="img-fluid rounded mt-3"
+                  style={{ maxHeight: 200 }}
+                  onError={(e) =>
+                    ((e.target as HTMLImageElement).src = "/placeholder.png")
+                  }
+                />
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setSelectedItem(null)}
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </>
   );

@@ -102,11 +102,11 @@ export const getResidentsByRoomId = async (roomId: number): Promise<IResident[]>
   return response.data;
 };
 
-export const checkStatusRoom = async (roomId: number): Promise<void> => {
+export const checkStatusRoom = async (id: number): Promise<void> => {
   try {
-    const response = await axios.post<void>(`${API_BASE_URL}/rooms/checkStatusRoom`,
+    const response = await axios.post<void>(`${API_BASE_URL}/rooms/checkStatusRoom`,null,
       {
-        params: { roomId },
+        params: { id },
       }
     );
     return response.data;

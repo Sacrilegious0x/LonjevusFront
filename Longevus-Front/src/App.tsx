@@ -26,6 +26,7 @@ import EditActivity from './pages/Activity/EditActivity';
 import ViewActivity from './pages/Activity/ViewActivity';
 import ShowResidentsFromActivity from './pages/Activity/ShowResidentsFromActivity';
 import AddResidentsToActivity from './pages/Activity/AddResidentToActivity';
+import AddProduct from './pages/product/AddProduct';
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
         <Route path="/compras/editar/:id" element={<EditPurchase />} /> 
         <Route path="/compras/agregar" element={<AddPurchase />} />
         <Route path="/productos" element={<ProductsList />} />
+        <Route path="/productos/agregar" element={<AddProduct />} />
         <Route path="/facturas" element={<BillingPage />} />
         <Route path="/facturas/editar/:id" element={<EditBilling />} />
         <Route path="/facturas/nueva" element={<AddBilling />} />

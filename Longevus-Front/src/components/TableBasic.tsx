@@ -27,7 +27,9 @@ function GenericTable<T extends {id: number}>({data,columns,selectedRows,onSelec
     // Calculamos si todas las filas están seleccionadas para pasarlo a la cabecera
     const isSelectedAll = data.length > 0 && selectedRows.size === data.length;
     return(
-        <table className="table table-responsive table-hover">
+        <div className="table-container">
+        <table className="table table-bordered table-hover w-100">
+
             <thead>
                 <tr>
                     {columns.map((column, index)=>
@@ -70,6 +72,7 @@ function GenericTable<T extends {id: number}>({data,columns,selectedRows,onSelec
                 )}
             </tbody>
         </table>
+       </div> 
     )
 }
 export default GenericTable;

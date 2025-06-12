@@ -5,33 +5,35 @@ import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import { succesAlert, errorAlert, infoAlert } from "../../js/alerts";
 import type { Resident } from "../../services/BillingService";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const AddBilling = () => {
-  const [date, setDate] = useState(
-    () => new Date().toISOString().split("T")[0]
-  );
+  const navigate = useNavigate();
+
+  const [date, setDate] = useState<Date>(() => {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  });
+
   const [amount, setAmount] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [residents, setResidents] = useState<Resident[]>([]);
-  const [selectedResidentId, setSelectedResidentId] = useState<number | null>(
-    null
-  );
-  const [startMonth, setStartMonth] = useState("");
-  const [endMonth, setEndMonth] = useState("");
+  const [selectedResidentId, setSelectedResidentId] = useState<number | null>(null);
+  const [periodMonths, setPeriodMonths] = useState<number | "">("");
+  const [periodLabel, setPeriodLabel] = useState("");
+
   const [errors, setErrors] = useState({
     date: false,
     amount: false,
     paymentMethod: false,
     selectedResidentId: false,
-    startMonth: false,
-    endMonth: false,
+    periodMonths: false,
   });
 
-  const navigate = useNavigate();
-
   const months = [
-    "Ene","Feb","Mar","Abr","May","Jun",
-    "Jul","Ago","Sep","Oct","Nov","Dic",
+    "Ene", "Feb", "Mar", "Abr", "May", "Jun",
+    "Jul", "Ago", "Sep", "Oct", "Nov", "Dic",
   ];
 
   useEffect(() => {
@@ -47,32 +49,43 @@ const AddBilling = () => {
     loadResidents();
   }, []);
 
+  const calculatePeriodLabel = (startDate: Date, monthsToAdd: number): string => {
+    const startMonth = startDate.getMonth(); // 0-index
+    const endMonth = (startMonth + monthsToAdd - 1) % 12;
+    return `${months[startMonth]}-${months[endMonth]}`;
+  };
+
+  useEffect(() => {
+    if (periodMonths && date) {
+      const label = calculatePeriodLabel(date, periodMonths);
+      setPeriodLabel(label);
+    } else {
+      setPeriodLabel("");
+    }
+  }, [periodMonths, date]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const period = startMonth && endMonth ? `${startMonth}-${endMonth}` : "";
 
     const newErrors = {
       date: !date,
       amount: amount <= 0,
       paymentMethod: !paymentMethod,
       selectedResidentId: !selectedResidentId,
-      startMonth: !startMonth,
-      endMonth: !endMonth,
+      periodMonths: !periodMonths,
     };
     setErrors(newErrors);
 
     if (Object.values(newErrors).some(Boolean)) {
-      infoAlert(
-        "Campos incompletos",
-        "Por favor complete todos los campos antes de guardar."
-      );
+      infoAlert("Campos incompletos", "Por favor complete todos los campos antes de guardar.");
       return;
     }
 
+    const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
     const billing = {
-      date,
+      date: formattedDate,
       amount,
-      period,
+      period: periodLabel,
       paymentMethod,
       administrator: { id: 1 },
       resident: { id: selectedResidentId! },
@@ -80,10 +93,7 @@ const AddBilling = () => {
 
     try {
       await createBilling(billing);
-      await succesAlert(
-        "¡Factura agregada!",
-        "La factura se ha guardado correctamente."
-      );
+      await succesAlert("¡Factura agregada!", "La factura se ha guardado correctamente.");
       navigate("/facturas");
     } catch (error) {
       console.error("Error guardando factura:", error);
@@ -99,11 +109,18 @@ const AddBilling = () => {
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label>Fecha:</label>
-            <input
-              type="date"
+            <DatePicker
+              selected={date}
+              onChange={(date: Date | null) => {
+                if (date) setDate(date);
+              }}
+              dateFormat="dd-MM-yyyy"
               className={`form-control ${errors.date ? "is-invalid" : ""}`}
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+              showMonthDropdown
+              showYearDropdown
+              dropdownMode="select"
+              placeholderText="Selecciona una fecha"
+              onKeyDown={(e) => e.preventDefault()}
             />
           </div>
 
@@ -117,57 +134,49 @@ const AddBilling = () => {
                 min="0"
                 step="0.01"
                 value={amount === 0 ? "" : amount}
-                onChange={(e) => setAmount(Number(e.target.value))}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const regex = /^\d+(\.\d{0,2})?$/;
+                  if (val === "" || regex.test(val)) {
+                    const number = Number(val);
+                    if (number <= 1000000) setAmount(number);
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (["e", "E", "+", "-"].includes(e.key)) e.preventDefault();
+                }}
                 placeholder="Ingrese el monto"
               />
             </div>
           </div>
 
           <div className="mb-3">
-            <label>Período:</label>
-            <div className="d-flex gap-2">
-              <select
-                className={`form-control ${
-                  errors.startMonth ? "is-invalid" : ""
-                }`}
-                value={startMonth}
-                onChange={(e) => setStartMonth(e.target.value)}
-              >
-                <option value="">Mes inicio</option>
-                {months
-                  .filter((m) => m !== endMonth)
-                  .map((month) => (
-                    <option key={month} value={month}>
-                      {month}
-                    </option>
-                  ))}
-              </select>
-              <span className="align-self-center">a</span>
-              <select
-                className={`form-control ${
-                  errors.endMonth ? "is-invalid" : ""
-                }`}
-                value={endMonth}
-                onChange={(e) => setEndMonth(e.target.value)}
-              >
-                <option value="">Mes fin</option>
-                {months
-                  .filter((m) => m !== startMonth)
-                  .map((month) => (
-                    <option key={month} value={month}>
-                      {month}
-                    </option>
-                  ))}
-              </select>
-            </div>
+            <label>Cantidad de meses a pagar:</label>
+            <select
+              className={`form-control ${errors.periodMonths ? "is-invalid" : ""}`}
+              value={periodMonths}
+              onChange={(e) => setPeriodMonths(Number(e.target.value))}
+            >
+              <option value="">Seleccione cantidad de meses</option>
+              {[1, 2, 3, 4, 5, 6].map((n) => (
+                <option key={n} value={n}>
+                  {n} mes{n > 1 ? "es" : ""}
+                </option>
+              ))}
+            </select>
           </div>
+
+          {periodLabel && (
+            <div className="mb-3">
+              <label>Período:</label>
+              <input type="text" className="form-control" value={periodLabel} readOnly />
+            </div>
+          )}
 
           <div className="mb-3">
             <label>Método de Pago:</label>
             <select
-              className={`form-control ${
-                errors.paymentMethod ? "is-invalid" : ""
-              }`}
+              className={`form-control ${errors.paymentMethod ? "is-invalid" : ""}`}
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}
             >
@@ -182,9 +191,7 @@ const AddBilling = () => {
           <div className="mb-3">
             <label>Residente:</label>
             <select
-              className={`form-control ${
-                errors.selectedResidentId ? "is-invalid" : ""
-              }`}
+              className={`form-control ${errors.selectedResidentId ? "is-invalid" : ""}`}
               value={selectedResidentId ?? ""}
               onChange={(e) => setSelectedResidentId(Number(e.target.value))}
             >
@@ -206,7 +213,7 @@ const AddBilling = () => {
             Volver
           </button>
           <button type="submit" className="btn btn-success">
-            Guardar Factura
+            Guardar
           </button>
         </form>
       </div>

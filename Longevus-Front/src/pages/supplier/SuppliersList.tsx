@@ -5,7 +5,7 @@ import type {columnDefinition} from '../../components/TableBasic';
 import { Link } from 'react-router-dom';
 import Table from '../../components/TableBasic';
 import { useState, useEffect } from "react";
-import { deleteSupplier, getSuppliers } from "../../services/SupplierService";
+import { deleteProductsBySupplierId, deleteSupplier, getSuppliers } from "../../services/SupplierService";
 import { confirmDeleteAlert, succesAlert, errorAlert } from '../../js/alerts';
 
 interface ISupplier{
@@ -106,11 +106,12 @@ const SuppliersList = () =>{
             setError(null);
    try {
       await deleteSupplier(id);
+      await deleteProductsBySupplierId(id);
             succesAlert("Eliminado",`Proveedor ${supplierName} eliminado exitosamente`);
       setSupplierData((prev) => prev.filter((p) => p.id !== id));
 
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Error desconocido al eliminar proveedor");
+      errorAlert("Hubo un error al eliminar el proveedor");
     } finally{
       setLoading(false);
     };

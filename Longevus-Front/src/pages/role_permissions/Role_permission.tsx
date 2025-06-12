@@ -4,8 +4,8 @@ import Footer from '../../components/Footer'
 import Header from '../../components/HeaderAdmin'
 import type { columnDefinition } from '../../components/TableBasic'
 import Table from '../../components/TableBasic';
-import { createRole, getAllPermissions, getAllPermissionsById, getAllRoles, updatePermissions } from '../../services/RolePermissionsService';
-import { confirmEditAlert, succesAlert } from '../../js/alerts';
+import { createRole, deleteRole, getAllPermissions, getAllPermissionsById, getAllRoles, updatePermissions } from '../../services/RolePermissionsService';
+import { confirmEditAlert, succesAlert ,confirmDeleteAlert} from '../../js/alerts';
 
 interface IRole {
   id: number
@@ -47,12 +47,17 @@ const RolesList = () => {
       header: 'Permisos',
       accessor: role => role,
       Cell: role => (
+        <>
         <button
           className="btn btn-warning"
           onClick={() => handleOpenModalRoleEdit(role)}
         >
           <i className="bi bi-key-fill"></i>
         </button>
+          <a className='btn btn-danger mr-2' onClick={()=>handleDelete(role.id,role.name)}>
+              <i className="bi bi-trash"/>
+          </a>  
+        </>
       )
     }
   ];
@@ -132,7 +137,6 @@ const RolesList = () => {
     setPermissions(updated);
   };
 
-  // 4. Guardar permisos (aquí usarías tu función savePermissions)
   const handleSave = async () => {
     if (!currentRole) return;
 
@@ -143,7 +147,7 @@ const RolesList = () => {
       try {
         updatePermissions(currentRole.id, permissions);
         succesAlert("Actualizado", "Habitacion actualizada");
-        // opcional: toast.success('Permisos actualizados');
+
       } catch (e) {
         console.log(e);
       } finally {
@@ -152,6 +156,25 @@ const RolesList = () => {
     }
 
   };
+
+   const handleDelete = async (roleId: number,roleName:string) => {
+      
+      const response = await confirmDeleteAlert(roleName);
+      if (response.isConfirmed){
+  
+       try {
+          await deleteRole(roleId);
+          succesAlert("Eliminado","Rol eliminado exitosamente");
+          fetchRoles();
+        } catch (err) {
+          alert(err instanceof Error ? err.message : "Error desconocido al eliminar proveedor");
+        }finally{
+
+        }
+      }else{
+        return;
+      }
+    }
 
   return (
     <>

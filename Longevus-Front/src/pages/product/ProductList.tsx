@@ -49,7 +49,9 @@ const productColumns: columnDefinition<IProduct>[]=[
 
     {header: '#', accessor: 'id', Cell:(_product, index)=>{return(index+1)}},
     {header: 'Nombre', accessor: 'name'},
-    {header: 'Precio', accessor: 'price'},
+    {header: 'Precio', accessor: 'price',
+      Cell: (product) => `₡${product.price}`
+    },
     {header: 'Categoria', accessor: 'category'},
     {header: 'Fecha de Vencimiento',accessor: 'expirationDate',
     Cell: (product) => {
@@ -128,7 +130,7 @@ useEffect(() => {
         setProductData((prev) => prev.filter((p) => p.id !== id));
         succesAlert("Eliminado","Producto eliminado exitosamente");
       } catch (err) {
-        alert(err instanceof Error ? err.message : "Error desconocido al eliminar proveedor");
+        errorAlert("Ocurrio un error al eliminar el producto.");
       }finally{
         setLoading(false);
       }

@@ -23,11 +23,18 @@ interface FormState {
   photoUrl: string;
 }
 
+
+
+
 const categories = ["Salud", "Limpieza", "Alimento", "Otro"];
 
 const EditProduct: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
+ //manejar inputs vacios
+ const [touched, setTouched] = useState<Record<string, boolean>>({});
+ const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Listas desplegables
   const [suppliers, setSuppliers] = useState<ISupplier[]>([]);
@@ -144,6 +151,16 @@ const EditProduct: React.FC = () => {
     }
   };
 
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const { name, value } = e.target;
+      setTouched(target => ({ ...target, [name]: true }));
+  
+  
+      setErrors(err => ({
+        ...err,
+        [name]: value.trim() ? '' : 'Este campo es obligatorio'}));
+    };
+
   //  Submit de la actualización
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -224,27 +241,39 @@ const EditProduct: React.FC = () => {
                   name="name"
                   id="name"
                   type="text"
-                  className="form-control"
+                  className={`form-control ${touched.name && errors.name ? 'is-invalid' : ''}`}
                   value={formData.name}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                 />
+                {touched.name && errors.name && (
+                  <div className="invalid-feedback">
+                    {errors.name}
+                  </div>
+                )}
               </div>
 
               {/* Precio */}
               <div className="mb-3">
                 <label htmlFor="price" className="form-label">
-                  Precio:
+                  Precio en ₡:
                 </label>
                 <input
                   name="price"
                   id="price"
                   type="number"
-                  className="form-control"
+                  className={`form-control ${touched.price && errors.price ? 'is-invalid' : ''}`}
                   value={formData.price}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                 />
+                {touched.price && errors.price && (
+                  <div className="invalid-feedback">
+                    {errors.price}
+                  </div>
+                )}
               </div>
 
               {/* Fecha de vencimiento */}

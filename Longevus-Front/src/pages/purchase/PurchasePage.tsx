@@ -9,6 +9,7 @@ import Footer from "../../components/Footer";
 import {succesAlert,errorAlert,confirmDeleteAlert,confirmEditAlert,} from "../../js/alerts";
 import {getAllPurchases,deletePurchase,type Purchase,} from "../../services/PurchaseService";
 import { useAuth } from "../../context/AuthContext";
+import type { ForwardedRef } from "react"; 
 registerLocale("es", es);
 
 const formatDate = (isoString: string): string => {
@@ -39,7 +40,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, CustomInputProps>(
 CustomInput.displayName = "CustomInput";
 
 const PurchasePage = () => {
-  const {hasAuthority} = useAuth();
+  const {hasAuthority,} = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedPurchase, setSelectedPurchase] = useState<Purchase | null>(

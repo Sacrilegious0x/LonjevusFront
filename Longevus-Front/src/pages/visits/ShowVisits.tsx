@@ -50,9 +50,9 @@ const showVisits = () => {
         return (
             visit.name.toLowerCase().includes(term) ||
             visit.visitDate.includes(term) ||
-            visit.email.toLowerCase().includes(term) ||
-            visit.resident.name.toLowerCase().includes(term) ||
-            visit.resident.numberRoom.toString().toLowerCase().includes(term)
+            visit.email.toLowerCase().includes(term) 
+            //visit.resident.name.toLowerCase().includes(term) ||
+            //visit.resident.numberRoom.toString().toLowerCase().includes(term)
         );
     });
     const handleDeleteVisit = async (visitId: number, visitorName: string) => {
@@ -120,8 +120,8 @@ const showVisits = () => {
         { header: 'Contacto', accessor: 'phoneNumber' },
         { header: 'Correo', accessor: 'email' },
         { header: 'Parentesco', accessor: 'relationship' },
-        { header: 'Residente', accessor: (row: IVisitData) => row.resident.name },
-        { header: 'Habitacion', accessor: (row: IVisitData) => row.resident.numberRoom },
+        // { header: 'Residente', accessor: (row: IVisitData) => row.resident.name },
+        // { header: 'Habitacion', accessor: (row: IVisitData) => row.resident.numberRoom },
         {
             header: 'Acciones', accessor: (visit) => visit,
             Cell: (visit) => (

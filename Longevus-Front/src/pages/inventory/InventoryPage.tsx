@@ -122,11 +122,30 @@ const InventoryPage = () => {
   header: "Foto",
   accessor: () => "",
   Cell: (item) => {
-    const photoPath = item?.photoURL ? item.photoURL.replace(/\\/g, "/").trim() : null;
-const url = photoPath ? `http://localhost:8080/${photoPath}` : "/placeholder.png";
+    const [hasError, setHasError] = useState(false);
+
+    if (hasError || !item.photoURL) {
+      return (
+        <div className="text-center text-muted" style={{ fontSize: "0.8rem" }}>
+          Imagen no disponible
+        </div>
+      );
+    }
+
+    const photoPath = item.photoURL.replace(/\\/g, "/").trim();
+    const url = `http://localhost:8080/${photoPath}`;
 
     return (
-      <div style={{ width: "70px", height: "70px", overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <div
+        style={{
+          width: "70px",
+          height: "70px",
+          overflow: "hidden",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <img
           src={url}
           alt={`Foto de ${item.product.name}`}
@@ -136,9 +155,7 @@ const url = photoPath ? `http://localhost:8080/${photoPath}` : "/placeholder.png
             objectFit: "cover",
             borderRadius: "8px",
           }}
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = "/placeholder.png";
-          }}
+          onError={() => setHasError(true)}
         />
       </div>
     );
@@ -174,15 +191,9 @@ const url = photoPath ? `http://localhost:8080/${photoPath}` : "/placeholder.png
 
   return (
     <>
-<<<<<<< HEAD
       {/* <Header /> */}
       <div className="container mt-4">
         <h1>Inventario</h1>
-=======
-      <Header />
-      <div className="container mt-5">
-        <h1 className="mb-4">Inventario</h1>
->>>>>>> developer
 
         <div className="row mb-4">
           <div className="col-md-6">

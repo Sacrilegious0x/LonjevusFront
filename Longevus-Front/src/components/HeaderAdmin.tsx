@@ -48,12 +48,16 @@ const Header = () => {
                                                 <Link className="sub_menu-options" to="/residente/visitas">Registro Visitas</Link>
                                             </li>
                                         )}
+                                        {hasAuthority('PERMISSION_HABITACIONES_VIEW') && (
                                         <li className="sub_ul-actions-li">
                                             <Link className="sub_menu-options" to="/habitaciones">Habitaciones</Link>
                                         </li>
+                                         )}
+                                         {hasAuthority('PERMISSION_HABITACIONES_CREATE') && (
                                         <li className="sub_ul-actions-li">
                                             <Link className="sub_menu-options" to="/habitaciones/agregar">Agregar Habitación</Link>
                                         </li>
+                                         )}
                                     </ul>
                                 )}
 
@@ -102,8 +106,12 @@ const Header = () => {
                                             {hasAuthority('PERMISSION_COMPRAS_CREATE') && (
                                                 <Link className="sub_menu-options" to="/compras/agregar">Agregar Compra</Link>
                                             )}
+                                            {hasAuthority('PERMISSION_PRODUCTOS_VIEW') && (
                                             <Link className="sub_menu-options" to="/productos">Listar Productos</Link>
+                                            )}
+                                            {hasAuthority('PERMISSION_PRODUCTOS_CREATE') && (
                                             <Link className="sub_menu-options" to="/productos/agregar">Agregar Productos</Link>
+                                            )}
                                         </li>
                                     </ul>
                                 )}

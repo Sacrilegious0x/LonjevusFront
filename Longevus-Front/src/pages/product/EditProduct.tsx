@@ -8,6 +8,7 @@ import { getSuppliers, type ISupplier } from "../../services/SupplierService";
 import { getProductById, getUnits, updateProduct, type IUnit, type RawProduct } from "../../services/ProductService";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
+import { confirmEditAlert, succesAlert } from "../../js/alerts";
 getProductById
 interface FormState {
   name: string;
@@ -165,8 +166,16 @@ const EditProduct: React.FC = () => {
         data.append("photo", selectedFile);
       }
 
+       const response = await confirmEditAlert(formData.name);
+
+      if(response.isConfirmed){
+
       await updateProduct(data);
+      succesAlert("Actualizado",`Producto actualizado exitosamente`)
       navigate("/productos");
+      }else{
+        console.log("No se actualizo el producto");
+      }
     } catch (error) {
       console.error("Error actualizando producto:", error);
     }
@@ -289,7 +298,7 @@ const EditProduct: React.FC = () => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Seleccione una unidad</option>
+                  <option value="">Seleccione una unidad:</option>
                   {units.map((u) => (
                     // Convertimos el id (number) a string, para que coincida con formData.unitId
                     <option key={u.id} value={u.id.toString()}>
@@ -312,7 +321,7 @@ const EditProduct: React.FC = () => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Seleccione un proveedor</option>
+                  <option value="">Seleccione un proveedor:</option>
                   {suppliers.map((prov) => (
                     <option key={prov.id} value={prov.id.toString()}>
                       {prov.name}

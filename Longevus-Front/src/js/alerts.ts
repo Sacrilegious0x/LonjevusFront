@@ -45,6 +45,17 @@ export function errorAlert(message:string){
     });
 }
 
+export function confirmEditSupplierAlert(param: string){
+    return Swal.fire({
+      title: `¿Estas seguro que deseas guardar los cambios a ${param}?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Actualizar",
+      cancelButtonText: "Cancelar"
+  })
+}
 export const confirmExitAlert = (text: string) => {
   return Swal.fire({
     icon: "warning",

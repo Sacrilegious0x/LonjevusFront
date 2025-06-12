@@ -1,6 +1,8 @@
 import React, { useState, useEffect, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import type { ResidentData } from "../services/ResidentService";
+import { errorAlert } from "../js/alerts";
+import { getRooms, type IRoom } from "../services/RoomService";
 
 interface ResidentProps {
   onSubmit: (data: ResidentData) => void;
@@ -22,6 +24,10 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
 
   const isEditing = !!initialData;
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [filteredRooms, setFilteredRooms] = useState<IRoom[]>([]);
+
+
   useEffect(() => {
     if (initialData) {
       console.log("Cargando initialData en form:", initialData);
@@ -29,22 +35,102 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
     }
   }, [initialData]);
 
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const allRooms = await getRooms();
+        const availableRooms = allRooms.filter(
+          (room) => room.statusRoom.toLowerCase() === "disponible"
+        );
+        setFilteredRooms(availableRooms);
+      } catch (err) {
+        console.error("Error al cargar habitaciones", err);
+      }
+    };
+
+    fetchRooms();
+  }, []);
+
+
   const handleForm = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 
     const target = e.target as HTMLInputElement;
     const { name, type, value, checked, files } = target;
 
+    if (name === "name" && value !== "" && value.trim() === "") {
+      return;
+    }
+
+    if (name === "name" && !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(value)) {
+      return;
+    }
+
+    if (name === "identification") {
+      if (!/^\d*$/.test(value)) {
+        return;
+      }
+    }
+
+    if (name === "identification") {
+      if (!/^\d*$/.test(value)) {
+        return;
+      }
+
+      if (value.length > 0 && (value.length < 9 || value.length > 12)) {
+        setErrors(prev => ({
+          ...prev,
+          identification: "Debe tener entre 9 y 12 dígitos"
+        }));
+      } else {
+        setErrors(prev => ({
+          ...prev,
+          identification: ""
+        }));
+      }
+    }
+
+
     setData(prev => ({
-      ...prev, //version anterior del form
+      ...prev,
       [name]: type === 'file' && files ? files[0]
         : type === 'checkbox' ? checked
           : type === 'number' ? Number(value) : value,
-    }))
+    }));
+
+
   };
 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const validIdentification = /^\d{9,12}$/.test(data.identification);
+
+    if (!validIdentification) {
+      setErrors({ identification: "La identificación debe tener entre 9 y 12 digitos" });
+      return;
+    }
+
+    const requiredFields = [
+      "name", "identification", "birthdate", "healthStatus",
+      "numberRoom", "photo"
+    ];
+
+    const emptyFields = requiredFields.filter((field) => !data[field as keyof typeof data]);
+
+    if (emptyFields.length > 0) {
+      errorAlert("Por favor complete todos los campos antes de guardar.");
+      return;
+    }
+
+
+    if (!data.photo && isEditing) {
+      errorAlert('Seleccione una foto');
+      return;
+    }
+
+
     onSubmit(data);
     console.log(data);
   };
@@ -53,15 +139,16 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
     <form onSubmit={handleSubmit} className="residentForm p-4 border rounded">
 
       <div className="mb-3">
-        <label className="form-label">Identificacion</label>
+        <label className="form-label">Identificación</label>
         <input
           type="text"
           name="identification"
           value={data.identification}
-          readOnly={isEditing}
+          placeholder="ej: 703230654"
           onChange={handleForm}
-          className="form-control"
+          className={`form-control ${errors.identification ? "is-invalid" : ""}`}
         />
+        {errors.identification && <div className="invalid-feedback">{errors.identification}</div>}
       </div>
 
       <div className="mb-3">
@@ -69,6 +156,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
         <input
           type="text"
           name="name"
+          placeholder="ej: María Gómez"
           value={data.name}
           onChange={handleForm}
           className="form-control"
@@ -98,16 +186,15 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
       </div>
 
       <div className="mb-3">
-        <label className="form-label">Número de habitación</label>
-        <input
-          type="number"
-          name="numberRoom"
-          value={data.numberRoom}
-          onChange={handleForm}
-          min={1}
-          max={15}
-          className="form-control"
-        />
+        <label className="form-label">Habitación</label>
+        <select name="numberRoom" value={data.numberRoom} onChange={handleForm} className="form-select">
+          <option value="">Seleccione una habitación</option>
+          {filteredRooms.map((room) => (
+            <option key={room.id} value={room.id}>
+              Habitación #{room.roomNumber} - {room.roomType}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="mb-3">
@@ -115,14 +202,13 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
         <input
           type="file"
           name="photo"
-          required
           accept="image/*"
           onChange={handleForm}
           className="form-control"
         />
       </div>
 
-      <button type="submit" className="btnAddResident">Guardar</button>
+      <button type="submit" className="btn btn-success float-end">Guardar</button>
     </form>
   );
 };

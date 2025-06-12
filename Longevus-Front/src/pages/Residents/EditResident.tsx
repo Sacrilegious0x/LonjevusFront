@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import EditResidentForm from "../../components/ResidentForm";
 import HeaderA from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
-import type { ResidentData } from "../../components/ResidentForm";
+import type { ResidentData } from '../../services/ResidentService';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { updateResident, getResidentById } from '../../services/ResidentService';
 import { succesAlert } from '../../js/alerts';
+import { Link } from 'react-router-dom';
 
 const EditResidentPage: React.FC = () => {
 
@@ -41,7 +42,10 @@ const EditResidentPage: React.FC = () => {
             <div className="container">
                 <div className="row">
                     <div className="div_ResidentForm card mt-5 mb-5 border-primary">
-                        <h1 className="fw-bold text-uppercase">Editar Residente</h1>
+                        <div className='card-title d-flex justify-content-between align-items-center mt-3'>
+                            <h1 className="fw-bold text-uppercase">Editar Residente</h1>
+                            <Link className='btn btn-secondary float-end' to="/residente/mostrar"><i className="bi bi-reply" /> Volver</Link>
+                        </div>
                         {residentData ? (
                             <EditResidentForm initialData={residentData} onSubmit={handleUpdateResident} />
                         ) : (

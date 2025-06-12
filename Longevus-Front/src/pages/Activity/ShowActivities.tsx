@@ -4,7 +4,7 @@ import Table from '../../components/TableBasic';
 import type { columnDefinition } from '../../components/TableBasic';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { getActivitiesByDate, deleteActivity, type Activity } from "../../services/ActivityService";
+import { getActivitiesByDate, deleteActivity, getActivitiesByMonth, getActivitiesByYear, type Activity } from "../../services/ActivityService";
 import { confirmDeleteAlert, succesAlert, errorAlert } from "../../js/alerts";
 
 const Activities = () => {
@@ -12,19 +12,59 @@ const Activities = () => {
     const [activitiesData, setActivitiesData] = useState<Activity[]>([]);
     const [activitiesDate, setActivitiesDate] = useState<string>("");
 
+    const [searchType, setSearchType] = useState<string>("mensual");
+    const [searchValue, setSearchValue] = useState<string>("");
 
-    const handleBuscar = () => {
-        if (!activitiesDate) return;
 
-        getActivitiesByDate(activitiesDate)
-            .then((data) => {
-                console.log("Fecha seleccionada:", activitiesDate);
-                setActivitiesData(data);
-            })
-            .catch((error) => {
-                console.error("Error al cargar actividades", error);
-            });
+
+    const handleSearch = () => {
+        if (!searchValue) return;
+
+        if (searchType === "date") {
+            getActivitiesByDate(searchValue)
+                .then(data => setActivitiesData(data))
+                .catch(err => errorAlert("Error al buscar por fecha"));
+        }
+
+        if (searchType === "monthly") {
+            const [yearStr, monthStr] = searchValue.split("-");
+            const year = parseInt(yearStr);
+            const month = parseInt(monthStr);
+
+            getActivitiesByMonth(month)
+                .then(data => {
+                    const filtered = data.filter(a => {
+                        const [aYear] = a.date.split("-").map(Number);
+                        return aYear === year;
+                    });
+                    setActivitiesData(filtered);
+                })
+                .catch(err => errorAlert("Error al buscar por mes"));
+        }
+
+        if (searchType === "year") {
+            const year = parseInt(searchValue.trim());
+
+            if (isNaN(year) || year < 2000 || year > 2100) {
+                errorAlert("Debe ingresar un año válido entre 2000 y 2100.");
+                return;
+            }
+
+            console.log("📆 Búsqueda por año:", year);
+
+            getActivitiesByYear(year)
+                .then(data => {
+                    console.log("Actividades encontradas:", data.length);
+                    setActivitiesData(data);
+                })
+                .catch(err => {
+                    console.error("Error al buscar por año:", err);
+                    errorAlert("Error al buscar por año");
+                });
+        }
+
     };
+
 
 
     const handleDeleteActivity = async (activity: Activity) => {
@@ -40,17 +80,24 @@ const Activities = () => {
                     console.error("Error al eliminar la actividad", error);
                     errorAlert('Error al eliminar la actividad');
                 });
-        }else{
+        } else {
             return;
         }
     }
+
+    const formatTime = (time: string) => {
+        if (!time) return '';
+        const [hour, minute] = time.split(':');
+        return `${hour}:${minute}`;
+    };
+
 
     const activityColumns: columnDefinition<Activity>[] = [
         { header: '#', accessor: 'id', Cell: (activity, index) => { return (index + 1) } },
         { header: 'Nombre', accessor: 'name' },
         { header: 'Tipo', accessor: 'type' },
-        { header: 'Inicio', accessor: 'startTime' },
-        { header: 'Fin', accessor: 'endTime' },
+        { header: 'Inicio', accessor: 'startTime', Cell: (activity) => formatTime(activity.startTime) },
+        { header: 'Fin', accessor: 'endTime', Cell: (activity) => formatTime(activity.endTime) },
         { header: 'Estado', accessor: 'status' },
         {
             header: 'Acciones', accessor: (activity) => activity,
@@ -77,16 +124,71 @@ const Activities = () => {
         <>
             <Header />
 
-            <center id="getDate" className="mt-4">
-                <label className="me-2">Seleccione la fecha</label>
-                <input
-                    type="date"
-                    value={activitiesDate}
-                    onChange={(e) => setActivitiesDate(e.target.value)}
-                    className="me-2"
-                />
-                <button className="btn btn-primary" onClick={handleBuscar}>Buscar</button>
-            </center>
+            <div className="d-flex justify-content-center mt-4">
+                <div className="input-group w-auto">
+                    <label className="input-group-text bg-white border-end-0 fw-semibold">
+                        Tipo de búsqueda
+                    </label>
+                    <select className="form-select" value={searchType} onChange={(e) => {
+                        setSearchType(e.target.value);
+                        setSearchValue("");
+                    }}>
+                        <option >Seleccione el tipo de búsqueda</option>
+                        <option value="date">Por fecha</option>
+                        <option value="monthly">Mensual</option>
+                        <option value="year">Anual</option>
+                    </select>
+                </div>
+            </div>
+
+            <div className="d-flex justify-content-center mt-3">
+                <div className="input-group w-auto">
+                    <label className="input-group-text bg-white border-end-0 fw-semibold">
+                        {searchType === "monthly" && "Seleccione mes"}
+                        {searchType === "date" && "Seleccione fecha"}
+                        {searchType === "year" && "Seleccione año"}
+                    </label>
+
+                    {searchType === "monthly" && (
+                        <input
+                            type="month"
+                            className="form-control"
+                            value={searchValue}
+                            onChange={(e) => setSearchValue(e.target.value)}
+                        />
+                    )}
+
+                    {searchType === "date" && (
+                        <input
+                            type="date"
+                            className="form-control"
+                            value={searchValue}
+                            onChange={(e) => setSearchValue(e.target.value)}
+                        />
+                    )}
+
+                    {searchType === "year" && (
+                        <input
+                            type="number"
+                            className="form-control"
+                            placeholder="Ingrese un año"
+                            value={searchValue}
+                            onChange={(e) => setSearchValue(e.target.value)}
+                            min="2000"
+                            max="2100"
+                        />
+
+                    )}
+
+                    {(searchType === "date" || searchType === "monthly" || searchType === "year") && (
+                        <button className="btn btn-primary" onClick={handleSearch}>
+                            Buscar
+                        </button>
+                    )}
+                </div>
+            </div>
+
+
 
             <div className='container'>
                 <div className='row'>

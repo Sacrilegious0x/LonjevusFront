@@ -116,6 +116,25 @@ const Header = () => {
                         )}
 
                     </li>
+
+                    <li className="ul-actions-li"
+                        onMouseEnter={() => setMenuActive('activities')}
+                        onMouseLeave={() => setMenuActive(null)}>
+
+                        Actividades
+
+                        {menuActive === 'activities' && (
+                            <ul className="sub_ul-actions">
+                                <li className="sub_ul-actions-li">
+                                    <Link className="sub_menu-options" to="/actividades/mostrar">Lista de Actividades</Link>
+                                </li>
+                                <li className="sub_ul-actions-li">
+                                    <Link className="sub_menu-options" to="/actividad/agregar">Agregar Actividad</Link>
+                                </li>
+                            </ul>
+                        )}
+
+                    </li>
                     
                 </ul>
             </nav>

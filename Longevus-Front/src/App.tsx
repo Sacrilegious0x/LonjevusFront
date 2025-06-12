@@ -29,13 +29,13 @@ import AddRoom from './pages/Room/AddRoom';
 import EditRoom from './pages/Room/EditRoom';
 import EditProduct from './pages/product/EditProduct';
 import AddProduct from './pages/product/AddProduct';
-
 import ShowActivities from './pages/Activity/ShowActivities';
 import AddActivity from './pages/Activity/AddActivity';
 import EditActivity from './pages/Activity/EditActivity';
 import ViewActivity from './pages/Activity/ViewActivity';
 import ShowResidentsFromActivity from './pages/Activity/ShowResidentsFromActivity';
 import AddResidentsToActivity from './pages/Activity/AddResidentToActivity';
+
 
 function App() {
   return (
@@ -71,10 +71,6 @@ function App() {
         <Route path='/habitaciones' element={<RoomList/>}/>
         <Route path='/habitaciones/agregar' element={<AddRoom/>}/>
         <Route path='/habitaciones/editar/:id' element={<EditRoom/>}/>
-
-
-
-
         <Route path="/actividades/mostrar" element={<ShowActivities />} />
         <Route path="/actividad/agregar" element={<AddActivity />} />
         <Route path="/actividad/editar/:id" element={<EditActivity />} />

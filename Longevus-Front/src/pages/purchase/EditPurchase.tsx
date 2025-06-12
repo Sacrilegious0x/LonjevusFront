@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
+import { format } from "date-fns";
+
 import {
   getPurchaseById,
   updatePurchase,
@@ -35,7 +37,7 @@ const isValidDate = (dateString: string): boolean => {
 
 const parseLocalISODate = (isoString: string): Date => {
   const [year, month, day] = isoString.split("-").map(Number);
-  return new Date(year, month - 1, day); // mes: 0-based
+  return new Date(year, month - 1, day); 
 };
 
 const EditPurchase = () => {
@@ -80,8 +82,8 @@ const EditPurchase = () => {
 
         const fakeProducts: IProduct[] = missingProducts.map((item) => ({
           id: item.idProduct,
-          name: `Producto eliminado`,
-          price: 0,
+          name:  item.productName ?? "Producto eliminado",
+          price: item.price ?? 0,
           expirationDate: "",
           category: "Desconocido",
           unit: "N/A",
@@ -175,7 +177,7 @@ const EditPurchase = () => {
 
     const payload: Purchase = {
       id: id!,
-      date,
+      date: format(parseLocalISODate(date), "yyyy-MM-dd"),
       amount: getTotal(),
       admin: { id: 1, name: "" },
       items: items.map((i) => ({
@@ -235,6 +237,7 @@ const EditPurchase = () => {
                 locale="es"
                 placeholderText="dd/mm/aaaa"
                 className="form-control"
+                onKeyDown={(e) => e.preventDefault()}
               />
             </div>
 
@@ -324,6 +327,7 @@ const EditPurchase = () => {
                           className={`form-control ${
                             showInvalid ? "is-invalid" : ""
                           }`}
+                          onKeyDown={(e) => e.preventDefault()}
                         />
                         {showInvalid && (
                           <div

@@ -368,6 +368,12 @@ nav a {
 
 .btnAddResident {
   background: #422C20;
+  color: #FFFFFF
+}
+
+.btnAddActivity {
+  background: #422C20;
+  color: #FFFFFF
 }
 
 .btn-time-selected{
@@ -403,3 +409,101 @@ nav a {
   color: #FFFFFF;
   border-color: #202042;
 }
+
+.modal.show.d-block {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1050;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5); 
+}
+
+.table td, .table th {
+  padding: 1rem !important;
+  vertical-align: middle;
+}
+
+/* Ajustes generales para inventario */
+.container {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.row {
+  margin-bottom: 1.5rem;
+}
+
+.table td, .table th {
+  padding: 1rem !important;
+  vertical-align: middle;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-body p {
+  margin-bottom: 1rem;
+}
+
+.table img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+  margin: auto;
+}
+
+
+.table td:not(.no-min) {
+  min-width: 100px;
+}
+
+
+.table td button {
+  white-space: nowrap;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+}
+
+.table-container {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.table-img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+  margin: auto;
+  border: none;
+  padding: 0;
+}
+
+.modal-img {
+  max-height: 200px;
+  max-width: 100%;
+  object-fit: cover;
+  display: block;
+  margin: 1rem auto 0;
+  border-radius: 8px;
+}
+
+.table td img {
+  width: 60px !important;
+  height: 60px !important;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+  margin: auto;
+}
+

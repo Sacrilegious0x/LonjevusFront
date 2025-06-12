@@ -3,11 +3,11 @@ import axios from "axios";
 const API_BASE_URL = 'http://localhost:8080'
 
 export interface Resident {
-    id: number,
-    identification?: string,
-    name?: string,
-    age?: number,
-    numberRoom?: number
+  id: number,
+  identification?: string,
+  name?: string,
+  age?: number,
+  numberRoom?: number
 }
 
 export interface ResidentData {
@@ -21,47 +21,48 @@ export interface ResidentData {
   photo: File | null;
 }
 
+
 export const getResidents = async (): Promise<Resident[]> => {
-    try {
-        const response = await axios.get(`${API_BASE_URL}/residents`);
-        return response.data;
-    }catch(error){
-        console.log('No se pudo obtener la lista de residentes', error)
-        throw(error)
-    }
+  try {
+    const response = await axios.get(`${API_BASE_URL}/residents`);
+    return response.data;
+  } catch (error) {
+    console.log('No se pudo obtener la lista de residentes', error)
+    throw (error)
+  }
 }
 
 export const deleteResident = async (id: number): Promise<void> => {
-    try {
-        await axios.delete(`${API_BASE_URL}/deleteResident?id=${id}`);
-    } catch (error) {
-        console.error('Error al eliminar el residente', error);
-        throw error;
-    }
+  try {
+    await axios.delete(`${API_BASE_URL}/deleteResident?id=${id}`);
+  } catch (error) {
+    console.error('Error al eliminar el residente', error);
+    throw error;
+  }
 };
 
 export const createResident = async (data: ResidentData): Promise<void> => {
-    const formData = new FormData();
-    formData.append("identification", data.identification);
-    formData.append("name", data.name);
-    formData.append("birthdate", data.birthdate);
-    formData.append("healthStatus", data.healthStatus);
-    formData.append("numberRoom", data.numberRoom.toString());
+  const formData = new FormData();
+  formData.append("identification", data.identification);
+  formData.append("name", data.name);
+  formData.append("birthdate", data.birthdate);
+  formData.append("healthStatus", data.healthStatus);
+  formData.append("numberRoom", data.numberRoom.toString());
 
-    if (data.photo && data.photo instanceof File) {
-        formData.append("photo", data.photo);
-    }
+  if (data.photo && data.photo instanceof File) {
+    formData.append("photo", data.photo);
+  }
 
-    try {
-        await axios.post(`${API_BASE_URL}/addResident`, formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        });
-    } catch (error) {
-        console.error("Error al crear el residente", error);
-        throw error;
-    }
+  try {
+    await axios.post(`${API_BASE_URL}/addResident`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  } catch (error) {
+    console.error("Error al crear el residente", error);
+    throw error;
+  }
 };
 
 
@@ -101,3 +102,25 @@ export const updateResident = async (data: ResidentData): Promise<ResidentData> 
     throw error;
   }
 };
+
+/*export const getRooms = async (): Promise<Number[]> => {
+  const response = await axios.get(`${API_BASE_URL}/getRooms`)
+    .then
+}*/
+
+
+export const filterResidents = (residents: Resident[], nameFilter?: string, identificationFilter?: string): Resident[] => {
+  return residents.filter((resident) => {
+    const matchesName = nameFilter
+      ? resident.name?.toLowerCase().includes(nameFilter.toLowerCase())
+      : true;
+
+    const matchesIdentification = identificationFilter
+      ? resident.identification?.toLowerCase().includes(identificationFilter.toLowerCase())
+      : true;
+
+    return matchesName || matchesIdentification;
+  });
+};
+
+

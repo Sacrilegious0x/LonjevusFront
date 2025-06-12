@@ -19,12 +19,13 @@ import {
 } from "../../js/alerts";
 
 const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-  return `${day}-${month}-${year}`;
+  const [year, month, day] = dateString.split("-").map(Number);
+  const date = new Date(year, month - 1, day); 
+  const formattedDay = String(date.getDate()).padStart(2, "0");
+  const formattedMonth = String(date.getMonth() + 1).padStart(2, "0");
+  return `${formattedDay}-${formattedMonth}-${date.getFullYear()}`;
 };
+
 
 const monthNames = [
   "Enero","Febrero","Marzo","Abril","Mayo","Junio",

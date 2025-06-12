@@ -5,6 +5,7 @@ import type { ResidentData } from "../../services/ResidentService";
 import { useNavigate } from "react-router-dom";
 import { createResident } from "../../services/ResidentService";
 import { succesAlert, errorAlert } from "../../js/alerts";
+import { Link } from "react-router-dom";
 
 const AddResident: React.FC = () => {
 
@@ -28,7 +29,10 @@ const AddResident: React.FC = () => {
             <div className="container">
                 <div className="row">
                     <div className="div_ResidentForm card mt-5 mb-5 border-primary">
-                        <h1 className="fw-bold text-uppercase">Agregar Residente</h1>
+                        <div className='card-title d-flex justify-content-between align-items-center mt-3'>
+                            <h1 className="fw-bold text-uppercase">Agregar Residente</h1>
+                            <Link className='btn btn-secondary float-end' to="/residente/mostrar"><i className="bi bi-reply" /> Volver</Link>
+                        </div>
                         <AddResidentForm onSubmit={handleCreateResident} />
                     </div>
                 </div>

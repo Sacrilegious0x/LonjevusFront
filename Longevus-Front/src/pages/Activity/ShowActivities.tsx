@@ -6,12 +6,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import { getActivitiesByDate, deleteActivity, getActivitiesByMonth, getActivitiesByYear, type Activity } from "../../services/ActivityService";
 import { confirmDeleteAlert, succesAlert, errorAlert } from "../../js/alerts";
+import { useAuth } from "../../context/AuthContext";
 
 const Activities = () => {
     const navigate = useNavigate();
     const [activitiesData, setActivitiesData] = useState<Activity[]>([]);
     const [activitiesDate, setActivitiesDate] = useState<string>("");
-
+    const {hasAuthority} = useAuth();
     const [searchType, setSearchType] = useState<string>("mensual");
     const [searchValue, setSearchValue] = useState<string>("");
 
@@ -102,17 +103,22 @@ const Activities = () => {
         {
             header: 'Acciones', accessor: (activity) => activity,
             Cell: (activity) => (
-                <>
+                <>  
+                {hasAuthority('PERMISSION_ACTIVIDADES_VIEW') && (
                     <a className='btn btn-info me-2' onClick={() => navigate(`/actividad/info/${activity.id}`)}>
                         <i className='bi bi-eye' />
                     </a>
+                )}
+                {hasAuthority('PERMISSION_ACTIVIDADES_UPDATE') && (
                     <a className='btn btn-warning me-2' onClick={() => navigate(`/actividad/editar/${activity.id}`)}>
                         <i className='bi bi-pencil-square' />
                     </a>
-
+                )}
+                {hasAuthority('PERMISSION_ACTIVIDADES_DELETE') && (
                     <a className='btn btn-danger me-2' onClick={() => handleDeleteActivity(activity)}>
                         <i className="bi bi-trash" />
                     </a>
+                )}
 
                 </>
             )
@@ -195,7 +201,9 @@ const Activities = () => {
                     <div className='card mt-5 mb-5'>
                         <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                             <h4>Lista de actividades</h4>
+                            {hasAuthority('PERMISSION_ACTIVIDADES_CREATE') && (
                             <Link className='btn btn-success' to='/actividad/agregar'><i className='bi bi-calendar-plus' /> Agregar</Link>
+                            )}
                         </div>
                         <div className='card-body'>
                             {activitiesData.length === 0 ? (

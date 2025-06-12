@@ -26,7 +26,7 @@ import SuppliersEdit from './pages/supplier/SuppliertsUpdate';
 import ShowVisits from './pages/visits/ShowVisits';
 import EditVisit from './pages/visits/EditVisit';
 import UserProfile from './pages/Employee/Profile';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedPage from './components/ProtectedPages';
 import ProtectedRoute from './components/ProtectedRoute';
 import RoomList from './pages/Room/ListRooms';
@@ -46,6 +46,7 @@ import RolesList from './pages/role_permissions/Role_permission';
 
 
 function App() {
+  
   return (
     <AuthProvider>
       <BrowserRouter>

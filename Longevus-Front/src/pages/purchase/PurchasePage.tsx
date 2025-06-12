@@ -10,6 +10,7 @@ import {succesAlert,errorAlert,confirmDeleteAlert,confirmEditAlert,} from "../..
 import {getAllPurchases,deletePurchase,type Purchase,} from "../../services/PurchaseService";
 import { useAuth } from "../../context/AuthContext";
 import type { ForwardedRef } from "react"; 
+
 registerLocale("es", es);
 
 const formatDate = (isoString: string): string => {
@@ -172,6 +173,7 @@ const PurchasePage = () => {
           onDelete={(item) => handleDelete(item.id!)}
           renderActions={(item) => (
             <div className="d-flex flex-row gap-1">
+              {hasAuthority('PERMISSION_COMPRAS_VIEW')&& (
               <button
                 className="btn btn-info p-2"
                 onClick={() => handleView(item)}
@@ -179,6 +181,8 @@ const PurchasePage = () => {
               >
                 <i className="bi bi-eye"></i>
               </button>
+              )}
+              {hasAuthority('PERMISSION_COMPRAS_UPDATE')&& (
               <button
                 className="btn btn-warning p-2"
                 onClick={() => handleEdit(item)}
@@ -186,6 +190,8 @@ const PurchasePage = () => {
               >
                 <i className="bi bi-pencil-square"></i>
               </button>
+              )}
+              {hasAuthority('PERMISSION_COMPRAS_DELETE')&& (
               <button
                 className="btn btn-danger p-2"
                 onClick={() => handleDelete(item.id!)}
@@ -193,6 +199,7 @@ const PurchasePage = () => {
               >
                 <i className="bi bi-trash"></i>
               </button>
+              )}
             </div>
           )}
         />

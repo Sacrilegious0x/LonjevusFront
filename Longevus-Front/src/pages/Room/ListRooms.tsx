@@ -7,8 +7,7 @@ import Footer from "../../components/Footer";
 import Table from '../../components/TableBasic';
 import { deleteRoom, getAllResidents, getRooms, type IResident } from "../../services/RoomService";
 import { confirmDeleteAlert, succesAlert, errorAlert } from '../../js/alerts';
-
-
+import { useAuth } from "../../context/AuthContext";
 interface IRoom{
     id:number,
     statusRoom:string,
@@ -24,7 +23,7 @@ const RoomList=() => {
     const [roomData,setRoomData] = useState<IRoom[]>([])
     const [loading,setLoading] = useState<boolean>(true);
     const [error,setError] = useState<string | null>(null);
-
+    const {hasAuthority} =  useAuth();
     const [searchTerm, setSearchTerm] = useState<string>('');
 
     const filteredRooms = roomData.filter(room =>{
@@ -46,10 +45,14 @@ const RoomList=() => {
         {header: 'Acciones', accessor: (room) => room,   
                 Cell: (room) =>(
                     <>
+                    {hasAuthority('PERMISSION_HABITACIONES_UPDATE')&& (
                     <Link className="btn btn-warning me-2" to={`/habitaciones/editar/${room.id}`}><i className='bi bi-pencil-square' /></Link>
+                    )}
+                    {hasAuthority('PERMISSION_HABITACIONES_DELETE')&& (
                     <a className='btn btn-danger me-2' onClick={()=>handleDelete(room.id,room.roomNumber)}>
                         <i className="bi bi-trash"/>
                     </a>  
+                    )}
                     </>
         )}];
 
@@ -128,7 +131,9 @@ const RoomList=() => {
             <div className='card mt-5 mb-5'>
                 <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                         <h4 className="m-2">Lista de habitaciones</h4>
-                        <Link className='btn btn-success' to='/habitaciones/agregar'>Agregar</Link>
+                        {hasAuthority('PERMISSION_HABITACIONES_UPDATE')&& (
+                            <Link className='btn btn-success' to='/habitaciones/agregar'>Agregar</Link>
+                        )}
                 </div>  
                 <div className='card-body'>
                         <input className="mb-3" type="text" placeholder="Buscar por número..." id="RoomSearch" value={searchTerm} onChange={(e)=> setSearchTerm(e.target.value)}/>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import AddContactModal from "./AddContactModal";
 import type { Resident } from "../services/ResidentService";
 import type { Contact } from "../services/ContactService";
-
+import { useAuth } from "../context/AuthContext";
 interface ContactProps {
     show: boolean;
     onClose: () => void;
@@ -15,7 +15,7 @@ interface ContactProps {
 const ViewContactModal: React.FC<ContactProps> = ({ show, onClose, residentName, contactsList, onDeleteContact, onEditContact }) => {
 
     const [showEditContactModal, setEditContactModal] = useState<Contact | null>(null);
-
+    const {hasAuthority} = useAuth();
     if (!show)
         return null;
     return (
@@ -41,6 +41,7 @@ const ViewContactModal: React.FC<ContactProps> = ({ show, onClose, residentName,
                                         <p className="mb-1"><strong>Teléfono:</strong> {contact.phoneNumber}</p>
                                         <p className="mb-2"><strong>Relación:</strong> {contact.relationShip}</p>
                                         <div className="d-flex gap-2">
+                                            {hasAuthority('PERMISSION_CONTACTOS_UPDATE') && (
                                             <button
                                                 className="btn btn-sm btn-primary"
                                                 onClick={() => {
@@ -52,12 +53,15 @@ const ViewContactModal: React.FC<ContactProps> = ({ show, onClose, residentName,
                                             >
                                                 Editar
                                             </button>
+                                            )}
+                                            {hasAuthority('PERMISSION_CONTACTOS_DELETE') && (
                                             <button
                                                 className="btn btn-sm btn-danger"
                                                 onClick={() => onDeleteContact(contact.id)}
                                             >
                                                 Eliminar
                                             </button>
+                                            )}
                                         </div>
                                     </li>
                                 ))}

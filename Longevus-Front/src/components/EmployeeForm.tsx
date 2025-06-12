@@ -4,7 +4,7 @@ import HourSelector  from './HourSelector';
 import DaySelector from './DaySelector';
 import type { IShift } from './HourSelector';
 import ShiftTypeSelector from './ShiftTypeSelector';
-
+import { useAuth } from '../context/AuthContext';
 export interface EmployeeFormData {
     name: string;
     identification: string;
@@ -45,14 +45,8 @@ interface EmployeeFormProps{
 const EmployeeForm = ({initialData, onSubmit, onCancel, showShiftSelector = false,
     showHourSelector = false,showOfficeContactField = false,
     showDaySelector = false}: EmployeeFormProps) => {
-        // !!! AÑADIR ESTOS CONSOLE LOGS !!!
-    console.log("Dentro de EmployeeForm - Props de visibilidad:");
-    console.log("initialData presente:", !!initialData); // Para saber si es modo edición
-    console.log("showShiftSelector:", showShiftSelector, typeof showShiftSelector);
-    console.log("showDaySelector:", showDaySelector, typeof showDaySelector);
-    console.log("showHourSelector:", showHourSelector, typeof showHourSelector);
-    console.log("showOfficeContactField:", showOfficeContactField, typeof showOfficeContactField); // Para comparar
-    
+      
+    const {hasAuthority} = useAuth();
     const [formData, setFormData] = useState<EmployeeFormData>(()=>{
         if(initialData){
             return{
@@ -247,7 +241,9 @@ const EmployeeForm = ({initialData, onSubmit, onCancel, showShiftSelector = fals
 
                             <div className='mb-3'>
                                 <button type="button" className='btn btn-secondary btn-sm me-3' onClick={onCancel}>Volver</button>
+                                {(hasAuthority('PERMISSION_ADMINISTRADORES_VIEW') || hasAuthority('PERMISSION_CUIDADORES_VIEW')) && (
                                 <input type='submit' value={"Guardar"} className='btn btn-primary btn-sm' />
+                                )}
                             </div>
                         </form>
                     </div>

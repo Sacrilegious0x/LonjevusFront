@@ -72,12 +72,16 @@ const Header = () => {
 
                                 {menuActive === 'activities' && (
                                     <ul className="sub_ul-actions">
+                                         {hasAuthority('PERMISSION_ACTIVIDADES_VIEW') && (
                                         <li className="sub_ul-actions-li">
                                             <Link className="sub_menu-options" to="/actividades/mostrar">Lista de Actividades</Link>
                                         </li>
+                                         )}
+                                          {hasAuthority('PERMISSION_ACTIVIDADES_CREATE') && (
                                         <li className="sub_ul-actions-li">
                                             <Link className="sub_menu-options" to="/actividad/agregar">Agregar Actividad</Link>
                                         </li>
+                                        )}
                                     </ul>
                                 )}
                             </li>
@@ -111,7 +115,7 @@ const Header = () => {
                                     onMouseEnter={() => setMenuActive('inventory')}
                                     onMouseLeave={() => setMenuActive(null)}>
 
-                                    Inventario y Compras
+                                    Inventario|Compras
 
                                     {menuActive === 'inventory' && (
                                         <ul className="sub_ul-actions">
@@ -121,6 +125,9 @@ const Header = () => {
                                                 )}
                                                 {hasAuthority('PERMISSION_COMPRAS_VIEW') && (
                                                     <Link className="sub_menu-options" to="/compras">Listar Compras</Link>
+                                                )}
+                                                {hasAuthority('PERMISSION_COMPRAS_VIEW') && (
+                                                    <Link className="sub_menu-options" to="/compras/inactivas">Compras Inactivas</Link>
                                                 )}
                                                 {hasAuthority('PERMISSION_COMPRAS_CREATE') && (
                                                     <Link className="sub_menu-options" to="/compras/agregar">Agregar Compra</Link>
@@ -146,9 +153,40 @@ const Header = () => {
 
                                     {menuActive === 'permissions' && (
                                         <ul className="sub_ul-actions">
+                                            {hasAuthority('PERMISSION_PERMISOS_VIEW') && (
                                             <li className="sub_ul-actions-li">
                                                 <Link className="sub_menu-options" to="/roles_permisos">Mostrar permisos</Link>
                                             </li>
+                                            )}
+                                        </ul>
+                                    )}
+
+                                </li>
+                            )}
+                             {hasAuthority('PERMISSION_FACTURAS_VIEW') && (
+                                <li className="ul-actions-li"
+                                    onMouseEnter={() => setMenuActive('permissions')}
+                                    onMouseLeave={() => setMenuActive(null)}>
+
+                                    Facturas
+
+                                    {menuActive === 'permissions' && (
+                                        <ul className="sub_ul-actions">
+                                            {hasAuthority('PERMISSION_FACTURAS_VIEW') && (
+                                            <li className="sub_ul-actions-li">
+                                                <Link className="sub_menu-options" to="/facturas">Mostrar Facturas</Link>
+                                            </li>
+                                            )}
+                                            {hasAuthority('PERMISSION_FACTURAS_CREATE') && (
+                                            <li className="sub_ul-actions-li">
+                                                <Link className="sub_menu-options" to="/facturas/nueva">Crear Factura</Link>
+                                            </li>
+                                            )}
+                                             {hasAuthority('PERMISSION_FACTURAS_VIEW') && (
+                                            <li className="sub_ul-actions-li">
+                                                <Link className="sub_menu-options" to="/facturas/inactivas">Inactivas</Link>
+                                            </li>
+                                            )}
                                         </ul>
                                     )}
 

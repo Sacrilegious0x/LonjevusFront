@@ -7,10 +7,10 @@ import { succesAlert, errorAlert, infoAlert } from "../../js/alerts";
 import type { Resident } from "../../services/BillingService";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
+import { useAuth } from "../../context/AuthContext";
 const AddBilling = () => {
   const navigate = useNavigate();
-
+const {hasAuthority} = useAuth();
   const [date, setDate] = useState<Date>(() => {
     const today = new Date();
     return new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -212,9 +212,11 @@ const AddBilling = () => {
             <i className="bi bi-reply me-1"></i>
             Volver
           </button>
+          {hasAuthority('PERMISSION_FACTURAS_CREATE') && (
           <button type="submit" className="btn btn-success">
             Guardar
           </button>
+          )}
         </form>
       </div>
       {/* <Footer /> */}

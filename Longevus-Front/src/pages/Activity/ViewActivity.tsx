@@ -5,12 +5,12 @@ import { type Resident } from "../../services/ResidentService";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import { Link } from "react-router-dom";
-
+import { useAuth } from "../../context/AuthContext";
 const ViewActivity: React.FC = () => {
     const { id } = useParams();
     const [activityData, setActivityData] = useState<Activity | null>(null);
     const [residentsData, setResidentsData] = useState<Resident[]>([]);
-
+    const {hasAuthority} = useAuth();
     useEffect(() => {
         if (id) {
             getActivityById(Number(id))
@@ -53,12 +53,16 @@ const ViewActivity: React.FC = () => {
                     <p><strong>Encargado(a):</strong> {activityData?.caregiver?.name ?? 'No asignado'}</p>
 
                     <center>
+                        {hasAuthority('PERMISSION_ACTIVIDADES_CREATE') && (
                         <Link className="btn btn-info mt-3 ms-2" to={`/actividad/info/residentes/agregar/${activityData?.id}`}>
                             Agregar residentes
                         </Link>
+                        )}
+                        {hasAuthority('PERMISSION_RESIDENTES_VIEW') && (
                         <Link className="btn btn-info mt-3 ms-2" to={`/actividad/info/residentes/${activityData?.id}`}>
                             Ver residentes
                         </Link>
+                        )}
                     </center>
 
                 </div>

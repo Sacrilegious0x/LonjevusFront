@@ -205,25 +205,25 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
             </div>
 
             <div className="mb-3">
-  <label className="form-label">Estado</label>
-  <select
-    name="status"
-    value={data.status}
-    onChange={handleForm}
-    className={`form-select ${errors.status ? "is-invalid" : ""}`}
-  >
-    <option value="">Seleccione el estado de la actividad</option>
-    <option value="Pendiente">Pendiente</option>
-    <option
-      value="En progreso"
-     disabled={!!data.date && new Date(data.date).toDateString() !== new Date().toDateString()}
-    >
-      En progreso
-    </option>
-    <option value="Finalizada">Finalizada</option>
-  </select>
-  {errors.status && <div className="invalid-feedback">{errors.status}</div>}
-</div>
+                <label className="form-label">Estado</label>
+                <select
+                    name="status"
+                    value={data.status}
+                    onChange={handleForm}
+                    className={`form-select ${errors.status ? "is-invalid" : ""}`}
+                >
+                    <option value="">Seleccione el estado de la actividad</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option
+                        value="En progreso"
+                        disabled={!!data.date && new Date(data.date).toDateString() !== new Date().toDateString()}
+                    >
+                        En progreso
+                    </option>
+                    <option value="Finalizada">Finalizada</option>
+                </select>
+                {errors.status && <div className="invalid-feedback">{errors.status}</div>}
+            </div>
 
 
             <div className="mb-3">

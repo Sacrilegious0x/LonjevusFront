@@ -16,21 +16,6 @@ const Activities = () => {
     const [searchValue, setSearchValue] = useState<string>("");
 
 
-    useEffect(() => {
-        const today = new Date();
-        const currentMonth = today.getMonth() + 1;
-
-        getActivitiesByMonth(currentMonth)
-            .then(data => {
-                console.log("Actividades recibidas del mes actual:", data);
-                setActivitiesData(data);
-            })
-            .catch(error => {
-                console.error("Error al cargar actividades del mes", error);
-            });
-    }, []);
-
-
 
     const handleSearch = () => {
         if (!searchValue) return;

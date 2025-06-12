@@ -5,6 +5,7 @@ import { errorAlert } from "../js/alerts";
 import { getRooms, type IRoom } from "../services/RoomService";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
+
 interface ResidentProps {
   onSubmit: (data: ResidentData) => void;
   initialData?: ResidentData;

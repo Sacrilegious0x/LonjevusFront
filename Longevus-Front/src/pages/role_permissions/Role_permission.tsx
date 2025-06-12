@@ -154,7 +154,6 @@ const RolesList = () => {
       succesAlert('Permisos Actualizados', 'Los permisos se han guardado correctamente. Por seguridad, se cerrará la sesión para aplicar los cambios.');
       logout();
       navigate('/login');
-      // opcional: toast.success('Permisos actualizados');
     } catch (e) {
       errorAlert("Ha ocurrido un error inesperado");
       console.log(e);
@@ -167,7 +166,6 @@ const RolesList = () => {
         try {
           updatePermissions(currentRole.id, permissions);
           succesAlert("Actualizado", "Habitacion actualizada");
-          // opcional: toast.success('Permisos actualizados');
         } catch (e) {
           console.log(e);
         } finally {

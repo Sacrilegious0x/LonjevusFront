@@ -57,7 +57,7 @@ const ViewEmployee = () => {
         }
     }, [id]);
 
-    // Procesar los datos del schedule si existen
+    // Procesa los datos del schedule si existen
     const workScheduleData = useMemo(() => {
         if (!employeeData?.schedule) return [];
 
@@ -82,13 +82,13 @@ const ViewEmployee = () => {
         return scheduleInfo.length > 0 ? scheduleInfo : [];
     }, [employeeData?.schedule]);
 
-    // Procesar los días seleccionados
+    // Procesa los días seleccionados
     const selectedDaysData = useMemo(() => {
         if (!employeeData?.schedule?.days) return [];
         return employeeData?.schedule.days.split(',').map((day: string) => day.trim());
     }, [employeeData?.schedule?.days]);
 
-    // Procesar los turnos seleccionados
+    // Procesa los turnos seleccionados
     const selectedShiftsData = useMemo(() => {
         if (!employeeData?.shift) return [];
         return employeeData.shift.split(',').map((shift: string) => shift.trim());

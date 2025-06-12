@@ -271,8 +271,8 @@ const AddProduct = () => {
                 </small>
               </div>
               <div className="mb-3">
-                  <button type="submit" className="btn btn-primary">Agregar</button>
-                  <a href='/productos' className="btn btn-secondary m-1">Cancelar</a>
+                  <button type="submit" className="btn btn-primary">Guardar</button>
+                  <a href='/productos' className="btn btn-secondary m-1">Volver</a>
               </div> 
             </form>
           </div>

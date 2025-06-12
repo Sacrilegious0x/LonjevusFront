@@ -243,7 +243,7 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                 {hasAuthority('PERMISSION_ACTIVIDADES_CREATE') && (
                     <button type="submit" className="btn btn-success float-end float-end">Guardar</button>
                 )}
-                <Link className='btn btn-secondary float-end' to="/actividades/mostrar"><i className="bi bi-reply" /> Volver</Link>
+                <Link className='btn btn-secondary float-end' to="/actividades/mostrar">Volver</Link>
             </div>
         </form>
     );

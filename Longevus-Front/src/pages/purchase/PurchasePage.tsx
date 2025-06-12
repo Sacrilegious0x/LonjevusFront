@@ -87,7 +87,7 @@ const PurchasePage = () => {
     {
       header: "Monto",
       accessor: "amount",
-      render: (item) => `$${item.amount.toFixed(2)}`,
+      render: (item) => `₡${item.amount.toFixed(2)}`,
     },
     {
       header: "Administrador",
@@ -224,7 +224,7 @@ const PurchasePage = () => {
                     <strong>Fecha:</strong> {formatDate(selectedPurchase.date)}
                   </p>
                   <p>
-                    <strong>Monto Total:</strong> $
+                    <strong>Monto Total:</strong> ₡
                     {selectedPurchase.amount.toFixed(2)}
                   </p>
                   <table className="table table-bordered mt-3">

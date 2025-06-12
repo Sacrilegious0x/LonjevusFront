@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 const ProtectedRoute = () => {
   const { isAuthenticated, loading} = useAuth();
   if (loading) {
-    return <div>Cargando sesión...</div>; // O un componente Spinner visualmente más atractivo
+    return <div>Cargando sesión...</div>; 
   }
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;

@@ -6,7 +6,7 @@ import { type ChangeEvent } from 'react';
     exitTime: string;
 }
 interface IDayScheduleEditorProps {
-    shifts: IShift[]; // El array de turnos(horarios) comunes
+    shifts: IShift[]; 
     onUpdateShift: (index: number, field: 'entryTime' | 'exitTime', value: string) => void; 
     onAddShift: () => void; 
     onRemoveShift: (id: string) => void; 

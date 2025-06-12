@@ -8,8 +8,8 @@ interface ContactProps {
     onClose: () => void;
     residentName?: string;
     contactsList: Contact[];
-    onDeleteContact: (id: number) => void; //función para eliminar un contacto
-    onEditContact: (contact: Contact) => void; //función para editar un contacto
+    onDeleteContact: (id: number) => void; 
+    onEditContact: (contact: Contact) => void; 
 }
 
 const ViewContactModal: React.FC<ContactProps> = ({ show, onClose, residentName, contactsList, onDeleteContact, onEditContact }) => {

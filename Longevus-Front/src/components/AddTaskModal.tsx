@@ -6,8 +6,8 @@ interface AddTaskModalProps {
   show: boolean;
   onClose: () => void;
   employeeName?: string;
-  caregiverId?: string | number; // Añadido: ID del cuidador
-  onTaskAdded?: (newTask: any) => void; // Callback cuando se agrega una tarea exitosamente
+  caregiverId?: string | number; 
+  onTaskAdded?: (newTask: any) => void; 
 }
 
 const AddTaskModal: React.FC<AddTaskModalProps> = ({
@@ -53,15 +53,13 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
         description: newTaskDescription.trim()
       };
 
-      // Llamar al servicio para guardar la tarea
+
       const response = await saveTask(taskData);
 
-      // Notificar que se agregó la tarea y proporcionar los datos
       if (onTaskAdded) {
         onTaskAdded(response.data);
       }
 
-      // Limpiar y cerrar
       setNewTaskDescription('');
       onClose();
     } catch (err) {

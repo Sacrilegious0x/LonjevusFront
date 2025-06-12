@@ -16,7 +16,20 @@ const Activities = () => {
     const [searchType, setSearchType] = useState<string>("mensual");
     const [searchValue, setSearchValue] = useState<string>("");
 
+    useEffect(() => {
+        const today = new Date();
+        const todayStr = today.toISOString().split("T")[0]; 
 
+        console.log("Cargando actividades de hoy:", todayStr);
+
+        getActivitiesByDate(todayStr)
+            .then(data => {
+                setActivitiesData(data);
+            })
+            .catch(error => {
+                console.error("Error al cargar actividades del día", error);
+            });
+    }, []);
 
     const handleSearch = () => {
         if (!searchValue) return;

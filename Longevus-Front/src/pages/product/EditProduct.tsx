@@ -18,8 +18,6 @@ interface FormState {
   unitId: string;      
   supplierId: string;  
   isActive: boolean;
-  // photoUrl lo usamos solo para previsualizar o para mostrar un string vacío.
-  // No es lo mismo que el archivo real, que guardamos en selectedFile.
   photoUrl: string;
 }
 
@@ -65,7 +63,7 @@ const EditProduct: React.FC = () => {
   // Para manejar el archivo .jpg/.png nuevo (si el usuario reemprueba foto)
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  //  Traer la lista de proveedores 
+
   useEffect(() => {
     const fetchSuppliers = async () => {
       try {
@@ -80,7 +78,7 @@ const EditProduct: React.FC = () => {
     fetchSuppliers();
   }, []);
 
-  // Traer la lista de unidades
+
   useEffect(() => {
     const fetchUnits = async () => {
       try {
@@ -114,9 +112,9 @@ const EditProduct: React.FC = () => {
         price: prod.price.toString(),
         expirationDate: prod.expirationDate, // "yyyy-MM-dd"
         category: prod.category,
-        unitId: unitIdString,       // p. ej. "4"
-        supplierId: supplierIdString, // p. ej. "2"
-        photoUrl: prod.photoURL,     // ojo que el backend lo llamó "photoURL"
+        unitId: unitIdString,       
+        supplierId: supplierIdString, 
+        photoUrl: prod.photoURL,     
         isActive:prod.isActive
       });
     } catch (err) {
@@ -161,13 +159,11 @@ const EditProduct: React.FC = () => {
         [name]: value.trim() ? '' : 'Este campo es obligatorio'}));
     };
 
-  //  Submit de la actualización
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
       const data = new FormData();
-      // Siempre incluimos el ID 
       data.append("id", id!);
       data.append("name", formData.name);
       data.append("price", formData.price);
@@ -177,8 +173,7 @@ const EditProduct: React.FC = () => {
       data.append("supplierId", formData.supplierId);
       data.append("isActive", formData.isActive.toString());
 
-      // Si selecciono una foto nueva lo enviamos; 
-      // si no no incluimos “photo” y el backend debe mantener la foto antigua
+
       if (selectedFile) {
         data.append("photo", selectedFile);
       }
@@ -198,7 +193,6 @@ const EditProduct: React.FC = () => {
     }
   };
 
-  //  6) Manejo de estados de carga/error 
   if (loadingSuppliers || loadingUnits || loadingProduct) {
     return (
       <>
@@ -221,7 +215,6 @@ const EditProduct: React.FC = () => {
     );
   }
 
-  // Formulario ya listo para editar
   return (
     <>
       {/* <Header /> */}
@@ -232,7 +225,6 @@ const EditProduct: React.FC = () => {
               <h1 className="mt-2">Editar Producto</h1>
             </center>
             <form onSubmit={handleSubmit}>
-              {/* Nombre */}
               <div className="mb-3">
                 <label htmlFor="name" className="form-label">
                   Nombre:
@@ -254,7 +246,6 @@ const EditProduct: React.FC = () => {
                 )}
               </div>
 
-              {/* Precio */}
               <div className="mb-3">
                 <label htmlFor="price" className="form-label">
                   Precio en ₡:
@@ -276,7 +267,6 @@ const EditProduct: React.FC = () => {
                 )}
               </div>
 
-              {/* Fecha de vencimiento */}
               <div className="mb-3">
                 <label htmlFor="expirationDate" className="form-label">
                   Fecha de Vencimiento:
@@ -292,7 +282,6 @@ const EditProduct: React.FC = () => {
                 />
               </div>
 
-              {/* Categoría */}
               <div className="mb-3">
                 <label htmlFor="category" className="form-label">
                   Categoría:
@@ -314,7 +303,6 @@ const EditProduct: React.FC = () => {
                 </select>
               </div>
 
-              {/* Unidad de Medida */}
               <div className="mb-3">
                 <label htmlFor="unitId" className="form-label">
                   Unidad de Medida:
@@ -323,13 +311,12 @@ const EditProduct: React.FC = () => {
                   id="unitId"
                   name="unitId"
                   className="form-select"
-                  value={formData.unitId}      // Por ejemplo, "3"
+                  value={formData.unitId}      
                   onChange={handleChange}
                   required
                 >
                   <option value="">Seleccione una unidad:</option>
                   {units.map((u) => (
-                    // Convertimos el id (number) a string, para que coincida con formData.unitId
                     <option key={u.id} value={u.id.toString()}>
                       {u.unitType}
                     </option>
@@ -337,7 +324,6 @@ const EditProduct: React.FC = () => {
                 </select>
               </div>
 
-              {/* Proveedor */}
               <div className="mb-3">
                 <label htmlFor="supplierId" className="form-label">
                   Proveedor:
@@ -346,7 +332,7 @@ const EditProduct: React.FC = () => {
                   id="supplierId"
                   name="supplierId"
                   className="form-select"
-                  value={formData.supplierId}  // Por ejemplo, "5"
+                  value={formData.supplierId}  
                   onChange={handleChange}
                   required
                 >
@@ -358,7 +344,6 @@ const EditProduct: React.FC = () => {
                   ))}
                 </select>
               </div>
-              {/* Foto actual / previsualización */}
               <div className="mb-3">
                 Foto Nueva:
                 <input

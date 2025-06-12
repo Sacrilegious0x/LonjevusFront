@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import EmployeeForm from '../../components/EmployeeForm';
 import type { EmployeeFormData, EmployeeInitialData } from '../../components/EmployeeForm';
 import { getAdminById, updateAdmin } from '../../services/AdminService';
-
+import { errorAlert, succesAlert, confirmEditAlert } from '../../js/alerts';
 
 
 const EditAdmin = () => {
@@ -53,33 +53,38 @@ const EditAdmin = () => {
                         setEmployeeData(initialData);
                     } else {
                         setError("Administrador no encontrado");
+                        errorAlert("Administrador no encontrado")
+                        
                     }
                     setLoading(false);
                 })
                 .catch(err => {
                     console.error("Error loading admin:", err);
                     setError("Error al cargar los datos del administrador.");
+                    errorAlert('Error al cargar los datos del administrador')
                     setLoading(false);
                 });
         } else {
             setError("ID de administrador no proporcionado en la URL.");
+            errorAlert("ID de administrador no proporcionado en la URL.")
             setLoading(false);
         }
     }, [id]);
 
     const handleFormSubmit = async (formData: EmployeeFormData) => {
         if (!id) {
-            console.error("Error: Intentando actualizar sin ID de administrador.");
+            errorAlert("Intentando actualizar sin ID de administrador.");
             return;
         }
 
         try {
-            const response = await updateAdmin(id, formData);
-            alert(response.data || "Administrador actualizado exitosamente!");
+            
+            await updateAdmin(id, formData);
+            succesAlert("Datos actualizados","Administrador actualizado exitosamente!");
             navigate('/roles_permisos');
         } catch (error) {
-            console.error("Error al actualizar administrador:", error);
-            alert("Error al actualizar administrador. Por favor, intente nuevamente.");
+            errorAlert("Error al actualizar administrador, intente nuevamente");
+            
         }
     };
     const handleCancel = () => {

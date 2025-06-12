@@ -203,20 +203,20 @@ const {hasAuthority} = useAuth();
               ))}
             </select>
           </div>
-
-          <button
-            type="button"
-            className="btn btn-secondary me-2"
-            onClick={() => navigate("/facturas")}
-          >
-            <i className="bi bi-reply me-1"></i>
-            Volver
-          </button>
-          {hasAuthority('PERMISSION_FACTURAS_CREATE') && (
-          <button type="submit" className="btn btn-success">
+               {hasAuthority('PERMISSION_FACTURAS_CREATE') && (
+          <button type="submit" className="btn btn-primary me-2">
             Guardar
           </button>
           )}
+          <button
+            type="button"
+            className="btn btn-secondary "
+            onClick={() => navigate("/facturas")}
+          >
+    
+            Volver
+          </button>
+         
         </form>
       </div>
       {/* <Footer /> */}

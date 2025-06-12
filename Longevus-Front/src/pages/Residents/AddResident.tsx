@@ -35,7 +35,7 @@ const AddResident: React.FC = () => {
                     <div className="div_ResidentForm card mt-5 mb-5 border-primary">
                         <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                             <h1 className="fw-bold text-uppercase">Agregar Residente</h1>
-                            <Link className='btn btn-secondary float-end' to="/residente/mostrar"><i className="bi bi-reply" /> Volver</Link>
+                            {/* <Link className='btn btn-secondary float-end' to="/residente/mostrar"><i className="bi bi-reply" /> Volver</Link> */}
                         </div>
                         <AddResidentForm onSubmit={handleCreateResident} />
                     </div>

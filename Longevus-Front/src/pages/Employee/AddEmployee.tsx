@@ -26,7 +26,7 @@ const AddEmployee = () => {
         } catch (err: any) {
             console.error("Error al crear el empleado:", err);
             setError(err.response?.data?.message || err.message || "Ocurrió un error desconocido al crear el empleado.");
-            alert(`Error: ${error}`);
+            errorAlert("Error al intentar crear el empleado");
         } finally {
             setIsLoading(false);
         }

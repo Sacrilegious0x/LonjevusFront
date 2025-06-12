@@ -10,6 +10,8 @@ import {
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import { succesAlert, errorAlert, confirmEditAlert } from "../../js/alerts";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const EditBilling = () => {
   const { id } = useParams();
@@ -17,75 +19,116 @@ const EditBilling = () => {
   const [billing, setBilling] = useState<Billing | null>(null);
   const [loading, setLoading] = useState(true);
   const [residents, setResidents] = useState<Resident[]>([]);
-  const [startMonth, setStartMonth] = useState("");
-  const [endMonth, setEndMonth] = useState("");
-  const [errors, setErrors] = useState({
-    date: false,
-    amount: false,
-    paymentMethod: false,
-    residentId: false,
-    startMonth: false,
-    endMonth: false,
-  });
+  const [date, setDate] = useState<Date | null>(null);
+  const [amount, setAmount] = useState<number>(0);
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [residentId, setResidentId] = useState<number | null>(null);
+  const [periodMonths, setPeriodMonths] = useState<number | "">("");
+  const [periodLabel, setPeriodLabel] = useState("");
 
   const months = [
-    "Ene","Feb","Mar","Abr","May","Jun",
-    "Jul","Ago","Sep","Oct","Nov","Dic",
+    "Ene",
+    "Feb",
+    "Mar",
+    "Abr",
+    "May",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dic",
   ];
+
+  const estimateMonthsFromPeriod = (
+    period: string
+  ): number => {
+    const [start, end] = period.split("-");
+    const startIndex = months.indexOf(start);
+    const endIndex = months.indexOf(end);
+    if (startIndex === -1 || endIndex === -1) return 1;
+    let diff = endIndex - startIndex + 1;
+    if (diff <= 0) diff += 12;
+    return diff;
+  };
+  const calculatePeriodLabel = (
+    startDate: Date,
+    monthsToAdd: number
+  ): string => {
+    const startMonth = startDate.getMonth();
+    const endMonth = (startMonth + monthsToAdd - 1) % 12;
+    return `${months[startMonth]}-${months[endMonth]}`;
+  };
 
   useEffect(() => {
     const fetchData = async () => {
-      if (id) {
-        const data = await getBillingById(parseInt(id));
-        setBilling(data);
-        const [start, end] = data.period.split("-");
-        setStartMonth(start);
-        setEndMonth(end);
+      try {
+        const res = await getAllResidents();
+        setResidents(res);
+
+        if (id) {
+          const data = await getBillingById(parseInt(id));
+          const exists = res.some(r => r.id === data.resident.id);
+        if (!exists) {
+          errorAlert("No se puede editar la factura porque el residente asociado ya no existe.");
+          navigate("/facturas");
+          return;
+        }
+          setBilling(data);
+          const [year, month, day] = data.date.split("-").map(Number);
+          const billingDate = new Date(year, month - 1, day);
+          setDate(billingDate);
+          setAmount(data.amount);
+          setPaymentMethod(data.paymentMethod);
+          setResidentId(data.resident.id);
+
+          const monthsCount = estimateMonthsFromPeriod(
+            data.period
+          );
+          setPeriodMonths(monthsCount);
+          setPeriodLabel(calculatePeriodLabel(billingDate, monthsCount));
+        }
+
         setLoading(false);
+      } catch (error) {
+        console.error("Error al cargar la factura:", error);
+        errorAlert("Hubo un error al cargar la factura.");
       }
-      const res = await getAllResidents();
-      setResidents(res);
     };
 
     fetchData();
   }, [id]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setBilling((prev) =>
-      prev
-        ? { ...prev, [name]: name === "amount" ? parseFloat(value) : value }
-        : null
-    );
-  };
-
-  const handleResidentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedId = parseInt(e.target.value);
-    const selectedResident = residents.find((r) => r.id === selectedId);
-    if (selectedResident && billing) {
-      setBilling({ ...billing, resident: selectedResident });
+  useEffect(() => {
+    if (date && periodMonths) {
+      const label = calculatePeriodLabel(date, periodMonths);
+      setPeriodLabel(label);
     }
-  };
+  }, [date, periodMonths]);
+
+  const [errors, setErrors] = useState({
+    date: false,
+    amount: false,
+    paymentMethod: false,
+    residentId: false,
+    periodMonths: false,
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const validationErrors = {
-      date: !billing?.date,
-      amount: !billing?.amount || billing.amount <= 0,
-      paymentMethod: !billing?.paymentMethod,
-      residentId: !billing?.resident?.id,
-      startMonth: !startMonth,
-      endMonth: !endMonth,
+      date: !date,
+      amount: amount <= 0,
+      paymentMethod: !paymentMethod,
+      residentId: !residentId,
+      periodMonths: !periodMonths,
     };
     setErrors(validationErrors);
 
     if (Object.values(validationErrors).some(Boolean)) {
-      errorAlert(
-        "Campos Imcompletos. Porfavor complete los campos antes de guardar"
-      );
+      errorAlert("Campos incompletos. Por favor complete todos los campos.");
       return;
     }
 
@@ -94,19 +137,25 @@ const EditBilling = () => {
     );
     if (!result.isConfirmed) return;
 
+    const formattedDate = `${date!.getFullYear()}-${String(
+      date!.getMonth() + 1
+    ).padStart(2, "0")}-${String(date!.getDate()).padStart(2, "0")}`;
+
+    const updatedBilling: Billing = {
+      ...billing!,
+      date: formattedDate,
+      amount,
+      paymentMethod,
+      period: periodLabel,
+      resident: { id: residentId! },
+    };
+
     try {
-      const updatedBilling: Billing = {
-        ...billing!,
-        period: `${startMonth}-${endMonth}`,
-      };
-
-      await updateBilling(billing!.id!, updatedBilling);
-
+      await updateBilling(updatedBilling.id!, updatedBilling);
       await succesAlert(
         "Factura actualizada",
         "La factura se actualizó correctamente."
       );
-
       navigate("/facturas");
     } catch (error) {
       console.error("Error al actualizar la factura:", error);
@@ -126,12 +175,16 @@ const EditBilling = () => {
         <form onSubmit={handleSubmit} className="mt-4">
           <div className="mb-3">
             <label className="form-label">Fecha:</label>
-            <input
-              type="date"
-              name="date"
+            <DatePicker
+              selected={date}
+              onChange={(d) => d && setDate(d)}
+              dateFormat="dd-MM-yyyy"
               className={`form-control ${errors.date ? "is-invalid" : ""}`}
-              value={billing.date}
-              onChange={handleChange}
+              showMonthDropdown
+              showYearDropdown
+              dropdownMode="select"
+              placeholderText="Selecciona una fecha"
+              onKeyDown={(e) => e.preventDefault()}
             />
           </div>
 
@@ -141,64 +194,64 @@ const EditBilling = () => {
               <span className="input-group-text">₡</span>
               <input
                 type="number"
-                name="amount"
                 className={`form-control ${errors.amount ? "is-invalid" : ""}`}
-                value={billing.amount}
-                onChange={handleChange}
+                value={amount === 0 ? "" : amount}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const regex = /^\d+(\.\d{0,2})?$/;
+                  if (val === "" || regex.test(val)) {
+                    const number = Number(val);
+                    if (number <= 1000000) setAmount(number);
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (["e", "E", "+", "-"].includes(e.key)) e.preventDefault();
+                }}
                 min="0"
                 step="0.01"
+                placeholder="Ingrese el monto"
               />
             </div>
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Período:</label>
-            <div className="d-flex gap-2">
-              <select
-                className={`form-control ${
-                  errors.startMonth ? "is-invalid" : ""
-                }`}
-                value={startMonth}
-                onChange={(e) => setStartMonth(e.target.value)}
-              >
-                <option value="">Mes inicio</option>
-                {months
-                  .filter((m) => m !== endMonth)
-                  .map((month) => (
-                    <option key={month} value={month}>
-                      {month}
-                    </option>
-                  ))}
-              </select>
-              <span className="align-self-center">a</span>
-              <select
-                className={`form-control ${
-                  errors.endMonth ? "is-invalid" : ""
-                }`}
-                value={endMonth}
-                onChange={(e) => setEndMonth(e.target.value)}
-              >
-                <option value="">Mes fin</option>
-                {months
-                  .filter((m) => m !== startMonth)
-                  .map((month) => (
-                    <option key={month} value={month}>
-                      {month}
-                    </option>
-                  ))}
-              </select>
-            </div>
+            <label className="form-label">Período (meses):</label>
+            <select
+              className={`form-control ${
+                errors.periodMonths ? "is-invalid" : ""
+              }`}
+              value={periodMonths}
+              onChange={(e) => setPeriodMonths(Number(e.target.value))}
+            >
+              <option value="">Seleccione cantidad de meses</option>
+              {[1, 2, 3, 4, 5, 6].map((n) => (
+                <option key={n} value={n}>
+                  {n} mes{n > 1 ? "es" : ""}
+                </option>
+              ))}
+            </select>
           </div>
+
+          {periodLabel && (
+            <div className="mb-3">
+              <label className="form-label">Período generado:</label>
+              <input
+                type="text"
+                className="form-control"
+                value={periodLabel}
+                readOnly
+              />
+            </div>
+          )}
 
           <div className="mb-3">
             <label className="form-label">Método de Pago:</label>
             <select
-              name="paymentMethod"
               className={`form-select ${
                 errors.paymentMethod ? "is-invalid" : ""
               }`}
-              value={billing.paymentMethod}
-              onChange={handleChange}
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value)}
             >
               <option value="">Seleccione</option>
               <option value="Efectivo">Efectivo</option>
@@ -212,8 +265,8 @@ const EditBilling = () => {
             <label className="form-label">Residente:</label>
             <select
               className={`form-select ${errors.residentId ? "is-invalid" : ""}`}
-              value={billing.resident?.id ?? ""}
-              onChange={handleResidentChange}
+              value={residentId ?? ""}
+              onChange={(e) => setResidentId(Number(e.target.value))}
             >
               <option value="">Seleccionar Residente</option>
               {residents.map((res) => (
@@ -223,6 +276,7 @@ const EditBilling = () => {
               ))}
             </select>
           </div>
+
           <div className="d-flex gap-2 mt-3">
             <button
               type="button"
@@ -232,7 +286,6 @@ const EditBilling = () => {
               <i className="bi bi-reply me-1"></i>
               Volver
             </button>
-
             <button type="submit" className="btn btn-primary">
               Guardar Cambios
             </button>

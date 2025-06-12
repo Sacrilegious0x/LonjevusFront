@@ -82,8 +82,8 @@ const EditPurchase = () => {
 
         const fakeProducts: IProduct[] = missingProducts.map((item) => ({
           id: item.idProduct,
-          name: `Producto eliminado`,
-          price: 0,
+          name:  item.productName ?? "Producto eliminado",
+          price: item.price ?? 0,
           expirationDate: "",
           category: "Desconocido",
           unit: "N/A",

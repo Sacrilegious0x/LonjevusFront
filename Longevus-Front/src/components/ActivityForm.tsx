@@ -24,6 +24,7 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
         });
 
     const isEditing = !!initialData;
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
         if (initialData) {
@@ -65,6 +66,20 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
             return;
         }
 
+        if (data.status === "En progreso") {
+            const today = new Date();
+            const selectedDate = new Date(data.date);
+
+            today.setHours(0, 0, 0, 0);
+            selectedDate.setHours(0, 0, 0, 0);
+
+            if (selectedDate.getTime() !== today.getTime()) {
+                setErrors({ status: "Solo se puede marcar como 'En progreso' una actividad en la fecha actual." });
+                return;
+            }
+        } else {
+            setErrors((prev) => ({ ...prev, status: "" }));
+        }
 
         onSubmit(data);
         console.log(data);
@@ -190,16 +205,26 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
             </div>
 
             <div className="mb-3">
-                <label className="form-label">Estado</label>
-                <select name="status" value={data.status}
-                    onChange={handleForm} className="form-select">
-                    <option value="">Seleccione el estado de la actividad</option>
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="En progreso">En progreso</option>
-                    <option value="Finalizada">Finalizada</option>
+  <label className="form-label">Estado</label>
+  <select
+    name="status"
+    value={data.status}
+    onChange={handleForm}
+    className={`form-select ${errors.status ? "is-invalid" : ""}`}
+  >
+    <option value="">Seleccione el estado de la actividad</option>
+    <option value="Pendiente">Pendiente</option>
+    <option
+      value="En progreso"
+     disabled={!!data.date && new Date(data.date).toDateString() !== new Date().toDateString()}
+    >
+      En progreso
+    </option>
+    <option value="Finalizada">Finalizada</option>
+  </select>
+  {errors.status && <div className="invalid-feedback">{errors.status}</div>}
+</div>
 
-                </select>
-            </div>
 
             <div className="mb-3">
                 <label className="form-label">Encargado(a)</label>
@@ -213,7 +238,7 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                 </select>
             </div>
 
-            <button type="submit" className="btnAddActivity float-end">Guardar</button>
+            <button type="submit" className="btn btn-success float-end float-end">Guardar</button>
         </form>
     );
 };

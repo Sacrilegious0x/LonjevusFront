@@ -2,6 +2,7 @@ import React, { useState, useEffect, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import type { ResidentData } from "../services/ResidentService";
 import { errorAlert } from "../js/alerts";
+import { getRooms, type IRoom } from "../services/RoomService";
 
 interface ResidentProps {
   onSubmit: (data: ResidentData) => void;
@@ -24,6 +25,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
   const isEditing = !!initialData;
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [filteredRooms, setFilteredRooms] = useState<IRoom[]>([]);
 
 
   useEffect(() => {
@@ -33,6 +35,24 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
     }
   }, [initialData]);
 
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const allRooms = await getRooms();
+        const availableRooms = allRooms.filter(
+          (room) => room.statusRoom.toLowerCase() === "disponible"
+        );
+        setFilteredRooms(availableRooms);
+      } catch (err) {
+        console.error("Error al cargar habitaciones", err);
+      }
+    };
+
+    fetchRooms();
+  }, []);
+
+
   const handleForm = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 
     const target = e.target as HTMLInputElement;
@@ -41,7 +61,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
     if (name === "name" && value !== "" && value.trim() === "") {
       return;
     }
-    
+
     if (name === "name" && !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(value)) {
       return;
     }
@@ -57,10 +77,10 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
         return;
       }
 
-      if (value.length > 0 && (value.length < 8 || value.length > 12)) {
+      if (value.length > 0 && (value.length < 9 || value.length > 12)) {
         setErrors(prev => ({
           ...prev,
-          identification: "Debe tener entre 8 y 12 dígitos"
+          identification: "Debe tener entre 9 y 12 dígitos"
         }));
       } else {
         setErrors(prev => ({
@@ -72,7 +92,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
 
 
     setData(prev => ({
-      ...prev, //version anterior del form
+      ...prev,
       [name]: type === 'file' && files ? files[0]
         : type === 'checkbox' ? checked
           : type === 'number' ? Number(value) : value,
@@ -166,16 +186,15 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
       </div>
 
       <div className="mb-3">
-        <label className="form-label">Número de habitación</label>
-        <input
-          type="number"
-          name="numberRoom"
-          value={data.numberRoom}
-          onChange={handleForm}
-          min={1}
-          max={15}
-          className="form-control"
-        />
+        <label className="form-label">Habitación</label>
+        <select name="numberRoom" value={data.numberRoom} onChange={handleForm} className="form-select">
+          <option value="">Seleccione una habitación</option>
+          {filteredRooms.map((room) => (
+            <option key={room.id} value={room.id}>
+              Habitación #{room.roomNumber} - {room.roomType}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="mb-3">
@@ -189,7 +208,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
         />
       </div>
 
-      <button type="submit" className="btnAddResident float-end">Guardar</button>
+      <button type="submit" className="btn btn-success float-end">Guardar</button>
     </form>
   );
 };

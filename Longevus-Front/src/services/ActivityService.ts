@@ -29,6 +29,55 @@ export const getActivitiesByDate = async (date: string): Promise<Activity[]> => 
     }
 }
 
+export const getActivitiesByMonth = async (month: number): Promise<Activity[]> => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/activities`);
+        const allActivities: Activity[] = response.data;
+
+        const currentYear = new Date().getFullYear();
+        const currentMonth = month;
+
+        const filtered = allActivities.filter(activity => {
+            const rawDate: string = activity.date;
+
+            if (!rawDate || !/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) return false;
+
+            const [year, activityMonth] = rawDate.split("-").map(Number);
+
+            return year === currentYear && activityMonth === currentMonth;
+
+        });
+
+        console.log("Actividades filtradas por mes actual:", filtered.length);
+        return filtered;
+    } catch (err) {
+        console.error("Error al obtener actividades del mes", err);
+        throw err;
+    }
+};
+
+export const getActivitiesByYear = async (year: number): Promise<Activity[]> => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/activities`);
+        const allActivities: Activity[] = response.data;
+
+        const filtered = allActivities.filter(activity => {
+            const rawDate = activity.date;
+
+            if (!rawDate || !/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) return false;
+
+            const [activityYear] = rawDate.split("-").map(Number);
+            return activityYear === year;
+        });
+
+        return filtered;
+    } catch (err) {
+        console.error("Error en getActivitiesByYear", err);
+        throw err;
+    }
+};
+
+
 export const getActivityById = async (id: number): Promise<Activity> => {
     try {
         const response = await axios.get(`${API_BASE_URL}/findActivity?id=${id}`);
@@ -82,24 +131,24 @@ export const deleteActivity = async (id: number): Promise<void> => {
 
 
 export const updateActivity = async (data: Activity): Promise<Activity> => {
-  const formData = {
-    ...data,
-    caregiver: {
-      id: data.caregiverId
-    }
-  };
+    const formData = {
+        ...data,
+        caregiver: {
+            id: data.caregiverId
+        }
+    };
 
-  try {
-    const response = await axios.post(`${API_BASE_URL}/updateActivity`, formData, {
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error al actualizar la actividad", error);
-    throw error;
-  }
+    try {
+        const response = await axios.post(`${API_BASE_URL}/updateActivity`, formData, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error al actualizar la actividad", error);
+        throw error;
+    }
 };
 
 export const deleteResidentFromActivity = async (idActivity: number, idResident: number): Promise<void> => {

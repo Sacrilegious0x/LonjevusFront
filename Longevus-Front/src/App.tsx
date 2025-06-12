@@ -44,8 +44,10 @@ import AddAdmin from './pages/Employee/AddAdmin';
 import EditAdmin from './pages/Employee/EditAdmin';
 import RolesList from './pages/role_permissions/Role_permission';
 
+
 function App() {
   return (
+<<<<<<< HEAD
     <AuthProvider>
       <BrowserRouter>
         <Routes>
@@ -97,6 +99,46 @@ function App() {
               <Route path="/roles_permisos" element={<RolesList/>}/>
             </Route>
           </Route>
+=======
+    <BrowserRouter>  
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/inventario" element={<InventoryPage />} />
+        <Route path="/visita" element={<VisitSchedule />} />
+        <Route path='/login' element={<Index/>} />
+        <Route path='/empleado/agregar' element={< AddEmployee/>}/>
+        <Route path='/empleado/mostrar' element={<ShowEmployee/>}/>
+        <Route path='/empleado/editar/:id' element={<EditEmployee/>}/>
+        <Route path='/empleado/perfil/:id' element={< ViewEmployee/>}/>
+        <Route path='/residente/mostrar' element={<ShowResidents/>}/>
+        <Route path='/residente/agregar' element={<AddResident/>}/>
+        <Route path="/residente/editar/:id" element={<EditResident />} /> 
+        <Route path="/residente/perfil/:id" element={<ViewResident />} /> 
+        <Route path="/compras" element={<PurchasePage />} />
+        <Route path="/compras/editar/:id" element={<EditPurchase />} /> 
+        <Route path="/compras/agregar" element={<AddPurchase />} />
+        <Route path="/productos" element={<ProductsList />} />
+        <Route path="/productos/editar/:id" element={<EditProduct />} />
+        <Route path="/productos/agregar" element={<AddProduct />} />
+        <Route path="/facturas" element={<BillingPage />} />
+        <Route path="/facturas/editar/:id" element={<EditBilling />} />
+        <Route path="/facturas/nueva" element={<AddBilling />} />
+        <Route path="/facturas/inactivas" element={<InactiveBillingsPage />} />
+        <Route path="/compras/inactivas" element={<InactivePurchasesPage />} />
+        <Route path="/proveedores" element={<SuppliersList />} />
+        <Route path="/proveedores/agregar" element={<SuppliersAdd/>} />
+        <Route path='/proveedores/editar/:id' element={<SuppliersEdit/>} />
+        <Route path="/roles_permisos" element={<RolesList/>} />
+        <Route path='/habitaciones' element={<RoomList/>}/>
+        <Route path='/habitaciones/agregar' element={<AddRoom/>}/>
+        <Route path='/habitaciones/editar/:id' element={<EditRoom/>}/>
+        <Route path="/actividades/mostrar" element={<ShowActivities />} />
+        <Route path="/actividad/agregar" element={<AddActivity />} />
+        <Route path="/actividad/editar/:id" element={<EditActivity />} />
+        <Route path="/actividad/info/:id" element={<ViewActivity />} />
+        <Route path="/actividad/info/residentes/:id" element={<ShowResidentsFromActivity />} />
+        <Route path="/actividad/info/residentes/agregar/:id" element={<AddResidentsToActivity />} />
+>>>>>>> developer
         </Routes>
       </BrowserRouter>
     </AuthProvider>

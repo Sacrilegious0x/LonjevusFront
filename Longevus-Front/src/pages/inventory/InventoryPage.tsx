@@ -118,33 +118,43 @@ const InventoryPage = () => {
       accessor: (item) => item.expirationDate ?? "N/A",
       Cell: (item) => formatDate(item.expirationDate),
     },
-    {
-      header: "Foto",
-      accessor: () => "",
-      Cell: (item) => {
-        const url = `http://localhost:8080/${item.photoURL}`;
-        return (
-          <img
-            src={url}
-            alt={`Foto de ${item.product.name}`}
-            width="60"
-            height="60"
-            className="img-thumbnail"
-            style={{ objectFit: "cover" }}
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "/placeholder.png"; // reemplazo si imagen rota
-            }}
-          />
-        );
-      },
-    },
+ {
+  header: "Foto",
+  accessor: () => "",
+  Cell: (item) => {
+    const photoPath = item?.photoURL ? item.photoURL.replace(/\\/g, "/").trim() : null;
+const url = photoPath ? `http://localhost:8080/${photoPath}` : "/placeholder.png";
+
+    return (
+      <div style={{ width: "70px", height: "70px", overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <img
+          src={url}
+          alt={`Foto de ${item.product.name}`}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            borderRadius: "8px",
+          }}
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = "/placeholder.png";
+          }}
+        />
+      </div>
+    );
+  },
+}
+,
+
     {
       header: "Acciones",
       accessor: () => "",
       Cell: (item) => (
-        <>
+        <div
+          style={{ display: "flex", gap: "0.25rem", justifyContent: "center" }}
+        >
           <button
-            className="btn btn-info btn-sm me-1"
+            className="btn btn-info btn-sm"
             onClick={() => setSelectedItem(item)}
             title="Ver detalles"
           >
@@ -157,18 +167,24 @@ const InventoryPage = () => {
           >
             <i className="bi bi-trash"></i>
           </button>
-        </>
+        </div>
       ),
     },
   ];
 
   return (
     <>
+<<<<<<< HEAD
       {/* <Header /> */}
       <div className="container mt-4">
         <h1>Inventario</h1>
+=======
+      <Header />
+      <div className="container mt-5">
+        <h1 className="mb-4">Inventario</h1>
+>>>>>>> developer
 
-        <div className="row mb-3">
+        <div className="row mb-4">
           <div className="col-md-6">
             <label className="form-label">Filtrar por categoría:</label>
             <select
@@ -189,7 +205,7 @@ const InventoryPage = () => {
         </div>
 
         {selectedCategory && (
-          <div className="row mb-3">
+          <div className="row mb-4">
             <div className="col-md-6">
               <label className="form-label">
                 Filtrar por fecha de vencimiento:
@@ -207,7 +223,7 @@ const InventoryPage = () => {
         )}
 
         <button
-          className="btn btn-secondary mb-3"
+          className="btn btn-secondary mb-4"
           onClick={() => {
             setSelectedCategory("");
             setSelectedDate(null);
@@ -216,18 +232,21 @@ const InventoryPage = () => {
           Limpiar búsqueda
         </button>
 
-        <p>
+        <p className="mb-4">
           Total de productos: <strong>{filteredData.length}</strong>
         </p>
 
-        <TableBasic<InventoryItem>
-          data={filteredData}
-          columns={columns}
-          selectedRows={selectedRows}
-          onToggleRow={toggleRow}
-          onSelectAll={selectAll}
-        />
+        <div className="mb-5 p-3 bg-light rounded shadow-sm">
+          <TableBasic<InventoryItem>
+            data={filteredData}
+            columns={columns}
+            selectedRows={selectedRows}
+            onToggleRow={toggleRow}
+            onSelectAll={selectAll}
+          />
+        </div>
       </div>
+
       {selectedItem && (
         <div className="modal show d-block" tabIndex={-1}>
           <div className="modal-dialog modal-lg">
@@ -260,12 +279,7 @@ const InventoryPage = () => {
                 </p>
                 <img
                   src={`http://localhost:8080/${selectedItem.photoURL}`}
-                  alt="Foto producto"
-                  className="img-fluid rounded mt-3"
-                  style={{ maxHeight: 200 }}
-                  onError={(e) =>
-                    ((e.target as HTMLImageElement).src = "/placeholder.png")
-                  }
+                  className="modal-img"
                 />
               </div>
               <div className="modal-footer">
@@ -280,6 +294,15 @@ const InventoryPage = () => {
           </div>
         </div>
       )}
+      <div
+        style={{
+          height: "200px",
+          backgroundColor: "#f8f9fa",
+          marginTop: "2rem",
+          padding: "1rem",
+        }}
+      >
+      </div>
 
       {/* <Footer /> */}
     </>

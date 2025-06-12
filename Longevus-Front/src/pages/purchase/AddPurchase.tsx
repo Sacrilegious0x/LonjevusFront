@@ -5,15 +5,17 @@ import Footer from "../../components/Footer";
 import DatePicker from "react-datepicker";
 import axios from "axios";
 import { errorAlert, succesAlert, confirmExitAlert } from "../../js/alerts";
-import {type Product, type Admin, type PurchasePayload} from "../../services/PurchaseService";
+import {
+  type Product,
+  type Admin,
+  type PurchasePayload,
+} from "../../services/PurchaseService";
 
 interface LocalPurchaseItem {
   productId: number;
   quantity: number;
   expirationDate: string;
 }
-
-
 
 const isValidDate = (dateString: string): boolean => {
   if (!/^\d{2}-\d{2}-\d{4}$/.test(dateString)) return false;
@@ -38,17 +40,13 @@ const parseLocalDate = (dateStr: string): Date => {
   return new Date(year, month - 1, day); // mes va de 0 a 11
 };
 
-
 const AddPurchase = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
-  const [date, setDate] = useState(() => {
-  const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const dd = String(today.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
-});
+  const [date, setDate] = useState<Date>(() => {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), today.getDate()); // sin desfase horario
+  });
 
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [items, setItems] = useState<LocalPurchaseItem[]>([]);
@@ -80,7 +78,10 @@ const AddPurchase = () => {
   }, []);
 
   const handleAddProduct = () => {
-    if (products.length === 0) return;
+    if (products.length === 0) {
+      errorAlert("No hay productos disponibles.");
+      return;
+    }
     setIsModified(true);
     setItems([
       ...items,
@@ -126,10 +127,16 @@ const AddPurchase = () => {
       return;
     }
 
+    if (products.length === 0) {
+      errorAlert("No se puede guardar la compra porque no hay productos disponibles.");
+      return;
+    }
+
     if (items.some((item) => !isValidDate(item.expirationDate))) {
       errorAlert("Hay una o más fechas inválidas");
       return;
     }
+
     if (items.some((item) => !item.expirationDate)) {
       errorAlert(
         "Debes seleccionar la fecha de vencimiento de todos los productos."
@@ -142,8 +149,12 @@ const AddPurchase = () => {
       return;
     }
 
+    const formattedDate = `${date.getFullYear()}-${String(
+      date.getMonth() + 1
+    ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
     const payload: PurchasePayload = {
-      date,
+      date: formattedDate,
       amount: getTotal(),
       admin: { id: admin.id, name: admin.name },
       items: items.map((item) => ({
@@ -173,12 +184,18 @@ const AddPurchase = () => {
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="form-label">Fecha</label>
-            <input
-              type="date"
+            <DatePicker
+              selected={date}
+              onChange={(date: Date | null) => {
+                if (date) setDate(date);
+              }}
+              dateFormat="dd-MM-yyyy"
               className="form-control"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              required
+              placeholderText="Selecciona una fecha"
+              showMonthDropdown
+              showYearDropdown
+              dropdownMode="select"
+              onKeyDown={(e) => e.preventDefault()}
             />
           </div>
 
@@ -248,8 +265,11 @@ const AddPurchase = () => {
                     </td>
                     <td>
                       <DatePicker
-                                selected={item.expirationDate ? parseLocalDate(item.expirationDate) : null}
-                        
+                        selected={
+                          item.expirationDate
+                            ? parseLocalDate(item.expirationDate)
+                            : null
+                        }
                         onChange={(date: Date | null) => {
                           const formatted = date
                             ? `${String(date.getDate()).padStart(

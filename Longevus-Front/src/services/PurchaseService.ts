@@ -12,6 +12,7 @@ export interface PurchaseItem {
   quantity: number;
   expirationDate: string;
   productName?: string;
+  price?: number;
 }
 
 export interface Admin {

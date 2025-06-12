@@ -18,6 +18,10 @@ export default function SuppliersEdit() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
+    //manejar inputs vacios
+    const [touched, setTouched] = useState<Record<string, boolean>>({});
+    const [errors, setErrors] = useState<Record<string, string>>({});
+
   const [formData, setFormData] = useState<SupplierData>({
     name: '',
     phoneNumber: '',
@@ -96,6 +100,18 @@ export default function SuppliersEdit() {
 
   };
 
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const { name, value } = e.target;
+      setTouched(target => ({ ...target, [name]: true }));
+  
+  
+      setErrors(err => ({
+        ...err,
+        [name]: value.trim() ? '' : 'Este campo es obligatorio'}));
+    };
+
+  
+
   return (
     <>
       {/* <Header /> */}
@@ -108,19 +124,39 @@ export default function SuppliersEdit() {
             <form onSubmit={handleSubmit}>
               <div className='mb-3'>
                 <label htmlFor='name' className='form-label'><i className="bi bi-person-fill"></i>Nombre:</label>
-                <input type='text' id='name' name='name' value={formData.name} onChange={handleChange} className='form-control' required />
+                <input type='text' id='name' name='name' value={formData.name} onChange={handleChange} onBlur={handleBlur} className={`form-control ${touched.name && errors.name ? 'is-invalid' : ''}`} required />
+                {touched.name && errors.name && (
+                  <div className="invalid-feedback">
+                    {errors.name}
+                  </div>
+                )}
               </div>
               <div className='mb-3'>
                 <label htmlFor='phoneNumber' className='form-label'><i className="bi bi-telephone-plus-fill"></i>Teléfono:</label>
-                <input type='text' id='phoneNumber' name='phoneNumber' value={formData.phoneNumber} onChange={handleChange} className='form-control' required />
+                <input type='text' id='phoneNumber' name='phoneNumber' value={formData.phoneNumber} onChange={handleChange} onBlur={handleBlur} className={`form-control ${touched.phoneNumber && errors.phoneNumber ? 'is-invalid' : ''}`} required />
+                {touched.phoneNumber && errors.phoneNumber && (
+                  <div className="invalid-feedback">
+                    {errors.phoneNumber}
+                  </div>
+                )}
               </div>
               <div className='mb-3'>
                 <label htmlFor='email' className='form-label'><i className="bi bi-envelope-fill"></i>Correo:</label>
-                <input type='email' id='email' name='email' value={formData.email} onChange={handleChange} className='form-control' required />
+                <input type='email' id='email' name='email' value={formData.email} onChange={handleChange} onBlur={handleBlur} className={`form-control ${touched.email && errors.email ? 'is-invalid' : ''}`} required />
+                {touched.email && errors.email && (
+                  <div className="invalid-feedback">
+                    {errors.email}
+                  </div>
+                )}
               </div>
               <div className='mb-3'>
                 <label htmlFor='address' className='form-label'><i className="bi bi-compass"></i>Dirección:</label>
-                <input type='text' id='address' name='address' value={formData.address} onChange={handleChange} className='form-control' required />
+                <input type='text' id='address' name='address' value={formData.address} onChange={handleChange} onBlur={handleBlur} className={`form-control ${touched.address && errors.address ? 'is-invalid' : ''}`} required />
+                {touched.address && errors.address && (
+                  <div className="invalid-feedback">
+                    {errors.address}
+                  </div>
+                )}
               </div>
               <div className='mb-3'>
                 <label htmlFor='photo' className='form-label'><i className="bi bi-image"></i>Fotografía:</label>

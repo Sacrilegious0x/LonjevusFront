@@ -6,6 +6,7 @@ import { getActivityById, type Activity, updateActivity } from '../../services/A
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { succesAlert, errorAlert } from "../../js/alerts";
+import { Link } from 'react-router-dom';
 
 const EditResidentPage: React.FC = () => {
 
@@ -43,7 +44,10 @@ const EditResidentPage: React.FC = () => {
             <div className="container">
                 <div className="row">
                     <div className="div_ResidentForm card mt-5 mb-5 border-primary">
-                        <h1 className="fw-bold text-uppercase">Editar Actividad</h1>
+                        <div className='card-title d-flex justify-content-between align-items-center mt-3'>
+                            <h1 className="fw-bold text-uppercase">Editar Actividad</h1>
+                            <Link className='btn btn-secondary float-end' to="/actividades/mostrar"><i className="bi bi-reply" /> Volver</Link>
+                        </div>
                         {activityData ? (
                             <EditActivityForm initialData={activityData} onSubmit={handleUpdateResident} />
                         ) : (

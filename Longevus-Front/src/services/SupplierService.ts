@@ -41,6 +41,17 @@ export const deleteSupplier = async (id: number): Promise<void> => {
     }
 };
 
+export const deleteProductsBySupplierId = async (id: number): Promise<void> => {
+    try {
+        await axios.delete(`${API_BASE_URL}/products/deleteBySupplier`, {
+            params: { id }
+        });
+    } catch (error) {
+        console.error('Error al los productos del proveedor:', error);
+        throw new Error('Ocurrió un error al eliminar los productos del proveedor');
+    }
+};
+
 
 export const getSupplierById = async (id:any): Promise<ISupplier> => {
     try {

@@ -142,9 +142,7 @@ const ResidentsFromActivity = () => {
                             <Link className='btn btn-secondary float-end' to={`/actividad/info/${id}`}><i className='bi bi-reply' />Volver</Link>
                         </div>
                         <div className='card-body'>
-                            {/*<label>Buscar</label>
-                            <input type="text" placeholder="Buscar..." id="userSearch" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
-                            <button className="btn btn-secondary" id="btnSearch"><i className='bi bi-search' onClick={handleSearch} /></button>*/}
+                        
                             <button
                                 className="btn btn-primary mb-3"
                                 onClick={() => {

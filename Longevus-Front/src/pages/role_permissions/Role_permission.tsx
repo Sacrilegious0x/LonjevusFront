@@ -4,10 +4,10 @@ import Footer from '../../components/Footer'
 import Header from '../../components/HeaderAdmin'
 import type { columnDefinition } from '../../components/TableBasic'
 import Table from '../../components/TableBasic';
-import { getAllPermissions, getAllPermissionsById, getAllRoles, updatePermissions, createRole } from '../../services/RolePermissionsService';
 import { useAuth } from '../../context/AuthContext';
-import { succesAlert, errorAlert, confirmEditAlert } from '../../js/alerts';
+import { succesAlert, errorAlert, confirmEditAlert, confirmDeleteAlert } from '../../js/alerts';
 import { useNavigate } from 'react-router-dom';
+import { createRole, deleteRole, getAllPermissions, getAllPermissionsById, getAllRoles, updatePermissions } from '../../services/RolePermissionsService';
 
 interface IRole {
   id: number
@@ -51,12 +51,17 @@ const RolesList = () => {
       header: 'Permisos',
       accessor: role => role,
       Cell: role => (
-        <button
-          className="btn btn-warning"
-          onClick={() => handleOpenModalRoleEdit(role)}
-        >
-          <i className="bi bi-key-fill"></i>
-        </button>
+        <>
+          <button
+            className="btn btn-warning"
+            onClick={() => handleOpenModalRoleEdit(role)}
+          >
+            <i className="bi bi-key-fill"></i>
+          </button>
+          <a className='btn btn-danger mr-2' onClick={() => handleDelete(role.id, role.name)}>
+            <i className="bi bi-trash" />
+          </a>
+        </>
       )
     }
   ];
@@ -136,7 +141,6 @@ const RolesList = () => {
     setPermissions(updated);
   };
 
-  // 4. Guardar permisos (aquí usarías tu función savePermissions)
   const handleSave = async () => {
     if (!currentRole) return;
 
@@ -169,132 +173,152 @@ const RolesList = () => {
     };
   }
 
-  return (
-    <>
-      {/* <Header /> */}
-      <div className="container">
-        <div className='row'>
-          <div className='card mt-5 mb-5'>
-            <div className="card-title d-flex justify-content-between align-items-center mt-3">
-              <h2 className="flex-grow-1 mt-2">
-                <i className="bi bi-person-badge me-2"></i>
-                Roles Usuario Hogar de Ancianos
-              </h2>
-              <button className="btn btn-success" onClick={handleOpenAddRoleModal}>
-                <i className="bi bi-plus-lg me-1"></i> Nuevo
-              </button>
+  const handleDelete = async (roleId: number, roleName: string) => {
+
+    const response = await confirmDeleteAlert(roleName);
+    if (response.isConfirmed) {
+
+      try {
+        await deleteRole(roleId);
+        succesAlert("Eliminado", "Rol eliminado exitosamente");
+        fetchRoles();
+      } catch (err) {
+        alert(err instanceof Error ? err.message : "Error desconocido al eliminar proveedor");
+      } finally {
+
+      }
+    } else {
+      return;
+    }
+  }
+
+
+return (
+  <>
+    {/* <Header /> */}
+    <div className="container">
+      <div className='row'>
+        <div className='card mt-5 mb-5'>
+          <div className="card-title d-flex justify-content-between align-items-center mt-3">
+            <h2 className="flex-grow-1 mt-2">
+              <i className="bi bi-person-badge me-2"></i>
+              Roles Usuario Hogar de Ancianos
+            </h2>
+            <button className="btn btn-success" onClick={handleOpenAddRoleModal}>
+              <i className="bi bi-plus-lg me-1"></i> Nuevo
+            </button>
+          </div>
+          <div className="card-body">
+            {loadingRoles
+              ? <p>Cargando roles...</p>
+              : <Table<IRole> data={rolesData} columns={rolesColumns} selectedRows={new Set()} onToggleRow={() => { }} onSelectAll={() => { }} />
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+    {showModal && (
+
+      <div className="modal fade show d-block" tabIndex={-1} role="dialog" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+        <div className="modal-dialog modal-lg" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Permisos para: <strong>{currentRole?.name}</strong></h5>
+              <button type="button" className="btn-close" onClick={handleCloseModal}></button>
             </div>
-            <div className="card-body">
-              {loadingRoles
-                ? <p>Cargando roles...</p>
-                : <Table<IRole> data={rolesData} columns={rolesColumns} selectedRows={new Set()} onToggleRow={() => { }} onSelectAll={() => { }} />
+            <div className="modal-body">
+
+              {permissions.length === 0
+
+                ? <p>Cargando Permisos...</p> : (
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Modulo</th>
+                        <th>VER</th>
+                        <th>INSERTAR</th>
+                        <th>ACTUALIZAR</th>
+                        <th>ELIMINAR</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {permissions.map((perm, idx) => (
+                        <tr key={perm.module}>
+                          <td>{perm.module}</td>
+                          <td>
+                            <input type="checkbox" checked={!!perm.canView} onChange={() => handleToggle(idx, 'canView')} />
+                          </td>
+                          <td>
+                            <input type="checkbox" checked={!!perm.canCreate} onChange={() => handleToggle(idx, 'canCreate')} />
+                          </td>
+                          <td>
+                            <input type="checkbox" checked={!!perm.canUpdate} onChange={() => handleToggle(idx, 'canUpdate')} />
+                          </td>
+                          <td>
+                            <input type="checkbox" checked={!!perm.canDelete} onChange={() => handleToggle(idx, 'canDelete')} />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )
               }
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>Cancelar</button>
+              <button type="button" className="btn btn-primary" onClick={handleSave}>Guardar</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    )}
+    {showAddRoleModal && (
+      <div className="modal fade show d-block" tabIndex={-1}>
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Crear nuevo rol</h5>
+              <button className="btn-close" onClick={handleCloseNewModal}></button>
+            </div>
+            <div className="modal-body">
+              <div className="mb-3">
+                <label className="form-label">Nombre</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={newRoleName}
+                  onChange={e => setNewRoleName(e.target.value)}
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Descripción</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={newRoleDescription}
+                  onChange={e => setNewRoleDescription(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-secondary" onClick={handleCloseNewModal}>
+                Cancelar
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={handleCreateRole}
+                disabled={!newRoleName.trim()}
+              >
+                Crear
+              </button>
             </div>
           </div>
         </div>
       </div>
-      {showModal && (
-
-        <div className="modal fade show d-block" tabIndex={-1} role="dialog" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
-          <div className="modal-dialog modal-lg" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Permisos para: <strong>{currentRole?.name}</strong></h5>
-                <button type="button" className="btn-close" onClick={handleCloseModal}></button>
-              </div>
-              <div className="modal-body">
-
-                {permissions.length === 0
-
-                  ? <p>Cargando Permisos...</p> : (
-                    <table className="table">
-                      <thead>
-                        <tr>
-                          <th>Modulo</th>
-                          <th>VER</th>
-                          <th>INSERTAR</th>
-                          <th>ACTUALIZAR</th>
-                          <th>ELIMINAR</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {permissions.map((perm, idx) => (
-                          <tr key={perm.module}>
-                            <td>{perm.module}</td>
-                            <td>
-                              <input type="checkbox" checked={!!perm.canView} onChange={() => handleToggle(idx, 'canView')} />
-                            </td>
-                            <td>
-                              <input type="checkbox" checked={!!perm.canCreate} onChange={() => handleToggle(idx, 'canCreate')} />
-                            </td>
-                            <td>
-                              <input type="checkbox" checked={!!perm.canUpdate} onChange={() => handleToggle(idx, 'canUpdate')} />
-                            </td>
-                            <td>
-                              <input type="checkbox" checked={!!perm.canDelete} onChange={() => handleToggle(idx, 'canDelete')} />
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  )
-                }
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>Cancelar</button>
-                <button type="button" className="btn btn-primary" onClick={handleSave}>Guardar</button>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      )}
-      {showAddRoleModal && (
-        <div className="modal fade show d-block" tabIndex={-1}>
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Crear nuevo rol</h5>
-                <button className="btn-close" onClick={handleCloseNewModal}></button>
-              </div>
-              <div className="modal-body">
-                <div className="mb-3">
-                  <label className="form-label">Nombre</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={newRoleName}
-                    onChange={e => setNewRoleName(e.target.value)}
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Descripción</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={newRoleDescription}
-                    onChange={e => setNewRoleDescription(e.target.value)}
-                  />
-                </div>
-              </div>
-              <div className="modal-footer">
-                <button className="btn btn-secondary" onClick={handleCloseNewModal}>
-                  Cancelar
-                </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={handleCreateRole}
-                  disabled={!newRoleName.trim()}
-                >
-                  Crear
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* <Footer /> */}
-    </>
-  )
+    )}
+    {/* <Footer /> */}
+  </>
+)
 }
 export default RolesList;

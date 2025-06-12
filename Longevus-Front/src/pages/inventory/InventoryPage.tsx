@@ -95,9 +95,9 @@ const InventoryPage = () => {
 
     const matchDate = selectedDate
       ? item.expirationDate &&
-        new Date(item.expirationDate).getMonth() === selectedDate.getMonth() &&
-        new Date(item.expirationDate).getFullYear() ===
-          selectedDate.getFullYear()
+      new Date(item.expirationDate).getMonth() === selectedDate.getMonth() &&
+      new Date(item.expirationDate).getFullYear() ===
+      selectedDate.getFullYear()
       : true;
 
     return matchCategory && matchDate;
@@ -111,59 +111,19 @@ const InventoryPage = () => {
     },
     {
       header: "Producto",
-      accessor: (item) => item.product.name,
+      accessor: (item) => item.product?.name ?? "Producto no disponible",
     },
     {
       header: "Fecha de Vencimiento",
       accessor: (item) => item.expirationDate ?? "N/A",
       Cell: (item) => formatDate(item.expirationDate),
-    },
- {
-  header: "Foto",
-  accessor: () => "",
-  Cell: (item) => {
-    const [hasError, setHasError] = useState(false);
-
-    if (hasError || !item.photoURL) {
-      return (
-        <div className="text-center text-muted" style={{ fontSize: "0.8rem" }}>
-          Imagen no disponible
-        </div>
-      );
-    }
-
-    const photoPath = item.photoURL.replace(/\\/g, "/").trim();
-    const url = `http://localhost:8080/${photoPath}`;
-
-    return (
-      <div
-        style={{
-          width: "70px",
-          height: "70px",
-          overflow: "hidden",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <img
-          src={url}
-          alt={`Foto de ${item.product.name}`}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            borderRadius: "8px",
-          }}
-          onError={() => setHasError(true)}
-        />
-      </div>
-    );
-  },
-}
-,
-
-    {
+    },{header: 'Foto', accessor: 'photoURL',
+      Cell: (item) =>(<img
+      src={`http://localhost:8080/${item.photoURL}`}
+      alt="Foto proveedor"
+      style={{ width: 50, height: 50, objectFit: 'cover' }}
+      />)
+    },{
       header: "Acciones",
       accessor: () => "",
       Cell: (item) => (

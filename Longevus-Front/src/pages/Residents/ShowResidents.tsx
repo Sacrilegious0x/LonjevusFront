@@ -4,7 +4,7 @@ import Table from '../../components/TableBasic';
 import type { columnDefinition } from '../../components/TableBasic';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { getResidents, deleteResident } from "../../services/ResidentService";
+import { getResidents, deleteResident, filterResidents } from "../../services/ResidentService";
 import type { Resident } from "../../services/ResidentService";
 import { confirmDeleteAlert, succesAlert, errorAlert } from "../../js/alerts";
 import { useAuth } from "../../context/AuthContext";
@@ -37,21 +37,35 @@ const Residents = () => {
                     console.error("Error al eliminar el residente", error);
                     errorAlert('Error al eliminar el residente')
                 });
-        }else
+        } else
             return
     }
 
     const [searchInput, setSearchInput] = useState("");
 
-    const handleSearch = () => {
-        {/* axios.get<Resident[]>(`http://localhost:8080/findResidentByNameorIdentification?value=${searchInput}`)
-            .then((response) => {
-                setResidentData(response.data);
-            })
-            .catch((error) => {
+    useEffect(() => {
+        const fetchAndFilter = async () => {
+            try {
+                const allResidents = await getResidents();
+
+                if (searchInput.trim() === "") {
+                    // Mostrar todos los residentes si no hay filtro
+                    setResidentData(allResidents);
+                    return;
+                }
+
+                const filtered = filterResidents(allResidents, searchInput, searchInput);
+                setResidentData(filtered);
+            } catch (error) {
                 console.error("Error al buscar residentes", error);
-            });*/}
-    };
+            }
+        };
+
+        fetchAndFilter();
+    }, [searchInput]);
+
+
+
 
     const personColumns: columnDefinition<Resident>[] = [
         { header: '#', accessor: 'id', Cell: (resident, index) => { return (index + 1) } },
@@ -98,10 +112,8 @@ const Residents = () => {
                             )}
                         </div>
                         <div className='card-body'>
-                            <label>Buscar</label>
                             <input type="text" placeholder="Buscar..." id="userSearch" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
-                            <button className="btn btn-secondary" id="btnSearch"><i className='bi bi-search' onClick={handleSearch} /></button>
-                            <Table<Resident> data={residentData} columns={personColumns} selectedRows={new Set()} onToggleRow={() => {} } onSelectAll={() => {}} />
+                            <Table<Resident> data={residentData} columns={personColumns} selectedRows={new Set()} onToggleRow={() => { }} onSelectAll={() => { }} />
                         </div>
                     </div>
 

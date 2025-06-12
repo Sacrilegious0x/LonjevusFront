@@ -65,14 +65,14 @@ const Residents = () => {
     }, [searchInput]);
 
 
-
+    
 
     const personColumns: columnDefinition<Resident>[] = [
         { header: '#', accessor: 'id', Cell: (resident, index) => { return (index + 1) } },
         { header: 'Identificacion', accessor: 'identification' },
         { header: 'Nombre', accessor: 'name' },
         { header: 'Edad', accessor: 'age' },
-        { header: 'Habitación', accessor: 'numberRoom' },
+        { header: 'Habitación', accessor: 'numberRoom', Cell: ({ numberRoom }) => numberRoom === 0 ? 'N/D' : numberRoom },
         {
             header: 'Acciones', accessor: (person) => person,
             Cell: (resident) => (

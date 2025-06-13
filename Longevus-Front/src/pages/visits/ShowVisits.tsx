@@ -6,6 +6,7 @@ import { getAllVisits, deleteVisit } from '../../services/VisitService';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { confirmDeleteAlert, succesAlert, errorAlert } from '../../js/alerts';
+import { useAuth } from '../../context/AuthContext';
 interface IVisitData {
     id: number,
     name: string,
@@ -22,6 +23,7 @@ interface IVisitData {
 }
 
 const showVisits = () => {
+    const {hasAuthority} = useAuth();
     const navigate = useNavigate();
     const [visitData, setVisitData] = useState<IVisitData[]>([]);
     const [loading, setLoading] = useState(true);
@@ -118,19 +120,29 @@ const showVisits = () => {
         { header: 'Contacto', accessor: 'phoneNumber' },
         { header: 'Correo', accessor: 'email' },
         { header: 'Parentesco', accessor: 'relationship' },
-        { header: 'Residente', accessor: (row: IVisitData) => row.resident.name },
-        { header: 'Habitacion', accessor: (row: IVisitData) => row.resident.numberRoom },
-        {
+        { header: 'Residente', accessor: (row: IVisitData) => row.resident?.name ?? 'No disponible' },
+        { header: 'Habitacion', accessor: (row: IVisitData) => 
+            {
+                if(row.resident?.numberRoom!==0){
+                    return row.resident.numberRoom
+                }
+                return 'N/D';
+            }
+        },
+            {
             header: 'Acciones', accessor: (visit) => visit,
             Cell: (visit) => (
                 <>
-                    <a className='btn btn-warning me-2' onClick={() => navigate(`/`)}>
+                    {hasAuthority('PERMISSION_VISITAS_UPDATE')&&(
+                    <a className='btn btn-warning me-2' onClick={() => navigate(`/residente/visitas/editar/${visit.id}`)}>
                         <i className='bi bi-pencil-square' />
                     </a>
-
+                    )}
+                    {hasAuthority('PERMISSION_VISITAS_DELETE')&&(
                     <a className='btn btn-danger me-2' onClick={() => handleDeleteVisit(visit.id, visit.name)}>
                         <i className="bi bi-trash" />
                     </a>
+                    )}
 
                 </>
             )
@@ -143,7 +155,7 @@ const showVisits = () => {
     if (loading) return <div className="container mt-5">Cargando visitas...</div>;
     return (
         <>
-            <Header />
+            {/* <Header /> */}
             <div className='container'>
                 <div className='row'>
                     <div className='card mt-5 mb-5'>
@@ -160,7 +172,7 @@ const showVisits = () => {
 
             </div>
 
-            <Footer />
+            {/* <Footer /> */}
         </>
     )
 

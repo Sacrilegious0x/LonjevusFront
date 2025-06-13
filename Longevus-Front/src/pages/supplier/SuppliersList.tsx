@@ -7,7 +7,7 @@ import Table from '../../components/TableBasic';
 import { useState, useEffect } from "react";
 import { deleteProductsBySupplierId, deleteSupplier, getSuppliers } from "../../services/SupplierService";
 import { confirmDeleteAlert, succesAlert, errorAlert } from '../../js/alerts';
-
+import { useAuth } from "../../context/AuthContext";
 interface ISupplier{
     id: number,
     name: string,
@@ -19,7 +19,7 @@ interface ISupplier{
 }
 
 const SuppliersList = () =>{
-
+  const {hasAuthority} = useAuth();
   const [supplierData, setSupplierData] = useState<ISupplier[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,10 +51,14 @@ const SuppliersList = () =>{
     {header: 'Acciones', accessor: (supplier) => supplier,   
         Cell: (supplier) =>(
             <>
+            {hasAuthority('PERMISSION_PROVEEDORES_UPDATE')&& (
             <Link className="btn btn-warning me-2" to={`/proveedores/editar/${supplier.id}`}><i className='bi bi-pencil-square' /></Link>
+            )}
+            {hasAuthority('PERMISSION_PROVEEDORES_DELETE')&& (
             <a className='btn btn-danger me-2' onClick={()=>handleDelete(supplier.id,supplier.name)}>
                 <i className="bi bi-trash"/>
             </a>  
+            )}
             </>
         ) 
     }
@@ -124,13 +128,15 @@ return (
 
     
   <>  
-    <Header/>
+    {/* <Header/> */}
       <div className="container ">
         <div className='row'>
             <div className='card mt-5 mb-5'>
                 <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                         <h4 className="m-2">Lista de proveedores</h4>
+                        {hasAuthority('PERMISSION_PROVEEDORES_CREATE')&& (
                         <Link className='btn btn-success' to='/proveedores/agregar'>Agregar</Link>
+                        )}
                 </div>  
                 <div className='card-body'>
                         <input className="mb-3" type="text" placeholder="Buscar..." id="supplierSearch" value={searchTerm} onChange={(e)=> setSearchTerm(e.target.value)}/>
@@ -140,7 +146,7 @@ return (
             </div>
         </div>
       </div>
-    <Footer/>
+    {/* <Footer/> */}
   </>  
   
     )

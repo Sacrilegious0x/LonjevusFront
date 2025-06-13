@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import type { Activity } from "../services/ActivityService";
 import { getAllCaregivers, type CaregiverApiResponse } from "../services/CaregiverService";
 import { errorAlert } from "../js/alerts";
-
+import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 interface ActivityProps {
     onSubmit: (data: Activity) => void;
     initialData?: Activity;
@@ -25,7 +26,7 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
 
     const isEditing = !!initialData;
     const [errors, setErrors] = useState<Record<string, string>>({});
-
+    const { hasAuthority } = useAuth();
     useEffect(() => {
         if (initialData) {
             console.log("Cargando initialData en form:", initialData);
@@ -238,7 +239,12 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                 </select>
             </div>
 
-            <button type="submit" className="btn btn-success float-end float-end">Guardar</button>
+            <div className="mt-3 d-flex gap-2 justify-content-end gap-2">
+                {hasAuthority('PERMISSION_ACTIVIDADES_CREATE') && (
+                    <button type="submit" className="btn btn-success float-end float-end">Guardar</button>
+                )}
+                <Link className='btn btn-secondary float-end' to="/actividades/mostrar">Volver</Link>
+            </div>
         </form>
     );
 };

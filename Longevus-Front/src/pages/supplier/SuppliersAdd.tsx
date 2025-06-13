@@ -79,7 +79,7 @@ export default function SuppliersAdd() {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className='container mt-5 form-container'>
         <div className='row'>
           <div className='col-12'>
@@ -185,7 +185,7 @@ export default function SuppliersAdd() {
           </div>
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }

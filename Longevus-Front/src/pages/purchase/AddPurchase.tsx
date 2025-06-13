@@ -177,7 +177,7 @@ const AddPurchase = () => {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className="container mt-4">
         <h2>Agregar Nueva Compra</h2>
 
@@ -247,7 +247,7 @@ const AddPurchase = () => {
                         ))}
                       </select>
                     </td>
-                    <td>${price.toFixed(2)}</td>
+                    <td>₡{price.toFixed(2)}</td>
                     <td>
                       <input
                         type="number"
@@ -299,7 +299,7 @@ const AddPurchase = () => {
                       )}
                     </td>
 
-                    <td>${(price * item.quantity).toFixed(2)}</td>
+                    <td>₡{(price * item.quantity).toFixed(2)}</td>
                     <td>
                       <button
                         type="button"
@@ -326,10 +326,13 @@ const AddPurchase = () => {
           </div>
 
           <div className="text-end mb-3">
-            <strong>Total: ${getTotal().toFixed(2)}</strong>
+            <strong>Total: ₡{getTotal().toFixed(2)}</strong>
           </div>
 
           <div className="d-flex gap-2 mt-3">
+            <button type="submit" className="btn btn-primary">
+              Guardar
+            </button>
             <button
               type="button"
               className="btn btn-secondary"
@@ -346,16 +349,13 @@ const AddPurchase = () => {
                 }
               }}
             >
-              <i className="bi bi-reply me-1"></i>
               Volver
             </button>
-            <button type="submit" className="btn btn-primary">
-              Guardar Compra
-            </button>
+            
           </div>
         </form>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

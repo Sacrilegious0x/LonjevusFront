@@ -1,5 +1,5 @@
 import type { Task } from '../services/TaskService';
-
+import { useAuth } from '../context/AuthContext';
 interface ViewTasksModalProps {
   show: boolean;
   onClose: () => void;
@@ -27,6 +27,7 @@ const ViewTasksModal: React.FC<ViewTasksModalProps> = ({
   onEditInputChange,
   onDeleteTask
 }) => {
+  const { hasAuthority } = useAuth();
   if (!show) {
     return null;
   }
@@ -72,6 +73,7 @@ const ViewTasksModal: React.FC<ViewTasksModalProps> = ({
                         <td>
                           {editingTask?.id === task.id ? (
                             <div className="btn-group btn-group-sm">
+                              {hasAuthority('PERMISSION_TAREAS_UPDATE') && (
                               <button
                                 className="btn btn-success"
                                 onClick={() => onSaveEdit(task.id!)}
@@ -79,6 +81,7 @@ const ViewTasksModal: React.FC<ViewTasksModalProps> = ({
                               >
                                 <i className="bi bi-check-lg"></i>
                               </button>
+                              )}
                               <button
                                 className="btn btn-secondary"
                                 onClick={onCancelEdit}
@@ -89,6 +92,7 @@ const ViewTasksModal: React.FC<ViewTasksModalProps> = ({
                             </div>
                           ) : (
                             <div className="btn-group btn-group-sm">
+                              {hasAuthority('PERMISSION_TAREAS_UPDATE') && (
                               <button
                                 className="btn btn-warning me-2"
                                 onClick={() => onEditClick(task)}
@@ -96,6 +100,8 @@ const ViewTasksModal: React.FC<ViewTasksModalProps> = ({
                               >
                                 <i className="bi bi-pencil-square"></i>
                               </button>
+                            )}
+                            {hasAuthority('PERMISSION_TAREAS_DELETE') && (
                               <button
                                 className="btn btn-danger"
                                 onClick={() => {
@@ -107,6 +113,7 @@ const ViewTasksModal: React.FC<ViewTasksModalProps> = ({
                               >
                                 <i className="bi bi-trash-fill"></i>
                               </button>
+                            )}
                             </div>
                           )}
                         </td>

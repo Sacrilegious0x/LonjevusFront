@@ -1,5 +1,4 @@
 import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 
 
 export function confirmDeleteAlert(param: string){
@@ -28,11 +27,11 @@ export function confirmAlert(param: string){
 }
 
 export function succesAlert(title: string, message: string){
-  Swal.fire({
+  return Swal.fire({
         title: title,
         text: message,
         icon: "success",
-        timer: 3000
+        timer: 2500
     });
 }
 
@@ -41,10 +40,38 @@ export function errorAlert(message:string){
         title: "Error!",
         text: message,
         icon: "error",
-        timer: 3000
+        timer: 2500
     });
 }
 
+export async function loadingAlert<T>(asyncOperation: () => Promise<T>): Promise<T> {
+  
+  Swal.fire({
+    title: 'Cargando datos...',
+    html: 'Por favor, espere.',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
+
+  try {
+    const result = await asyncOperation();
+    Swal.close();
+    return result;
+
+  } catch (error) {
+    
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No se pudieron cargar los datos.'
+    });
+
+    
+    throw error;
+  }
+}
 export function confirmEditSupplierAlert(param: string){
     return Swal.fire({
       title: `¿Estas seguro que deseas guardar los cambios a ${param}?`,

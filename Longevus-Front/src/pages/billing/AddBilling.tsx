@@ -7,10 +7,10 @@ import { succesAlert, errorAlert, infoAlert } from "../../js/alerts";
 import type { Resident } from "../../services/BillingService";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
+import { useAuth } from "../../context/AuthContext";
 const AddBilling = () => {
   const navigate = useNavigate();
-
+const {hasAuthority} = useAuth();
   const [date, setDate] = useState<Date>(() => {
     const today = new Date();
     return new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -103,7 +103,7 @@ const AddBilling = () => {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className="container mt-4">
         <h2>Agregar Nueva Factura</h2>
         <form onSubmit={handleSubmit}>
@@ -203,21 +203,23 @@ const AddBilling = () => {
               ))}
             </select>
           </div>
-
-          <button
-            type="button"
-            className="btn btn-secondary me-2"
-            onClick={() => navigate("/facturas")}
-          >
-            <i className="bi bi-reply me-1"></i>
-            Volver
-          </button>
-          <button type="submit" className="btn btn-success">
+               {hasAuthority('PERMISSION_FACTURAS_CREATE') && (
+          <button type="submit" className="btn btn-primary me-2">
             Guardar
           </button>
+          )}
+          <button
+            type="button"
+            className="btn btn-secondary "
+            onClick={() => navigate("/facturas")}
+          >
+    
+            Volver
+          </button>
+         
         </form>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

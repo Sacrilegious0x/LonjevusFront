@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { getAllCaregivers, deleteCaregiver } from '../../services/CaregiverService';
 import { confirmDeleteAlert, succesAlert, errorAlert } from '../../js/alerts';
-
+import { useAuth } from '../../context/AuthContext';
 interface IPerson {
     id: number;
     name: string;
@@ -15,6 +15,7 @@ interface IPerson {
     salary: string;
 }
 const ShowEmployee = () => {
+    const { hasAuthority } = useAuth();
     const navigate = useNavigate();
     const [userData, setUserData] = useState<IPerson[]>([]);
     const [loading, setLoading] = useState(true);
@@ -88,7 +89,7 @@ const ShowEmployee = () => {
                 try {
                     return formateadorCRC.format(salary); 
                 } catch (e) {
-                    console.error("Error formateando hora:", e);
+                    console.error("Error formateando salario:", e);
                     return salary;
                 }
             }
@@ -97,16 +98,22 @@ const ShowEmployee = () => {
             header: 'Acciones', accessor: (person) => person,
             Cell: (person) => (
                 <>
-                    <a className='btn btn-info me-2' onClick={() => navigate(`/empleado/perfil/${person.id}`)}>
-                        <i className='bi bi-eye' />
-                    </a>
-                    <a className='btn btn-warning me-2' onClick={() => navigate(`/empleado/editar/${person.id}`)}>
-                        <i className='bi bi-pencil-square' />
-                    </a>
+                    {hasAuthority('PERMISSION_CUIDADORES_VIEW') && (
+                        <a className='btn btn-info me-2' onClick={() => navigate(`/empleado/perfil/${person.id}`)}>
+                            <i className='bi bi-eye' />
+                        </a>
+                    )}
+                    {hasAuthority('PERMISSION_CUIDADORES_UPDATE') && (
+                        <a className='btn btn-warning me-2' onClick={() => navigate(`/empleado/editar/${person.id}`)}>
+                            <i className='bi bi-pencil-square' />
+                        </a>
+                    )}
 
-                    <a className='btn btn-danger me-2' onClick={() => handleDeleteCaregiver(person.id,person.name)}>
-                        <i className="bi bi-trash" />
-                    </a>
+                   {hasAuthority('PERMISSION_CUIDADORES_DELETE') && (
+                        <a className='btn btn-danger me-2' onClick={() => handleDeleteCaregiver(person.id, person.name)}>
+                            <i className="bi bi-trash" />
+                        </a>
+                    )}
 
                 </>
             )
@@ -116,13 +123,15 @@ const ShowEmployee = () => {
     if (loading) return <div className="container mt-5">Cargando cuidadores...</div>;
     return (
         <>
-            <Header />
+            {/* <Header /> */}
             <div className='container'>
                 <div className='row'>
                     <div className='card mt-5 mb-5'>
                         <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                             <h4>Lista de empleados</h4>
+                            {hasAuthority('PERMISSION_CUIDADORES_CREATE') && (
                             <Link className='btn btn-success' to='/empleado/agregar'><i className='bi bi-person-plus-fill' /></Link>
+                            )}
                         </div>
                         <div className='card-body'>
                             <input type="text" placeholder="Buscar..." id="userSearch" value={searchTerm}
@@ -135,7 +144,7 @@ const ShowEmployee = () => {
                 </div>
 
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </>
 
     )

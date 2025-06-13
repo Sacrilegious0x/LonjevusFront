@@ -91,7 +91,7 @@ export default function EditRoom() {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className="container mt-5 form-container">
         <div className="row">
           <div className="col-12">
@@ -188,7 +188,7 @@ export default function EditRoom() {
           </div>
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }

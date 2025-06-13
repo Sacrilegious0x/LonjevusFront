@@ -4,13 +4,14 @@ import HourSelector  from './HourSelector';
 import DaySelector from './DaySelector';
 import type { IShift } from './HourSelector';
 import ShiftTypeSelector from './ShiftTypeSelector';
-
+import { useAuth } from '../context/AuthContext';
+import { errorAlert} from '../js/alerts';
 export interface EmployeeFormData {
     name: string;
     identification: string;
     email: string;
-    password: string; // Nota: La contraseña NO se carga para edición, generalmente se deja vacía.
-    photo: File | null; // Nota: La foto File NO se carga para edición, se maneja de forma diferente (URL existente + nueva carga).
+    password: string; 
+    photo: File | null;
     salary: string;
     selectedDays: string[];
     workSchedule: IShift[];
@@ -45,14 +46,8 @@ interface EmployeeFormProps{
 const EmployeeForm = ({initialData, onSubmit, onCancel, showShiftSelector = false,
     showHourSelector = false,showOfficeContactField = false,
     showDaySelector = false}: EmployeeFormProps) => {
-        // !!! AÑADIR ESTOS CONSOLE LOGS !!!
-    console.log("Dentro de EmployeeForm - Props de visibilidad:");
-    console.log("initialData presente:", !!initialData); // Para saber si es modo edición
-    console.log("showShiftSelector:", showShiftSelector, typeof showShiftSelector);
-    console.log("showDaySelector:", showDaySelector, typeof showDaySelector);
-    console.log("showHourSelector:", showHourSelector, typeof showHourSelector);
-    console.log("showOfficeContactField:", showOfficeContactField, typeof showOfficeContactField); // Para comparar
-
+      
+    const {hasAuthority} = useAuth();
     const [formData, setFormData] = useState<EmployeeFormData>(()=>{
         if(initialData){
             return{
@@ -68,7 +63,7 @@ const EmployeeForm = ({initialData, onSubmit, onCancel, showShiftSelector = fals
                         ...shift,
                         id: `${initialData.scheduleId ?? 'sched'}-${index}`
                       }))
-                    : [{ id: crypto.randomUUID(), entryTime: "", exitTime: "" }], // Horario por defecto si no hay o está vacío
+                    : [{ id: crypto.randomUUID(), entryTime: "", exitTime: "" }], 
                 selectedShifts: initialData.selectedShifts || [], officeContact:initialData.officeContact || "",
             };
         }else{
@@ -87,11 +82,44 @@ const EmployeeForm = ({initialData, onSubmit, onCancel, showShiftSelector = fals
     });
     const isEditing = !!initialData;
     const formTitle = isEditing ? "Editar Personal " : "Agregar Personal ";
+    const [errors, setErrors] = useState<Partial<Record<keyof EmployeeFormData | 'form', string>>>({});
 
+    const validateField = (name: string, value: any) => {
+        let errorMsg = "";
+        switch (name) {
+            case 'name':
+                if (!value) errorMsg = "El nombre es requerido.";
+                else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value)) errorMsg = "El nombre solo puede contener letras y espacios.";
+                break;
+            case 'identification':
+                if (!value) errorMsg = "La identificación es requerida.";
+                else if (!/^\d{9,12}$/.test(value)) errorMsg = "La identificación debe tener entre 9 y 12 dígitos.";
+                break;
+            case 'email':
+                if (!value) errorMsg = "El correo es requerido.";
+                else if (!/\S+@\S+\.\S+/.test(value)) errorMsg = "El formato del correo no es válido.";
+                break;
+            case 'password':
+                if (!isEditing && (!value || value.length < 6)) {
+                    errorMsg = "La contraseña es requerida y debe tener al menos 6 caracteres.";
+                }
+                break;
+            case 'salary':
+                if (!value) errorMsg = "El salario es requerido.";
+                else if (isNaN(Number(value)) || Number(value) <= 0) errorMsg = "El salario debe ser un número positivo.";
+                break;
+            case 'photo':
+                if (!isEditing && !value) {
+                    errorMsg = "La fotografía es requerida.";
+                }
+                break;
+        }
+        setErrors(prev => ({ ...prev, [name]: errorMsg }));
+    };
 
-    /// Handler genérico para inputs de texto/email/password/archivos, etc
     const handleForm = (e: ChangeEvent<HTMLInputElement>) =>  {
         const { name, value, type, files } = e.target;
+        const fieldValue = type === 'file' && files ? files[0] : value;
         if (type === 'file' && files) {
             setFormData(prevForm => ({
                 ...prevForm,
@@ -103,6 +131,7 @@ const EmployeeForm = ({initialData, onSubmit, onCancel, showShiftSelector = fals
                 [name]: value,
             }));
         }
+        validateField(name, fieldValue);
     };
 
    
@@ -152,108 +181,167 @@ const EmployeeForm = ({initialData, onSubmit, onCancel, showShiftSelector = fals
         }));
     };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+const validateForm = (): boolean => {
+        const newErrors: Partial<Record<keyof EmployeeFormData | 'form', string>> = {};
+        
+        // Validaciones de campos de texto
+        if (!formData.name) newErrors.name = "El nombre es requerido.";
+        if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(formData.name)) newErrors.name = "El nombre solo puede contener letras y espacios.";
+        
+        if (!formData.identification) newErrors.identification = "La identificación es requerida.";
+        else if (!/^\d{9,12}$/.test(formData.identification)) newErrors.identification = "La identificación debe tener entre 9 y 12 dígitos.";
+
+        if (!formData.email) newErrors.email = "El correo es requerido.";
+        else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "El formato del correo no es válido.";
+        
+        if (!isEditing && (!formData.password || formData.password.length < 6)) newErrors.password = "La contraseña es requerida y debe tener al menos 6 caracteres.";
+        
+        if (!formData.salary) newErrors.salary = "El salario es requerido.";
+        else if (isNaN(Number(formData.salary)) || Number(formData.salary) <= 0) newErrors.salary = "El salario debe ser un número positivo.";
+        
+        if (!isEditing && !formData.photo) newErrors.photo = "La fotografía es requerida.";
+
+        // Validaciones de selectores condicionales
+        if (showDaySelector && formData.selectedDays.length === 0) newErrors.selectedDays = "Debe seleccionar al menos un día de trabajo.";
+        if (showShiftSelector && formData.selectedShifts.length === 0) newErrors.selectedShifts = "Debe seleccionar al menos un tipo de turno.";
+
+        if (showHourSelector) {
+            for (const shift of formData.workSchedule) {
+                if (!shift.entryTime || !shift.exitTime) {
+                    newErrors.workSchedule = "Debe completar todas las horas de entrada y salida.";
+                    break;
+                }
+                if (shift.entryTime >= shift.exitTime) {
+                     newErrors.workSchedule = "La hora de salida debe ser posterior a la de entrada.";
+                    break;
+                }
+            }
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        if (!validateForm()) {
+            errorAlert("Por favor, corrija los errores en el formulario antes de guardar.");
+            return;
+        }
+
         const finalFormData = {
             ...formData,
             scheduleId: initialData?.scheduleId ?? formData.scheduleId,
         };
-        onSubmit(finalFormData, initialData?.id);
-        console.log("Form Data Submitted:", JSON.stringify(formData, null, 2));
-    };
 
-    const currentlySelectedDays = formData.selectedDays;
-    console.log(currentlySelectedDays + " Ha seleccionado esos dias");
+        onSubmit(finalFormData, initialData?.id);
+        console.log("Form Data Submitted:", JSON.stringify(finalFormData, null, 2));
+    };
+      const handlePriceKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  if (['e','E','+','-'].includes(e.key)) {e.preventDefault();}
+  };
 
 
     return (
-        <>
-            <div className='container mt-5'>
-                <div className='row'>
-                    <div className='col-12'>
-                        <h1>
-                            
-                            {isEditing ? (
-                                <i className="bi bi-pencil-square"></i> // Icono para editar
-                            ) : (
-                                <i className="bi bi-person-plus-fill"></i> // Icono para agregar
-                            )}
-                            {formTitle} 
-                            </h1>
-                        <form onSubmit={handleSubmit}>
-                            <div className='mb-3'>
-                                <label htmlFor='nameInput' className='form-label'><i className="bi bi-person-fill">Nombre: </i></label>
-                                <input type='text' name='name' id='nameInput' onChange={handleForm} value={formData.name} className='form-control' required />
-                            </div>
-                            <div className='mb-3'>
-                                <label htmlFor='identificationInput'><i className="bi bi-person-vcard-fill">Identificaci&oacute;n: </i></label>
-                                <input type='text' name='identification' id='identificationInput' onChange={handleForm} value={formData.identification} className='form-control' required />
-                            </div>
-                            <div className='mb-3'>
-                                <label htmlFor='emailInput'> <i className="bi bi-envelope-fill">Correo:</i></label>
-                                <input type='email' name='email' id='emailInput' onChange={handleForm} value={formData.email} className='form-control' required />
-                            </div>
-                           {!isEditing && (
-                                <div className='mb-3'>
-                                    <label htmlFor='passwordInput'><i className="bi bi-key-fill"></i>Contrase&ntilde;a: </label>
-                                    <input type='password' name='password' id='passwordInput' onChange={handleForm} value={formData.password} className='form-control' required={!isEditing} />
-                                </div>
-                            )}                         
-                            <div className='mb-3'>
-                                <label htmlFor='photoInput'><i className="bi bi-images">Fotograf&iacute;a:</i></label>
-                                <input type='file' name='photo' id='photoInput' onChange={handleForm} className='form-control' required={!isEditing} />
-                            </div>
-                            <div className='mb-3'>
-                                <label htmlFor='salaryInput'>Sueldo: </label>
-                                <input type='number' name='salary' id='salaryInput' onChange={handleForm} value={formData.salary} className='form-control' required />
-                            </div>
+        <div className='container mt-5'>
+            <div className='row'>
+                <div className='col-12'>
+                    <h1>
+                        {isEditing ? <i className="bi bi-pencil-square"></i> : <i className="bi bi-person-plus-fill"></i>}
+                        {formTitle}
+                    </h1>
+                    <form onSubmit={handleSubmit} noValidate> 
+                        <div className='mb-3'>
+                            <label htmlFor='nameInput' className='form-label'><i className="bi bi-person-fill"></i> Nombre:</label>
+                            <input type='text' name='name' id='nameInput' onChange={handleForm} value={formData.name} className={`form-control ${errors.name ? 'is-invalid' : ''}`} />
+                            {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+                        </div>
 
-                            {showShiftSelector && (
+                        <div className='mb-3'>
+                            <label htmlFor='identificationInput'><i className="bi bi-person-vcard-fill"></i> Identificación:</label>
+                            <input type='text' name='identification' id='identificationInput' onChange={handleForm} value={formData.identification} className={`form-control ${errors.identification ? 'is-invalid' : ''}`} />
+                            {errors.identification && <div className="invalid-feedback">{errors.identification}</div>}
+                        </div>
+
+                        <div className='mb-3'>
+                            <label htmlFor='emailInput'><i className="bi bi-envelope-fill"></i> Correo:</label>
+                            <input type='email' name='email' id='emailInput' onChange={handleForm} value={formData.email} className={`form-control ${errors.email ? 'is-invalid' : ''}`} />
+                            {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+                        </div>
+
+                        {!isEditing && (
+                            <div className='mb-3'>
+                                <label htmlFor='passwordInput'><i className="bi bi-key-fill"></i> Contraseña:</label>
+                                <input type='password' name='password' id='passwordInput' onChange={handleForm} value={formData.password} className={`form-control ${errors.password ? 'is-invalid' : ''}`} />
+                                {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+                            </div>
+                        )}
+
+                        <div className='mb-3'>
+                            <label htmlFor='photoInput'><i className="bi bi-images"></i> Fotografía:</label>
+                            <input type='file' name='photo' id='photoInput' onChange={handleForm} className={`form-control ${errors.photo ? 'is-invalid' : ''}`} accept="image/*" />
+                            {errors.photo && <div className="invalid-feedback">{errors.photo}</div>}
+                        </div>
+
+                        <div className='mb-3'>
+                            <label htmlFor='salaryInput'>Sueldo:</label>
+                            <input type='number' name='salary' id='salaryInput' onChange={handleForm} value={formData.salary} className={`form-control ${errors.salary ? 'is-invalid' : ''}`} onKeyDown={handlePriceKeyDown} />
+                            {errors.salary && <div className="invalid-feedback">{errors.salary}</div>}
+                        </div>
+                        
+                        {/* Componentes selectores con sus validaciones */}
+                        {showShiftSelector && (
+                            <>
                                 <ShiftTypeSelector
-                                selectedShiftTypes={formData.selectedShifts}
-                                onShiftTypeChange={handleShiftTypeChange}
-                             />
-                            )}
-                            {showDaySelector && (
+                                    selectedShiftTypes={formData.selectedShifts}
+                                    onShiftTypeChange={handleShiftTypeChange}
+                                />
+                                {errors.selectedShifts && <div className="text-danger small mt-1">{errors.selectedShifts}</div>}
+                            </>
+                        )}
+                        
+                        {showDaySelector && (
+                             <>
                                 <DaySelector
                                     selectedDays={formData.selectedDays}
-                                    onDayChange={handleDayChange}  
+                                    onDayChange={handleDayChange}
                                 />
-                            )}
+                                {errors.selectedDays && <div className="text-danger small mt-1">{errors.selectedDays}</div>}
+                             </>
+                        )}
 
-                            {showHourSelector && (                          
+                        {showHourSelector && (
+                            <>
                                 <HourSelector
                                     shifts={formData.workSchedule}
                                     onUpdateShift={handleWorkScheduleChange}
                                     onAddShift={addCommonShift}
                                     onRemoveShift={removeCommonShift}
                                 />
-                            )}
-
-                            {showOfficeContactField && (
-                                <div className='mb-3'>
-                                    <label htmlFor='officeContact'>Contacto de oficina: <i className="bi bi-telephone-fill"></i></label>
-                                    <input
-                                        type='tel'
-                                        name='officeContact'
-                                        id='officeContact'
-                                        onChange={handleForm}
-                                        value={formData.officeContact || ''}
-                                        className='form-control'
-                                    />
-                                </div>
-                            )}
-
+                                {errors.workSchedule && <div className="text-danger small mt-1">{errors.workSchedule}</div>}
+                            </>
+                        )}
+                        
+                        {showOfficeContactField && (
                             <div className='mb-3'>
-                                <button type="button" className='btn btn-secondary btn-sm me-3' onClick={onCancel}>Volver</button>
-                                <input type='submit' value={"Guardar"} className='btn btn-primary btn-sm' />
+                                <label htmlFor='officeContact'>Contacto de oficina: <i className="bi bi-telephone-fill"></i></label>
+                                <input type='tel' name='officeContact' id='officeContact' onChange={handleForm} value={formData.officeContact || ''} className='form-control' />
                             </div>
-                        </form>
-                    </div>
+                        )}
+                        
+                        <div className='mb-3'>
+                            {(hasAuthority('PERMISSION_ADMINISTRADORES_VIEW') || hasAuthority('PERMISSION_CUIDADORES_VIEW')) && (
+                                <input type='submit' value={"Guardar"} className='btn btn-primary btn-sm me-3' />
+                            )}
+                            <button type="button" className='btn btn-secondary btn-sm ' onClick={onCancel}>Volver</button>
+                            
+                        </div>
+                    </form>
                 </div>
             </div>
-            
-        </>
+        </div>
     );
 };
 

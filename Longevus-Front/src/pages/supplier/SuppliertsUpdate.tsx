@@ -114,7 +114,7 @@ export default function SuppliersEdit() {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className='container mt-5 form-container'>
         <div className='row'>
           <div className='col-12'>
@@ -170,7 +170,7 @@ export default function SuppliersEdit() {
           </div>
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }

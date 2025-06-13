@@ -5,7 +5,7 @@ import type { EmployeeFormData, EmployeeInitialData } from '../../components/Emp
 import { updateCaregiver, getCaregiverById, } from '../../services/CaregiverService';
 import type { CaregiverApiResponse } from '../../services/CaregiverService';
 import type { IShift } from '../../components/HourSelector';
-
+import { errorAlert, succesAlert, confirmEditAlert } from '../../js/alerts';
 const EditEmployee =()=>{
     const { id } = useParams<{ id: string }>(); 
     const navigate = useNavigate();
@@ -57,23 +57,24 @@ const EditEmployee =()=>{
                         scheduleId: dbScheduleId, 
                     };
 
+                    console.log("URL DE LA FOTO ", apiData.photoUrl);
                     console.log("Datos del cuidador recibidos (crudos API):", apiData);
                     console.log("Datos iniciales para el formulario (transformados):", initialData);
 
                     setEmployeeData(initialData)
                 } else {
-                    setError("Empleado no encontrado");
+                    errorAlert("Empleado no encontrado");
                 }
                 setLoading(false);
             })
             .catch(err => {
                 console.error("Error cargando datos del empleado:", err);
                 let errorMessage = "Error al cargar los datos del empleado.";   
-                setError(errorMessage);
+                errorAlert(errorMessage);
                 setLoading(false);
             });
     } else {
-        setError("ID de empleado no proporcionado en la URL.");
+        errorAlert("ID de empleado no proporcionado en la URL.");
         setLoading(false);
     }
 }, [id]);
@@ -85,12 +86,12 @@ const handleFormSubmit = async (formData: EmployeeFormData, id?: string) => {
               }
               
               try {
-                  const response = await updateCaregiver(id, formData);
-                  alert(response.data || "Trabajador actualizado exitosamente!");
+                  await updateCaregiver(id, formData);
+                  succesAlert("Datos actualizados" ,"Trabajador actualizado exitosamente!");
                   navigate('/empleado/mostrar');
               } catch (error) {
                   console.error("Error al actualizar Trabajador:", error);
-                  alert("Error al actualizar trabajador. Por favor, intente nuevamente.");
+                  errorAlert("Error al actualizar trabajador. Por favor, intente nuevamente.");
               }
     };
     const handleCancel = () => {

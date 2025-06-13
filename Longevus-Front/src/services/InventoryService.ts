@@ -1,3 +1,6 @@
+import axios from 'axios';
+
+
 export type InventoryItem = {
   id: number;
   quantity: number;
@@ -19,19 +22,21 @@ export type InventoryItem = {
 const BASE_URL = "http://localhost:8080/api/inventory";
 
 export const getAllInventory = async (): Promise<InventoryItem[]> => {
-  const res = await fetch(`${BASE_URL}/all`);
-  if (!res.ok) {
+  try{
+    const res = await axios.get(`${BASE_URL}/all`);
+    return res.data.inventory || [];
+  }catch(error){
     throw new Error("Error al obtener inventario");
   }
-  const data = await res.json();
-  return data.inventory || [];
+
 };
 
 export const deleteInventory = async (id: number): Promise<void> => {
-  const res = await fetch(`${BASE_URL}/delete?id=${id}`, {
-    method: "DELETE",
-  });
-  if (!res.ok) {
-    throw new Error("Error al eliminar inventario");
+  try {
+    await axios.delete(`${BASE_URL}/delete?id=${id}`)
+  } catch (error) {
+     throw new Error("Error al eliminar inventario");
   }
+
+  
 };

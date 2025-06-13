@@ -10,9 +10,9 @@ import { Link } from 'react-router-dom';
 import { getResidentById } from "../../services/ResidentService";
 import { getContactsByResidentId, addContact, updateContact, deleteContact } from "../../services/ContactService";
 import { confirmDeleteAlert, succesAlert, errorAlert } from "../../js/alerts";
-
+import { useAuth } from "../../context/AuthContext";
 const ViewResident: React.FC = () => {
-
+    const {hasAuthority} = useAuth();
     const { id } = useParams();
     const [residentData, setResidentData] = useState<ResidentData | null>(null);
     const [contactsData, setContactsData] = useState<Contact[]>([]);
@@ -86,7 +86,7 @@ const ViewResident: React.FC = () => {
 
     return (
         <>
-            <Header />
+            {/* <Header /> */}
             <div className="container mt-5 mb-5">
                 <div className="card shadow p-4">
                     <div className='card-title d-flex justify-content-between align-items-center mt-3'>
@@ -110,12 +110,17 @@ const ViewResident: React.FC = () => {
                     <p><strong>Número de habitación:</strong> {residentData?.numberRoom}</p>
 
                     <center>
+                        {hasAuthority('PERMISSION_CONTACTOS_CREATE') && (
                         <button className="btn btn-primary mt-3" onClick={() => setShowAddContactModal(true)}>
                             Agregar contactos
                         </button>
+                        )}
+                        {hasAuthority('PERMISSION_CONTACTOS_VIEW') && (
                         <button className="btn btn-info mt-3 ms-2" onClick={() => setShowContactModal(true)}>
                             Ver contactos
                         </button>
+                        )}
+                        <Link className='btn btn-secondary float-end' to="/residente/mostrar"><i className="bi bi-reply"/> Volver</Link>
                     </center>
 
                 </div>
@@ -137,7 +142,7 @@ const ViewResident: React.FC = () => {
                     onAddContact={handleAddContact}
                 />
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </>
     );
 };

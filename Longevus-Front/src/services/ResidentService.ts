@@ -7,7 +7,7 @@ export interface Resident {
   identification?: string,
   name?: string,
   age?: number,
-  numberRoom?: number
+  numberRoom?: number | string
 }
 
 export interface ResidentData {

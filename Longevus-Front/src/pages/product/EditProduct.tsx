@@ -360,16 +360,8 @@ const EditProduct: React.FC = () => {
               </div>
 
               <div className="mb-3">
-                <button type="submit" className="btn btn-primary">
-                  Guardar 
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary ms-2"
-                  onClick={() => navigate("/productos")}
-                >
-                  Cancelar
-                </button>
+                <button type="button"className="btn btn-secondary ms-2"onClick={() => navigate("/productos")}>Cancelar</button>
+                <button type="submit" className="btn btn-primary">Guardar</button>
               </div>
             </form>
           </div>

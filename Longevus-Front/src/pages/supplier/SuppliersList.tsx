@@ -5,8 +5,8 @@ import type {columnDefinition} from '../../components/TableBasic';
 import { Link } from 'react-router-dom';
 import Table from '../../components/TableBasic';
 import { useState, useEffect } from "react";
-import { deleteProductsBySupplierId, deleteSupplier, getSuppliers } from "../../services/SupplierService";
-import { confirmDeleteAlert, succesAlert, errorAlert } from '../../js/alerts';
+import { deleteProductsBySupplierId, deleteSupplier, getProductsBySupplierId, getSuppliers } from "../../services/SupplierService";
+import { confirmDeleteAlert, succesAlert, errorAlert, confirmDeleteSupplierAlert } from '../../js/alerts';
 import { useAuth } from "../../context/AuthContext";
 interface ISupplier{
     id: number,
@@ -103,8 +103,10 @@ const SuppliersList = () =>{
 
 
   const handleDelete = async (id: number,supplierName:string) => {
-  //const confirmDelete = window.confirm("¿Seguro que deseas eliminar este proveedor?");
-  const response = await confirmDeleteAlert(supplierName);
+    
+  const quantityOfProducts = await getProductsBySupplierId(id);
+
+  const response = await confirmDeleteSupplierAlert(quantityOfProducts,supplierName);
   if(response.isConfirmed){
             setLoading(true);
             setError(null);
@@ -135,7 +137,7 @@ return (
                 <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                         <h4 className="m-2">Lista de proveedores</h4>
                         {hasAuthority('PERMISSION_PROVEEDORES_CREATE')&& (
-                        <Link className='btn btn-success' to='/proveedores/agregar'>Agregar</Link>
+                        <Link className='btn btn-success' to='/proveedores/agregar'><i className="bi bi-clipboard-plus"></i> Agregar</Link>
                         )}
                 </div>  
                 <div className='card-body'>

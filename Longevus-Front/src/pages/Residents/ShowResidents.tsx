@@ -49,7 +49,6 @@ const Residents = () => {
                 const allResidents = await getResidents();
 
                 if (searchInput.trim() === "") {
-                    // Mostrar todos los residentes si no hay filtro
                     setResidentData(allResidents);
                     return;
                 }

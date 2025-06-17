@@ -130,3 +130,35 @@ export function infoAlert(title: string, message: string) {
     timer: 3000,
   });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export function confirmDeleteSupplierAlert(numberOfProducts:number,supplierName:string){
+  return Swal.fire({
+    icon: "warning",
+    title: "Eliminación delicada",
+    text: `¿Seguro que desea aliminar a: ${supplierName}? 
+    se eliminara también ${numberOfProducts} ${(numberOfProducts == 1 ? " producto asociado":" productos asociados" )}.`,
+    showCancelButton: true,
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "Cancelar",
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+  });
+}

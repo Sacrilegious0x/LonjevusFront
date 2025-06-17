@@ -37,7 +37,6 @@ const AppointmentScheduler = () => {
          
         //console.log("Residentes obtenidos:", data);
 
-        //Transforma los datos de la API al formato { value, label }
         const formattedOptions: Resident[] = data.map(resident => ({
           value: `hab${resident.numberRoom}-${resident.id}`, 
           label: `Hab: ${resident.numberRoom} - ${resident.name}`
@@ -106,9 +105,8 @@ const AppointmentScheduler = () => {
             <h1 className="display-4 fw-bold text-dark mb-3">Agendar Visita</h1>
             <p className="lead text-muted">Selecciona el residente, fecha y hora que mejor te convenga</p>
           </div>
-
           <div className="row g-4">
-            {/* Resident Selection */}
+
             <div className="col-12">
               <ResidentSelector
                 residents={allResidentOptions}
@@ -117,7 +115,6 @@ const AppointmentScheduler = () => {
               />
             </div>
 
-            {/* Date and Time Selection */}
             <div className="col-lg-12">
               <DateSelector selectedResident={formData.resident} selectedDate={selectedDate} onDateChange={setSelectedDate} />
             </div>
@@ -126,12 +123,10 @@ const AppointmentScheduler = () => {
               <TimeSelector selectedTime={selectedTime} selectedDate={selectedDate} onTimeChange={setSelectedTime} />
             </div>
 
-            {/* Visitor Information */}
             <div className="col-12">
               <VisitorForm formData={formData} onInputChange={handleInputChange} />
             </div>
 
-            {/* Summary and Submit */}
             <div className="col-12">
               <AppointmentSummary
                 selectedDate={selectedDate}

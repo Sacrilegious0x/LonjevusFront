@@ -55,7 +55,7 @@ export const getProducts = async (): Promise<IProduct[]> => {
     try {
 
     const response = await axios.get<ProductListResponse>(`${API_BASE_URL}/products/list`);
-    // “response.data.products” es RawProductFromAPI[]
+    
     const flattened: IProduct[] = response.data.products.map((p) => ({
       id: p.id,
       name: p.name,

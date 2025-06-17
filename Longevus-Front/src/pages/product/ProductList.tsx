@@ -7,7 +7,7 @@ import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import Table from '../../components/TableBasic';
 import { deleteProduct, getProducts } from "../../services/ProductService";
-import { confirmDeleteAlert, succesAlert, errorAlert } from '../../js/alerts';
+import { confirmDeleteAlert, succesAlert, errorAlert, confirmDeleteSupplierAlert } from '../../js/alerts';
 import { useAuth } from "../../context/AuthContext";
 interface IProduct {
   id:number,
@@ -95,7 +95,7 @@ useEffect(() => {
         setProductData(products);
         setLoading(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Error desconocido al cargar proveedores");
+        setError(err instanceof Error ? err.message : "Error desconocido al cargar los productos");
         setLoading(false);
       }
     };
@@ -125,6 +125,8 @@ useEffect(() => {
     const handleDelete = async (id: number,productName:string) => {
     //const confirmDelete = window.confirm("¿Seguro que deseas eliminar este proveedor?");
     const response = await confirmDeleteAlert(productName);
+
+    
     if (response.isConfirmed){
         setLoading(true);
         setError(null);
@@ -152,7 +154,7 @@ useEffect(() => {
                 <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                         <h4 className="m-2">Lista de productos</h4>
                         {hasAuthority('PERMISSION_PRODUCTOS_CREATE')&& (
-                          <Link className='btn btn-success' to='/productos/agregar'>Agregar</Link>
+                          <Link className='btn btn-success' to='/productos/agregar'><i className="bi bi-plus-square"></i> Agregar</Link>
                         )}
                 </div>  
                 <div className='card-body'>

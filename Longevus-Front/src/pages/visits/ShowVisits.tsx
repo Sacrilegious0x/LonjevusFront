@@ -50,9 +50,9 @@ const showVisits = () => {
         return (
             visit.name.toLowerCase().includes(term) ||
             visit.visitDate.includes(term) ||
-            visit.email.toLowerCase().includes(term) 
-            // visit.resident.name.toLowerCase().includes(term) ||
-            // visit.resident.numberRoom.toString().toLowerCase().includes(term)
+            visit.email.toLowerCase().includes(term) ||
+            visit.resident.name.toLowerCase().includes(term) ||
+            visit.resident.numberRoom.toString().toLowerCase().includes(term)
         );
     });
     const handleDeleteVisit = async (visitId: number, visitorName: string) => {
@@ -121,18 +121,28 @@ const showVisits = () => {
         { header: 'Correo', accessor: 'email' },
         { header: 'Parentesco', accessor: 'relationship' },
         { header: 'Residente', accessor: (row: IVisitData) => row.resident?.name ?? 'No disponible' },
-        { header: 'Habitacion', accessor: (row: IVisitData) => row.resident?.numberRoom  ?? 'N/D'},
-        {
+        { header: 'Habitacion', accessor: (row: IVisitData) => 
+            {
+                if(row.resident?.numberRoom!==0){
+                    return row.resident.numberRoom
+                }
+                return 'N/D';
+            }
+        },
+            {
             header: 'Acciones', accessor: (visit) => visit,
             Cell: (visit) => (
                 <>
+                    {hasAuthority('PERMISSION_VISITAS_UPDATE')&&(
                     <a className='btn btn-warning me-2' onClick={() => navigate(`/residente/visitas/editar/${visit.id}`)}>
                         <i className='bi bi-pencil-square' />
                     </a>
-
+                    )}
+                    {hasAuthority('PERMISSION_VISITAS_DELETE')&&(
                     <a className='btn btn-danger me-2' onClick={() => handleDeleteVisit(visit.id, visit.name)}>
                         <i className="bi bi-trash" />
                     </a>
+                    )}
 
                 </>
             )

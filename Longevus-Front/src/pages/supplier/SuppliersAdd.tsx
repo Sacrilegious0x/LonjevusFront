@@ -178,8 +178,8 @@ export default function SuppliersAdd() {
               </div>
 
               <div className='mb-3'>
-                <button type='submit' className='btn btn-primary'>Guardar</button>
                 <a href='/proveedores' className='btn btn-secondary m-1'>Volver</a>
+                <button type='submit' className='btn btn-primary'>Guardar</button>
               </div>
             </form>
           </div>

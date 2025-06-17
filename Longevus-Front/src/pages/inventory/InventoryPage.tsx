@@ -4,7 +4,7 @@ import TableBasic, { type columnDefinition } from "../../components/TableBasic";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { es } from "date-fns/locale/es";
 import "react-datepicker/dist/react-datepicker.css";
-
+import { useAuth } from "../../context/AuthContext";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import {
@@ -41,7 +41,7 @@ const InventoryPage = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
-
+  const {hasAuthority} = useAuth();
   useEffect(() => {
     getAllInventory()
       .then((data) => setInventoryData(data))
@@ -129,7 +129,8 @@ const InventoryPage = () => {
       Cell: (item) => (
         <div
           style={{ display: "flex", gap: "0.25rem", justifyContent: "center" }}
-        >
+        > 
+        {hasAuthority('PERMISSION_PRODUCTOS_VIEW')&&(
           <button
             className="btn btn-info btn-sm"
             onClick={() => setSelectedItem(item)}
@@ -137,13 +138,16 @@ const InventoryPage = () => {
           >
             <i className="bi bi-eye"></i>
           </button>
+        )}
+          {hasAuthority('PERMISSION_PRODUCTOS_DELETE')&&(
           <button
             className="btn btn-danger btn-sm"
-            onClick={() => handleDelete(item.id, item.product.name)}
+            onClick={() => handleDelete(item.id, item.product?.name || 'Desconocido')}
             title="Eliminar"
           >
             <i className="bi bi-trash"></i>
           </button>
+          )}
         </div>
       ),
     },

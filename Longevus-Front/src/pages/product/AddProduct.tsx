@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useAsyncError, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { createProduct, getUnits, type IUnit } from "../../services/ProductService";
@@ -271,8 +271,8 @@ const AddProduct = () => {
                 </small>
               </div>
               <div className="mb-3">
-                  <button type="submit" className="btn btn-primary">Agregar</button>
-                  <a href='/productos' className="btn btn-secondary m-1">Cancelar</a>
+                  <a href='/productos' className="btn btn-secondary m-1">Volver</a>
+                  <button type="submit" className="btn btn-primary">Guardar</button>
               </div> 
             </form>
           </div>

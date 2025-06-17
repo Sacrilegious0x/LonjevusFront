@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loginSuccess, setLoginSuccess] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   
-  // EFECTO CORREGIDO: Usa las claves correctas de tu localStorage
+
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     const storedUser = localStorage.getItem('userProfile');
@@ -36,17 +36,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsAuthenticated(true);
         setAuthorities(JSON.parse(storedAuthorities));
         setUser(JSON.parse(storedUser) as UserProfile);
-        // Restaura el header de Axios para las peticiones futuras en esta sesión
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       } catch (error) {
         console.error("Error al parsear datos de sesión desde localStorage", error);
-        logoutService(); // Si los datos están corruptos, cerramos sesión.
+        logoutService(); 
       }
     }
     setLoading(false);
   }, []);
 
-  // Lógica de login simplificada y robusta
   const login = useCallback(async (credentials: ILoginCredentials) => {
     const response = await loginService(credentials);
     setIsAuthenticated(true);
@@ -57,7 +55,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    
   }, []);
 
-  // Lógica de logout que limpia todo
   const logout = useCallback(() => {
     logoutService();
     setAuthorities([]);
@@ -70,7 +67,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return authorities.includes(authority);
   }, [authorities]);
   
-  // El `useMemo` que asegura la reactividad con las dependencias correctas
   const contextValue = useMemo(() => ({
     isAuthenticated,
     authorities,

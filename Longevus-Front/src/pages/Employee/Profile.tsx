@@ -81,7 +81,6 @@ const Profile = () => {
     
         // === Handlers para Agregar Tarea ===
         const handleTaskAdded = () => {
-            // Recargar las tareas después de agregar una nueva
             if (id) {
                 getCaregiverTask(id)
                     .then(tasksData => setTasks(tasksData || []))
@@ -134,13 +133,11 @@ const Profile = () => {
             try {
                 await deleteTask(Number(taskId));
                 
-                // Recargar tareas después de eliminar
                 if (id) {
                     const freshTasks = await getCaregiverTask(id);
                     setTasks(freshTasks || []);
                 }
                 
-                // Si la tarea eliminada era la que se estaba editando, cancelar edición
                 if (editingTask?.id === taskId) {
                     handleCancelEdit();
                 }

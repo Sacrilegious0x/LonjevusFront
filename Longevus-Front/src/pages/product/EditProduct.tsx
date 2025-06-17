@@ -114,7 +114,7 @@ const EditProduct: React.FC = () => {
         price: prod.price.toString(),
         expirationDate: prod.expirationDate, // "yyyy-MM-dd"
         category: prod.category,
-        unitId: unitIdString,       // p. ej. "4"
+        unitId: unitIdString,       
         supplierId: supplierIdString, // p. ej. "2"
         photoUrl: prod.photoURL,     // ojo que el backend lo llamó "photoURL"
         isActive:prod.isActive

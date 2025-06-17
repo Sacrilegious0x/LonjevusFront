@@ -4,7 +4,7 @@ import {
   getAllBillings,
   deleteBilling,
   getAllResidents,
-  getBillingsByResident,
+  getBillingsByResident, 
   getBillingsByInactiveResidents,
 } from "../../services/BillingService";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +17,7 @@ import {
   infoAlert,
   confirmEditAlert,
 } from "../../js/alerts";
-import { useAuth } from "../../context/AuthContext";
+
 const formatDate = (dateString: string): string => {
   const [year, month, day] = dateString.split("-").map(Number);
   const date = new Date(year, month - 1, day); 
@@ -43,7 +43,7 @@ const BillingPage = () => {
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedBilling, setSelectedBilling] = useState<Billing | null>(null);
   const navigate = useNavigate();
-  const {hasAuthority} = useAuth();
+
   const loadBillings = async () => {
     try {
       const data = await getAllBillings();
@@ -135,7 +135,7 @@ const BillingPage = () => {
 
   return (
     <>
-      {/* <Header /> */}
+      <Header />
       <div className="container mt-4">
         <h2>Facturas</h2>
 
@@ -212,7 +212,6 @@ const BillingPage = () => {
           >
             Limpiar Filtros
           </button>
-          {hasAuthority('PERMISSION_FACTURAS_CREATE') && (
           <button
             className="btn btn-success"
             onClick={() => navigate("/facturas/nueva")}
@@ -221,15 +220,12 @@ const BillingPage = () => {
 
             Nueva
           </button>
-          )}
-          {hasAuthority('PERMISSION_FACTURAS_VIEW') && (
           <button
             className="btn btn-outline-dark ms-2"
             onClick={() => navigate("/facturas/inactivas")}
           >
             Facturas Canceladas
           </button>
-          )}
         </div>
 
         <table className="table table-bordered table-striped text-center align-middle">
@@ -250,7 +246,6 @@ const BillingPage = () => {
                 <td>{formatDate(billing.date)}</td>
                 <td>₡{billing.amount.toFixed(2)}</td>
                 <td className="d-flex flex-row justify-content-center gap-1">
-                  {hasAuthority('PERMISSION_FACTURAS_VIEW') && (
                   <button
                     className="btn btn-info p-2"
                     onClick={() => setSelectedBilling(billing)}
@@ -258,8 +253,6 @@ const BillingPage = () => {
                   >
                     <i className="bi bi-eye"></i>
                   </button>
-                  )}
-                  {hasAuthority('PERMISSION_FACTURAS_UPDATE') && (
                   <button
                     className="btn btn-warning p-2"
                     onClick={async () => {
@@ -272,8 +265,6 @@ const BillingPage = () => {
                   >
                     <i className="bi bi-pencil-square"></i>
                   </button>
-                  )}
-                  {hasAuthority('PERMISSION_FACTURAS_DELETE') && (
                   <button
                     className="btn btn-danger p-2"
                     onClick={() => handleDelete(billing.id!)}
@@ -281,7 +272,6 @@ const BillingPage = () => {
                   >
                     <i className="bi bi-trash"></i>
                   </button>
-                  )}
                 </td>
               </tr>
             ))}
@@ -344,7 +334,7 @@ const BillingPage = () => {
           </div>
         )}
       </div>
-      {/* <Footer /> */}
+      <Footer />
     </>
   );
 };

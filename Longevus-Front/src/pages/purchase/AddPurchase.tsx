@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/HeaderAdmin";
-import Footer from "../../components/Footer";
 import DatePicker from "react-datepicker";
 import axios from "axios";
 import { errorAlert, succesAlert, confirmExitAlert } from "../../js/alerts";

@@ -1,20 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/HeaderAdmin";
-import Footer from "../../components/Footer";
 import DatePicker from "react-datepicker";
 import axios from "axios";
+import Select from "react-select";
+import type { SingleValue } from "react-select";
 import { errorAlert, succesAlert, confirmExitAlert } from "../../js/alerts";
 import {
-  type Product,
   type Admin,
   type PurchasePayload,
 } from "../../services/PurchaseService";
+
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  category?: {
+    name: string;
+  };
+}
 
 interface LocalPurchaseItem {
   productId: number;
   quantity: number;
   expirationDate: string;
+}
+
+interface ProductOption {
+  value: number;
+  label: string;
 }
 
 const isValidDate = (dateString: string): boolean => {
@@ -37,7 +50,7 @@ const convertToISODate = (dateString: string): string => {
 
 const parseLocalDate = (dateStr: string): Date => {
   const [day, month, year] = dateStr.split("-").map(Number);
-  return new Date(year, month - 1, day); // mes va de 0 a 11
+  return new Date(year, month - 1, day);
 };
 
 const AddPurchase = () => {
@@ -45,7 +58,7 @@ const AddPurchase = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [date, setDate] = useState<Date>(() => {
     const today = new Date();
-    return new Date(today.getFullYear(), today.getMonth(), today.getDate()); // sin desfase horario
+    return new Date(today.getFullYear(), today.getMonth(), today.getDate());
   });
 
   const [admin, setAdmin] = useState<Admin | null>(null);
@@ -77,15 +90,31 @@ const AddPurchase = () => {
     fetchAdmin();
   }, []);
 
+  const selectedProductIds = items.map((item) => item.productId);
+
+  const groupedOptions = Object.entries(
+    products.reduce((groups, product) => {
+      const category = product.category?.name || "Sin categoría";
+      if (!groups[category]) groups[category] = [];
+      if (!selectedProductIds.includes(product.id)) {
+        groups[category].push({ value: product.id, label: product.name });
+      }
+      return groups;
+    }, {} as Record<string, ProductOption[]>)
+  ).map(([label, options]) => ({ label, options }));
+
   const handleAddProduct = () => {
-    if (products.length === 0) {
-      errorAlert("No hay productos disponibles.");
+    const availableProducts = products.filter(
+      (p) => !selectedProductIds.includes(p.id)
+    );
+    if (availableProducts.length === 0) {
+      errorAlert("Ya se han agregado todos los productos disponibles.");
       return;
     }
     setIsModified(true);
     setItems([
       ...items,
-      { productId: products[0].id, quantity: 1, expirationDate: "" },
+      { productId: availableProducts[0].id, quantity: 1, expirationDate: "" },
     ]);
   };
 
@@ -100,8 +129,7 @@ const AddPurchase = () => {
         i === index
           ? {
               ...item,
-              [field]:
-                field === "expirationDate" ? String(value) : Number(value),
+              [field]: field === "expirationDate" ? String(value) : Number(value),
             }
           : item
       )
@@ -138,9 +166,7 @@ const AddPurchase = () => {
     }
 
     if (items.some((item) => !item.expirationDate)) {
-      errorAlert(
-        "Debes seleccionar la fecha de vencimiento de todos los productos."
-      );
+      errorAlert("Debes seleccionar la fecha de vencimiento de todos los productos.");
       return;
     }
 
@@ -229,23 +255,16 @@ const AddPurchase = () => {
                 return (
                   <tr key={index}>
                     <td>
-                      <select
-                        className="form-select"
-                        value={item.productId}
-                        onChange={(e) =>
-                          handleChange(
-                            index,
-                            "productId",
-                            parseInt(e.target.value)
-                          )
-                        }
-                      >
-                        {products.map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {p.name}
-                          </option>
-                        ))}
-                      </select>
+                      <Select
+                        value={{
+                          value: item.productId,
+                          label: product?.name || "",
+                        }}
+                        options={groupedOptions}
+                        onChange={(selected: SingleValue<ProductOption>) => {
+                          if (selected) handleChange(index, "productId", selected.value);
+                        }}
+                      />
                     </td>
                     <td>₡{price.toFixed(2)}</td>
                     <td>
@@ -255,11 +274,7 @@ const AddPurchase = () => {
                         min={1}
                         value={item.quantity}
                         onChange={(e) =>
-                          handleChange(
-                            index,
-                            "quantity",
-                            parseInt(e.target.value)
-                          )
+                          handleChange(index, "quantity", parseInt(e.target.value))
                         }
                       />
                     </td>
@@ -351,7 +366,6 @@ const AddPurchase = () => {
             >
               Volver
             </button>
-            
           </div>
         </form>
       </div>

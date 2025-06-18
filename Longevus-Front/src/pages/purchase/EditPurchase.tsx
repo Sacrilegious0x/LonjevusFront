@@ -292,7 +292,7 @@ const EditPurchase = () => {
                           ))}
                         </select>
                       </td>
-                      <td>${price.toFixed(2)}</td>
+                      <td>₡{price.toFixed(2)}</td>
                       <td>
                         <input
                           type="number"
@@ -351,7 +351,7 @@ const EditPurchase = () => {
                           </div>
                         )}
                       </td>
-                      <td>${(item.quantity * price).toFixed(2)}</td>
+                      <td>₡{(item.quantity * price).toFixed(2)}</td>
                       <td>
                         <button
                           type="button"
@@ -368,7 +368,7 @@ const EditPurchase = () => {
             </table>
 
             <div className="text-end mb-3">
-              <strong>Total:</strong> ${getTotal().toFixed(2)}
+              <strong>Total:</strong> ₡{getTotal().toFixed(2)}
             </div>
           </fieldset>
           <div className="d-flex justify-content-start gap-2 mt-4">

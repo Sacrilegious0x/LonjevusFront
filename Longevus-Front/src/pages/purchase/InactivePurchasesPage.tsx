@@ -136,7 +136,7 @@ const InactivePurchasesPage = () => {
                 <tr key={purchase.id}>
                   <td>{index + 1}</td>
                   <td>{formatDate(purchase.date)}</td>
-                  <td>${purchase.amount.toFixed(2)}</td>
+                  <td>₡{purchase.amount.toFixed(2)}</td>
                   <td>{purchase.admin?.name ?? "No asignado"}</td>
                   <td>
                     <button
@@ -171,7 +171,7 @@ const InactivePurchasesPage = () => {
                 <div className="modal-body">
                   <p><strong>Encargado:</strong> {selectedPurchase.admin?.name}</p>
                   <p><strong>Fecha:</strong> {formatDate(selectedPurchase.date)}</p>
-                  <p><strong>Monto Total:</strong> ${selectedPurchase.amount.toFixed(2)}</p>
+                  <p><strong>Monto Total:</strong> ₡{selectedPurchase.amount.toFixed(2)}</p>
 
                   <table className="table table-bordered mt-3">
                     <thead className="table-secondary">

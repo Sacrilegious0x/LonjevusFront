@@ -8,8 +8,7 @@ export interface Resident {
   identification?: string,
   name?: string,
   age?: number,
-  numberRoom?: number
-  room?: IRoom
+  numberRoom?: number | string
 }
 
 export interface ResidentData {

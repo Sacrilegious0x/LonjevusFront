@@ -28,7 +28,7 @@ export const getActivitiesByDate = async (date: string): Promise<Activity[]> => 
         throw (err);
     }
 }
-
+              
 export const getActivitiesByMonth = async (month: number): Promise<Activity[]> => {
     try {
         const response = await axios.get(`${API_BASE_URL}/activities`);

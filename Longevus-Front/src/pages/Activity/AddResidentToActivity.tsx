@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import { type Resident, getResidents } from "../../services/ResidentService";
 import { Link } from "react-router-dom";
 import { succesAlert, errorAlert, confirmAlert } from "../../js/alerts";
-
+import { useAuth } from "../../context/AuthContext";
 const AddResidentsToActivity = () => {
 
     const { id } = useParams();
@@ -17,7 +17,7 @@ const AddResidentsToActivity = () => {
     const [residentOnActivityData, setResidentOnActivityData] = useState<Resident[]>([]);
     const [residentData, setResidentData] = useState<Resident[]>([]);
     const [residentsOutActivity, setResidentOutActivity] = useState<Resident[]>([]);
-
+    const {hasAuthority} = useAuth();
     const [selectionMode, setSelectionMode] = useState(false);
     const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
 
@@ -93,9 +93,11 @@ const AddResidentsToActivity = () => {
             header: 'Acciones', accessor: (person) => person,
             Cell: (resident) => (
                 <>
+                    {hasAuthority('PERMISSION_RESIDENTES_VIEW') && (
                     <a className='btn btn-info me-2' onClick={() => navigate(`/residente/perfil/${resident.id}`)}>
                         <i className='bi bi-eye' />
                     </a>
+                    )}
                 </>
             )
 
@@ -155,16 +157,18 @@ const AddResidentsToActivity = () => {
 
     return (
         <>
-            <HeaderA />
+            {/* <HeaderA /> */}
             <div className='container'>
                 <div className='row'>
                     <div className='card mt-5 mb-5'>
                         <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                             <h4>Lista de residentes disponibles</h4>
+                            {hasAuthority('PERMISSION_ACTIVIDADES_VIEW') && (
                             <Link className='btn btn-secondary float-end' to={`/actividad/info/${id}`}><i className='bi bi-reply' /></Link>
+                            )}
                         </div>
                         <div className='card-body'>
-                            
+                            {hasAuthority('PERMISSION_RESIDENTES_VIEW') && (
                             <button
                                 className="btn btn-primary mb-3"
                                 onClick={() => {
@@ -174,6 +178,7 @@ const AddResidentsToActivity = () => {
                             >
                                 {selectionMode ? 'Quitar selección' : 'Seleccionar residentes'}
                             </button>
+                            )}
                             <Table<Resident>
                                 data={residentsOutActivity}
                                 columns={extendedColumns}
@@ -183,6 +188,7 @@ const AddResidentsToActivity = () => {
                             />
 
                             {selectionMode && (
+                                
                                 <button
                                     className="btn btn-info mt-3"
                                     disabled={selectedRows.size === 0}
@@ -197,7 +203,7 @@ const AddResidentsToActivity = () => {
                 </div>
 
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </>
 
 

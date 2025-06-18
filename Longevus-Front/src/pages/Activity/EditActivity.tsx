@@ -40,13 +40,13 @@ const EditResidentPage: React.FC = () => {
 
     return (
         <>
-            <HeaderA />
+            {/* <HeaderA /> */}
             <div className="container">
                 <div className="row">
                     <div className="div_ResidentForm card mt-5 mb-5 border-primary">
                         <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                             <h1 className="fw-bold text-uppercase">Editar Actividad</h1>
-                            <Link className='btn btn-secondary float-end' to="/actividades/mostrar"><i className="bi bi-reply" /> Volver</Link>
+                            {/* <Link className='btn btn-secondary float-end' to="/actividades/mostrar"><i className="bi bi-reply" /> Volver</Link> */}
                         </div>
                         {activityData ? (
                             <EditActivityForm initialData={activityData} onSubmit={handleUpdateResident} />
@@ -56,7 +56,7 @@ const EditResidentPage: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </>
     );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useAsyncError, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { createProduct, getUnits, type IUnit } from "../../services/ProductService";
@@ -22,6 +22,9 @@ const AddProduct = () => {
   const [errorUnits, setErrorUnits] = useState<string | null>(null);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+    const [touched, setTouched] = useState<Record<string, boolean>>({});
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
   const navigate = useNavigate();
 
@@ -111,10 +114,20 @@ const AddProduct = () => {
     }
   };
 
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const { name, value } = e.target;
+      setTouched(target => ({ ...target, [name]: true }));
+  
+  
+      setErrors(err => ({
+        ...err,
+        [name]: value.trim() ? '' : 'Este campo es obligatorio'}));
+    };
+
   return (
 
     <>
-      <Header />
+      {/* <Header /> */}
       <div className='container mt-5 form-container'>
         <div className='row'>
           <div className="col-12">
@@ -128,12 +141,18 @@ const AddProduct = () => {
                   name="name"
                   id="name"
                   type="text"
-                  className="form-control"
+                  className={`form-control ${touched.name && errors.name ? 'is-invalid' : ''}`}
                   value={formData.name}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   required
-                  
                 />
+                {touched.name && errors.name && (
+                  <div className="invalid-feedback">
+                    {errors.name}
+                  </div>
+                )}
+
               </div>
 
               <div className="mb-3">
@@ -142,13 +161,21 @@ const AddProduct = () => {
                   name="price"
                   id="price"
                   type="number"
-                  className="form-control"
+                  className={`form-control ${touched.price && errors.price ? 'is-invalid' : ''}`}
                   value= {formData.price}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   onKeyDown={handlePriceKeyDown} 
+                  min={0}
                   required
-                  
+                 
                 />
+
+                {touched.price && errors.price && (
+                  <div className="invalid-feedback">
+                    {errors.name}
+                  </div>
+                )}
               </div>
 
               <div className="mb-3">
@@ -157,11 +184,17 @@ const AddProduct = () => {
                   id="expirationDate"
                   name="expirationDate"
                   type="date"
-                  className="form-control"
+                  className={`form-control ${touched.date && errors.date ? 'is-invalid' : ''}`}
                   value={formData.expirationDate}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                 />
+               {touched.price && errors.price && (
+                  <div className="invalid-feedback">
+                    {errors.date}
+                  </div>
+                )}
               </div>
 
               <div className="mb-3">
@@ -238,14 +271,14 @@ const AddProduct = () => {
                 </small>
               </div>
               <div className="mb-3">
-                  <button type="submit" className="btn btn-primary">Agregar</button>
-                  <a href='/productos' className="btn btn-secondary m-1">Cancelar</a>
+                  <a href='/productos' className="btn btn-secondary m-1">Volver</a>
+                  <button type="submit" className="btn btn-primary">Guardar</button>
               </div> 
             </form>
           </div>
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

@@ -2,22 +2,14 @@ import React, { useState, useEffect } from "react";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { es } from "date-fns/locale/es";
 import "react-datepicker/dist/react-datepicker.css";
-
 import StandardTable, { type Column } from "../../components/StandardTable";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
-import {
-  succesAlert,
-  errorAlert,
-  confirmDeleteAlert,
-  confirmEditAlert,
-} from "../../js/alerts";
-import {
-  getAllPurchases,
-  deletePurchase,
-  type Purchase,
-} from "../../services/PurchaseService";
+import {succesAlert,errorAlert,confirmDeleteAlert,confirmEditAlert,} from "../../js/alerts";
+import {getAllPurchases,deletePurchase,type Purchase,} from "../../services/PurchaseService";
+import { useAuth } from "../../context/AuthContext";
+import type { ForwardedRef } from "react"; 
 
 registerLocale("es", es);
 
@@ -49,6 +41,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, CustomInputProps>(
 CustomInput.displayName = "CustomInput";
 
 const PurchasePage = () => {
+  const {hasAuthority,} = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedPurchase, setSelectedPurchase] = useState<Purchase | null>(
@@ -94,7 +87,7 @@ const PurchasePage = () => {
     {
       header: "Monto",
       accessor: "amount",
-      render: (item) => `$${item.amount.toFixed(2)}`,
+      render: (item) => `₡${item.amount.toFixed(2)}`,
     },
     {
       header: "Administrador",
@@ -131,7 +124,7 @@ const PurchasePage = () => {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className="container mt-4">
         <h2>Listado de Compras</h2>
         <div className="d-flex justify-content-end gap-2 mb-3">
@@ -180,6 +173,7 @@ const PurchasePage = () => {
           onDelete={(item) => handleDelete(item.id!)}
           renderActions={(item) => (
             <div className="d-flex flex-row gap-1">
+              {hasAuthority('PERMISSION_COMPRAS_VIEW')&& (
               <button
                 className="btn btn-info p-2"
                 onClick={() => handleView(item)}
@@ -187,6 +181,8 @@ const PurchasePage = () => {
               >
                 <i className="bi bi-eye"></i>
               </button>
+              )}
+              {hasAuthority('PERMISSION_COMPRAS_UPDATE')&& (
               <button
                 className="btn btn-warning p-2"
                 onClick={() => handleEdit(item)}
@@ -194,6 +190,8 @@ const PurchasePage = () => {
               >
                 <i className="bi bi-pencil-square"></i>
               </button>
+              )}
+              {hasAuthority('PERMISSION_COMPRAS_DELETE')&& (
               <button
                 className="btn btn-danger p-2"
                 onClick={() => handleDelete(item.id!)}
@@ -201,6 +199,7 @@ const PurchasePage = () => {
               >
                 <i className="bi bi-trash"></i>
               </button>
+              )}
             </div>
           )}
         />
@@ -225,7 +224,7 @@ const PurchasePage = () => {
                     <strong>Fecha:</strong> {formatDate(selectedPurchase.date)}
                   </p>
                   <p>
-                    <strong>Monto Total:</strong> $
+                    <strong>Monto Total:</strong> ₡
                     {selectedPurchase.amount.toFixed(2)}
                   </p>
                   <table className="table table-bordered mt-3">
@@ -262,7 +261,7 @@ const PurchasePage = () => {
           </div>
         )}
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

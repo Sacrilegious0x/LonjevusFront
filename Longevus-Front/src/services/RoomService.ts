@@ -101,3 +101,17 @@ export const getResidentsByRoomId = async (roomId: number): Promise<IResident[]>
   });
   return response.data;
 };
+
+export const checkStatusRoom = async (id: number): Promise<void> => {
+  try {
+    const response = await axios.post<void>(`${API_BASE_URL}/rooms/checkStatusRoom`,null,
+      {
+        params: { id },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error al chequear y actualizar estado de habitación:", error);
+    throw new Error("No se pudo chequear el estado de la habitación");
+  }
+};

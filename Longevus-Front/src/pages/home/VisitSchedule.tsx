@@ -10,9 +10,11 @@ import DateSelector from "../../components/AppoitmentDateSelector"
 import Footer from "../../components/Footer"
 import Header from "../../components/Header"
 import { getResidents, addVisit, type VisitPayload, type ApiResident } from "../../services/VisitService"
-
+import { succesAlert } from "../../js/alerts"
+import { useNavigate } from "react-router-dom"
 
 const AppointmentScheduler = () => {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<string>("")
   const [selectedTime, setSelectedTime] = useState<string>("")
   const [allResidentOptions, setAllResidentOptions] = useState<Resident[]>([]);
@@ -35,7 +37,6 @@ const AppointmentScheduler = () => {
          
         //console.log("Residentes obtenidos:", data);
 
-        //Transforma los datos de la API al formato { value, label }
         const formattedOptions: Resident[] = data.map(resident => ({
           value: `hab${resident.numberRoom}-${resident.id}`, 
           label: `Hab: ${resident.numberRoom} - ${resident.name}`
@@ -78,26 +79,13 @@ const AppointmentScheduler = () => {
     };
 
     try {
-
+      console.log("Informacion que se manda " , visitToSave);
       const successMessage = await addVisit(visitToSave);
-      console.log(successMessage); 
+      succesAlert("Visita Agendada", successMessage);
       setIsSubmitted(true); 
     } catch (error) {
       console.error("Fallo al enviar la visita:", error);
     }
-  }
-
-  const handleNewAppointment = () => {
-    setIsSubmitted(false)
-    setSelectedDate("")
-    setSelectedTime("")
-    setFormData({
-      resident: "",
-      name: "",
-      email: "",
-      phone: "",
-      relationship: "",
-    })
   }
 
   const isFormValid =
@@ -105,15 +93,7 @@ const AppointmentScheduler = () => {
     formData.name && formData.email && formData.relationship
 
   if (isSubmitted) {
-    return (
-      <ConfirmationScreen
-        selectedDate={selectedDate}
-        selectedTime={selectedTime}
-        formData={formData}
-        onNewAppointment={handleNewAppointment}
-        residentOptions={allResidentOptions}
-      />
-    )
+    navigate("/")
   }
 
   return (
@@ -125,9 +105,8 @@ const AppointmentScheduler = () => {
             <h1 className="display-4 fw-bold text-dark mb-3">Agendar Visita</h1>
             <p className="lead text-muted">Selecciona el residente, fecha y hora que mejor te convenga</p>
           </div>
-
           <div className="row g-4">
-            {/* Resident Selection */}
+
             <div className="col-12">
               <ResidentSelector
                 residents={allResidentOptions}
@@ -136,7 +115,6 @@ const AppointmentScheduler = () => {
               />
             </div>
 
-            {/* Date and Time Selection */}
             <div className="col-lg-12">
               <DateSelector selectedResident={formData.resident} selectedDate={selectedDate} onDateChange={setSelectedDate} />
             </div>
@@ -145,12 +123,10 @@ const AppointmentScheduler = () => {
               <TimeSelector selectedTime={selectedTime} selectedDate={selectedDate} onTimeChange={setSelectedTime} />
             </div>
 
-            {/* Visitor Information */}
             <div className="col-12">
               <VisitorForm formData={formData} onInputChange={handleInputChange} />
             </div>
 
-            {/* Summary and Submit */}
             <div className="col-12">
               <AppointmentSummary
                 selectedDate={selectedDate}

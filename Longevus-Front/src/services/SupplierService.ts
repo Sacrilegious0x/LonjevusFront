@@ -1,5 +1,6 @@
 
 import axios from 'axios';
+import type { IProduct } from './ProductService';
 
 const API_BASE_URL = 'http://localhost:8080';
 
@@ -41,6 +42,17 @@ export const deleteSupplier = async (id: number): Promise<void> => {
     }
 };
 
+export const deleteProductsBySupplierId = async (id: number): Promise<void> => {
+    try {
+        await axios.delete(`${API_BASE_URL}/products/deleteBySupplier`, {
+            params: { id }
+        });
+    } catch (error) {
+        console.error('Error al los productos del proveedor:', error);
+        throw new Error('Ocurrió un error al eliminar los productos del proveedor');
+    }
+};
+
 
 export const getSupplierById = async (id:any): Promise<ISupplier> => {
     try {
@@ -52,6 +64,16 @@ export const getSupplierById = async (id:any): Promise<ISupplier> => {
         throw new Error('No se pudo cargar el proveedor');
     }
 };
+
+export const getProductsBySupplierId = async (id:number): Promise<number> =>{
+  try{
+    const response = await axios.get(`${API_BASE_URL}/suppliers/getQuantityProductsBySupplier?id=${id}`,{});
+    return response.data;
+  }catch(error){
+    console.error('Error al obtener los productos de este proveedor',error);
+    throw new Error('No se pudieron cargar los productos de este proveedor');
+  }
+}
 
 
 

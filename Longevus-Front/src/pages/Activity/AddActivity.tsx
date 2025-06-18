@@ -23,7 +23,7 @@ const AddActivity: React.FC = () => {
 
     return (
         <>
-            <Header />
+            {/* <Header /> */}
             <div className="container">
                 <div className="row">
                     <div className="div_ResidentForm card mt-5 mb-5 border-primary">
@@ -31,10 +31,11 @@ const AddActivity: React.FC = () => {
                             <h1 className="fw-bold text-uppercase">Agregar Actividad</h1>
                         </div>
                         <AddActivtyForm onSubmit={handleCreateActivity} />
+                        
                     </div>
                 </div>
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </>
     );
 }

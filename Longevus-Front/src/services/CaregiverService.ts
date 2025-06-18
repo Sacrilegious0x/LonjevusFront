@@ -94,6 +94,9 @@ export const createCaregiver = async (caregiverFormData: EmployeeFormData): Prom
         schedule: backendSchedulePayload 
     };
     const formData = new FormData();
+    if (caregiverFormData.photo instanceof File) {
+        formData.append('photo', caregiverFormData.photo);
+    }
     formData.append('caregiverData', new Blob([JSON.stringify(caregiverDataForJson)], { type: 'application/json' }));
 
     if (caregiverFormData.photo) {

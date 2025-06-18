@@ -4,8 +4,10 @@ import Footer from '../../components/Footer'
 import Header from '../../components/HeaderAdmin'
 import type { columnDefinition } from '../../components/TableBasic'
 import Table from '../../components/TableBasic';
-import { createRole, getAllPermissions, getAllPermissionsById, getAllRoles, updatePermissions } from '../../services/RolePermissionsService';
-import { confirmEditAlert, succesAlert } from '../../js/alerts';
+import { useAuth } from '../../context/AuthContext';
+import { succesAlert, errorAlert, confirmEditAlert, confirmDeleteAlert } from '../../js/alerts';
+import { useNavigate } from 'react-router-dom';
+import { createRole, deleteRole, getAllPermissions, getAllPermissionsById, getAllRoles, updatePermissions } from '../../services/RolePermissionsService';
 
 interface IRole {
   id: number
@@ -24,6 +26,8 @@ interface IPermissionModule {
 
 
 const RolesList = () => {
+  const navigate = useNavigate();
+  const { hasAuthority,logout } = useAuth();
   const [rolesData, setRolesData] = useState<IRole[]>([]);
   const [loadingRoles, setLoadingRoles] = useState(false);
 
@@ -32,7 +36,7 @@ const RolesList = () => {
   const [permissions, setPermissions] = useState<IPermissionModule[]>([]);
   const [loadingPerms, setLoadingPerms] = useState(false);
 
-  const fetchRoles = () => {setLoadingRoles(true);getAllRoles().then(setRolesData).catch(console.error).finally(() => setLoadingRoles(false))};
+  const fetchRoles = () => { setLoadingRoles(true); getAllRoles().then(setRolesData).catch(console.error).finally(() => setLoadingRoles(false)) };
   //Cargar roles al montar
   useEffect(() => {
     setLoadingRoles(true);
@@ -47,12 +51,22 @@ const RolesList = () => {
       header: 'Permisos',
       accessor: role => role,
       Cell: role => (
-        <button
-          className="btn btn-warning"
-          onClick={() => handleOpenModalRoleEdit(role)}
-        >
-          <i className="bi bi-key-fill"></i>
-        </button>
+        <>
+        {hasAuthority('PERMISSION_ROLES_UPDATE')&& (
+          <button
+            className="btn btn-warning"
+            onClick={() => handleOpenModalRoleEdit(role)}
+          >
+            <i className="bi bi-key-fill"></i>
+          </button>
+        )}
+          {' '}
+          {hasAuthority('PERMISSION_ROLES_DELETE')&& (
+          <button className='btn btn-danger me-2' onClick={() => handleDelete(role.id, role.name)}>
+            <i className="bi bi-trash" />
+          </button>
+          )}
+        </>
       )
     }
   ];
@@ -132,30 +146,59 @@ const RolesList = () => {
     setPermissions(updated);
   };
 
-  // 4. Guardar permisos (aquí usarías tu función savePermissions)
   const handleSave = async () => {
     if (!currentRole) return;
 
-    const response = await confirmEditAlert(`l rol: ${currentRole.name}`);
+    try {
+      await updatePermissions(currentRole.id, permissions);
+      succesAlert('Permisos Actualizados', 'Los permisos se han guardado correctamente. Por seguridad, se cerrará la sesión para aplicar los cambios.');
+      logout();
+      navigate('/login');
+    } catch (e) {
+      errorAlert("Ha ocurrido un error inesperado");
+      console.log(e);
+    } finally {
+      handleCloseModal();
+      const response = await confirmEditAlert(`l rol: ${currentRole.name}`);
 
+      if (response.isConfirmed) {
+
+        try {
+          updatePermissions(currentRole.id, permissions);
+          succesAlert("Actualizado", "Habitacion actualizada");
+        } catch (e) {
+          console.log(e);
+        } finally {
+          handleCloseModal();
+        }
+      }
+
+    };
+  }
+
+  const handleDelete = async (roleId: number, roleName: string) => {
+
+    const response = await confirmDeleteAlert(roleName);
     if (response.isConfirmed) {
 
       try {
-        updatePermissions(currentRole.id, permissions);
-        succesAlert("Actualizado", "Habitacion actualizada");
-        // opcional: toast.success('Permisos actualizados');
-      } catch (e) {
-        console.log(e);
+        await deleteRole(roleId);
+        succesAlert("Eliminado", "Rol eliminado exitosamente");
+        fetchRoles();
+      } catch (err) {
+        alert(err instanceof Error ? err.message : "Error desconocido al eliminar proveedor");
       } finally {
-        handleCloseModal();
-      }
-    }
 
-  };
+      }
+    } else {
+      return;
+    }
+  }
+
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className="container">
         <div className='row'>
           <div className='card mt-5 mb-5'>
@@ -164,9 +207,11 @@ const RolesList = () => {
                 <i className="bi bi-person-badge me-2"></i>
                 Roles Usuario Hogar de Ancianos
               </h2>
-              <button className="btn btn-success"onClick={handleOpenAddRoleModal}>
+              {hasAuthority('PERMISSION_ROLES_CREATE')&& (
+              <button className="btn btn-success" onClick={handleOpenAddRoleModal}>
                 <i className="bi bi-plus-lg me-1"></i> Nuevo
               </button>
+              )}
             </div>
             <div className="card-body">
               {loadingRoles
@@ -179,7 +224,7 @@ const RolesList = () => {
       </div>
       {showModal && (
 
-        <div className="modal fade show d-block" tabIndex={-1} role="dialog">
+        <div className="modal fade show d-block" tabIndex={-1} role="dialog" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
           <div className="modal-dialog modal-lg" role="document">
             <div className="modal-content">
               <div className="modal-header">
@@ -232,7 +277,7 @@ const RolesList = () => {
           </div>
 
         </div>
-      )};
+      )}
       {showAddRoleModal && (
         <div className="modal fade show d-block" tabIndex={-1}>
           <div className="modal-dialog">
@@ -277,9 +322,8 @@ const RolesList = () => {
           </div>
         </div>
       )}
-      <Footer />
+      {/* <Footer /> */}
     </>
   )
 }
-
 export default RolesList;

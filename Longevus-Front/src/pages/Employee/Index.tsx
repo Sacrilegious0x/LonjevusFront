@@ -1,14 +1,26 @@
-import { useState, type ChangeEvent, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect,useState, type ChangeEvent, type FormEvent } from 'react';
+import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-
-
+import { succesAlert, errorAlert } from '../../js/alerts';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 const Index = () => {
     const navigate = useNavigate();
+    const { login, isAuthenticated, loginSuccess } = useAuth();
     const [formData, setFormData] = useState({
         userEmail: "",
         password: ""
     });
+
+    useEffect(() => {
+        if (loginSuccess) {    
+            succesAlert("Login exitoso!","Puede ingresar").
+            then(()=>{
+                 navigate('/perfil');
+            });     
+           
+        }
+    }, [loginSuccess, navigate]);
 
     const handleForm = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -18,19 +30,31 @@ const Index = () => {
         }));
     }
 
-    const submit = (e: FormEvent<HTMLFormElement>) => {
+    const submit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (formData.password === "pass") {
-            console.log("Puede ingresar");
-            navigate("/roles_permisos");
-        } else {
-            console.log("No puede ingresar");
-        }
+        
+    console.log("CREDENCIALES" , formData);
+       try {
+         await login({
+            email: formData.userEmail,
+            password: formData.password
+         });
+         
+            
+             console.log("Puede ingresar");
+             
+             //navigate("/perfil")
+             
+         
+       } catch (error) {
+            errorAlert("Credenciales incorrectas")
+       }
     }
 
 
     return (
         <>
+            <Header/>
             <div className='cardLogin'>
                 <div className='row'>
                     <div className='cardLogin-body text-center'>

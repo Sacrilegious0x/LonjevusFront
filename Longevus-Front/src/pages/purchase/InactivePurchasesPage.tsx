@@ -75,7 +75,7 @@ const InactivePurchasesPage = () => {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className="container mt-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h2>Compras Canceladas</h2>
@@ -213,7 +213,7 @@ const InactivePurchasesPage = () => {
           Volver
         </button>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

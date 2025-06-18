@@ -26,6 +26,14 @@ const AppointmentSummary = ({
         (r) => r.value === formData.resident
     );
 
+    const parts = selectedDate.split('-').map(part => parseInt(part, 10));
+    const correctedDate = new Date(parts[0], parts[1] - 1, parts[2]);
+    const displayDate = correctedDate.toLocaleDateString("es-ES", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+    });
+
     return (
         <>
             <div className="card shadow-sm border-dark-subtle">

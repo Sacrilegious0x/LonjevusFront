@@ -4,7 +4,7 @@ import TableBasic, { type columnDefinition } from "../../components/TableBasic";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { es } from "date-fns/locale/es";
 import "react-datepicker/dist/react-datepicker.css";
-
+import { useAuth } from "../../context/AuthContext";
 import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import {
@@ -41,7 +41,7 @@ const InventoryPage = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
-
+  const {hasAuthority} = useAuth();
   useEffect(() => {
     getAllInventory()
       .then((data) => setInventoryData(data))
@@ -95,9 +95,9 @@ const InventoryPage = () => {
 
     const matchDate = selectedDate
       ? item.expirationDate &&
-        new Date(item.expirationDate).getMonth() === selectedDate.getMonth() &&
-        new Date(item.expirationDate).getFullYear() ===
-          selectedDate.getFullYear()
+      new Date(item.expirationDate).getMonth() === selectedDate.getMonth() &&
+      new Date(item.expirationDate).getFullYear() ===
+      selectedDate.getFullYear()
       : true;
 
     return matchCategory && matchDate;
@@ -111,48 +111,26 @@ const InventoryPage = () => {
     },
     {
       header: "Producto",
-      accessor: (item) => item.product.name,
+      accessor: (item) => item.product?.name ?? "Producto no disponible",
     },
     {
       header: "Fecha de Vencimiento",
       accessor: (item) => item.expirationDate ?? "N/A",
       Cell: (item) => formatDate(item.expirationDate),
-    },
- {
-  header: "Foto",
-  accessor: () => "",
-  Cell: (item) => {
-    const photoPath = item?.photoURL ? item.photoURL.replace(/\\/g, "/").trim() : null;
-const url = photoPath ? `http://localhost:8080/${photoPath}` : "/placeholder.png";
-
-    return (
-      <div style={{ width: "70px", height: "70px", overflow: "hidden", display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <img
-          src={url}
-          alt={`Foto de ${item.product.name}`}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            borderRadius: "8px",
-          }}
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = "/placeholder.png";
-          }}
-        />
-      </div>
-    );
-  },
-}
-,
-
-    {
+    },{header: 'Foto', accessor: 'photoURL',
+      Cell: (item) =>(<img
+      src={`http://localhost:8080/${item.photoURL}`}
+      alt="Foto proveedor"
+      style={{ width: 50, height: 50, objectFit: 'cover' }}
+      />)
+    },{
       header: "Acciones",
       accessor: () => "",
       Cell: (item) => (
         <div
           style={{ display: "flex", gap: "0.25rem", justifyContent: "center" }}
-        >
+        > 
+        {hasAuthority('PERMISSION_PRODUCTOS_VIEW')&&(
           <button
             className="btn btn-info btn-sm"
             onClick={() => setSelectedItem(item)}
@@ -160,13 +138,16 @@ const url = photoPath ? `http://localhost:8080/${photoPath}` : "/placeholder.png
           >
             <i className="bi bi-eye"></i>
           </button>
+        )}
+          {hasAuthority('PERMISSION_PRODUCTOS_DELETE')&&(
           <button
             className="btn btn-danger btn-sm"
-            onClick={() => handleDelete(item.id, item.product.name)}
+            onClick={() => handleDelete(item.id, item.product?.name || 'Desconocido')}
             title="Eliminar"
           >
             <i className="bi bi-trash"></i>
           </button>
+          )}
         </div>
       ),
     },
@@ -174,9 +155,9 @@ const url = photoPath ? `http://localhost:8080/${photoPath}` : "/placeholder.png
 
   return (
     <>
-      <Header />
-      <div className="container mt-5">
-        <h1 className="mb-4">Inventario</h1>
+      {/* <Header /> */}
+      <div className="container mt-4">
+        <h1>Inventario</h1>
 
         <div className="row mb-4">
           <div className="col-md-6">
@@ -298,7 +279,7 @@ const url = photoPath ? `http://localhost:8080/${photoPath}` : "/placeholder.png
       >
       </div>
 
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

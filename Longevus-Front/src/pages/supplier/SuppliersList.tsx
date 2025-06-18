@@ -5,9 +5,9 @@ import type {columnDefinition} from '../../components/TableBasic';
 import { Link } from 'react-router-dom';
 import Table from '../../components/TableBasic';
 import { useState, useEffect } from "react";
-import { deleteSupplier, getSuppliers } from "../../services/SupplierService";
-import { confirmDeleteAlert, succesAlert, errorAlert } from '../../js/alerts';
-
+import { deleteProductsBySupplierId, deleteSupplier, getProductsBySupplierId, getSuppliers } from "../../services/SupplierService";
+import { confirmDeleteAlert, succesAlert, errorAlert, confirmDeleteSupplierAlert } from '../../js/alerts';
+import { useAuth } from "../../context/AuthContext";
 interface ISupplier{
     id: number,
     name: string,
@@ -19,7 +19,7 @@ interface ISupplier{
 }
 
 const SuppliersList = () =>{
-
+  const {hasAuthority} = useAuth();
   const [supplierData, setSupplierData] = useState<ISupplier[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,10 +51,14 @@ const SuppliersList = () =>{
     {header: 'Acciones', accessor: (supplier) => supplier,   
         Cell: (supplier) =>(
             <>
+            {hasAuthority('PERMISSION_PROVEEDORES_UPDATE')&& (
             <Link className="btn btn-warning me-2" to={`/proveedores/editar/${supplier.id}`}><i className='bi bi-pencil-square' /></Link>
+            )}
+            {hasAuthority('PERMISSION_PROVEEDORES_DELETE')&& (
             <a className='btn btn-danger me-2' onClick={()=>handleDelete(supplier.id,supplier.name)}>
                 <i className="bi bi-trash"/>
             </a>  
+            )}
             </>
         ) 
     }
@@ -99,18 +103,21 @@ const SuppliersList = () =>{
 
 
   const handleDelete = async (id: number,supplierName:string) => {
-  //const confirmDelete = window.confirm("¿Seguro que deseas eliminar este proveedor?");
-  const response = await confirmDeleteAlert(supplierName);
+    
+  const quantityOfProducts = await getProductsBySupplierId(id);
+
+  const response = await confirmDeleteSupplierAlert(quantityOfProducts,supplierName);
   if(response.isConfirmed){
             setLoading(true);
             setError(null);
    try {
       await deleteSupplier(id);
+      await deleteProductsBySupplierId(id);
             succesAlert("Eliminado",`Proveedor ${supplierName} eliminado exitosamente`);
       setSupplierData((prev) => prev.filter((p) => p.id !== id));
 
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Error desconocido al eliminar proveedor");
+      errorAlert("Hubo un error al eliminar el proveedor");
     } finally{
       setLoading(false);
     };
@@ -123,13 +130,15 @@ return (
 
     
   <>  
-    <Header/>
+    {/* <Header/> */}
       <div className="container ">
         <div className='row'>
             <div className='card mt-5 mb-5'>
                 <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                         <h4 className="m-2">Lista de proveedores</h4>
-                        <Link className='btn btn-success' to='/proveedores/agregar'>Agregar</Link>
+                        {hasAuthority('PERMISSION_PROVEEDORES_CREATE')&& (
+                        <Link className='btn btn-success' to='/proveedores/agregar'><i className="bi bi-clipboard-plus"></i> Agregar</Link>
+                        )}
                 </div>  
                 <div className='card-body'>
                         <input className="mb-3" type="text" placeholder="Buscar..." id="supplierSearch" value={searchTerm} onChange={(e)=> setSearchTerm(e.target.value)}/>
@@ -139,7 +148,7 @@ return (
             </div>
         </div>
       </div>
-    <Footer/>
+    {/* <Footer/> */}
   </>  
   
     )

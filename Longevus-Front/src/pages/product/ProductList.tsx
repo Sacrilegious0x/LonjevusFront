@@ -7,8 +7,8 @@ import Header from "../../components/HeaderAdmin";
 import Footer from "../../components/Footer";
 import Table from '../../components/TableBasic';
 import { deleteProduct, getProducts } from "../../services/ProductService";
-import { confirmDeleteAlert, succesAlert, errorAlert } from '../../js/alerts';
-
+import { confirmDeleteAlert, succesAlert, errorAlert, confirmDeleteSupplierAlert } from '../../js/alerts';
+import { useAuth } from "../../context/AuthContext";
 interface IProduct {
   id:number,
   name: string,
@@ -27,7 +27,7 @@ const dateES = (dateStr: string): string => {
 };
 
 const ProductsList=() => {
-
+  const {hasAuthority} = useAuth();
   const [productData,setProductData] = useState<IProduct[]>([])
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +49,9 @@ const productColumns: columnDefinition<IProduct>[]=[
 
     {header: '#', accessor: 'id', Cell:(_product, index)=>{return(index+1)}},
     {header: 'Nombre', accessor: 'name'},
-    {header: 'Precio', accessor: 'price'},
+    {header: 'Precio', accessor: 'price',
+      Cell: (product) => `₡${product.price}`
+    },
     {header: 'Categoria', accessor: 'category'},
     {header: 'Fecha de Vencimiento',accessor: 'expirationDate',
     Cell: (product) => {
@@ -68,10 +70,14 @@ const productColumns: columnDefinition<IProduct>[]=[
     {header: 'Acciones', accessor: (product) => product,   
         Cell: (product) =>(
             <>
+            {hasAuthority('PERMISSION_PRODUCTOS_UPDATE')&& (
             <Link className="btn btn-warning me-2" to={`/productos/editar/${product.id}`}><i className='bi bi-pencil-square' /></Link>
+            )}
+            {hasAuthority('PERMISSION_PRODUCTOS_DELETE')&& (
             <a className='btn btn-danger me-2' onClick={()=>handleDelete(product.id,product.name)}>
                 <i className="bi bi-trash"/>
-            </a>  
+            </a> 
+            )} 
             </>
         ) 
     }
@@ -89,7 +95,7 @@ useEffect(() => {
         setProductData(products);
         setLoading(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Error desconocido al cargar proveedores");
+        setError(err instanceof Error ? err.message : "Error desconocido al cargar los productos");
         setLoading(false);
       }
     };
@@ -98,9 +104,9 @@ useEffect(() => {
     if (loading) {
     return (
       <>
-        <Header />
+        {/* <Header /> */}
         <div className="container mt-5">Cargando proveedores…</div>
-        <Footer />
+        {/* <Footer /> */}
       </>
     );
   }
@@ -108,9 +114,9 @@ useEffect(() => {
     if (error) {
     return (
       <>
-        <Header />
+        {/* <Header /> */}
         <div className="container mt-5 text-danger">{error}</div>
-        <Footer />
+        {/* <Footer /> */}
       </>
     );
   }
@@ -119,6 +125,8 @@ useEffect(() => {
     const handleDelete = async (id: number,productName:string) => {
     //const confirmDelete = window.confirm("¿Seguro que deseas eliminar este proveedor?");
     const response = await confirmDeleteAlert(productName);
+
+    
     if (response.isConfirmed){
         setLoading(true);
         setError(null);
@@ -128,7 +136,7 @@ useEffect(() => {
         setProductData((prev) => prev.filter((p) => p.id !== id));
         succesAlert("Eliminado","Producto eliminado exitosamente");
       } catch (err) {
-        alert(err instanceof Error ? err.message : "Error desconocido al eliminar proveedor");
+        errorAlert("Ocurrio un error al eliminar el producto.");
       }finally{
         setLoading(false);
       }
@@ -139,13 +147,15 @@ useEffect(() => {
   return (
 
      <>  
-    <Header/>
+    {/* <Header/> */}
       <div className="container ">
         <div className='row'>
             <div className='card mt-5 mb-5'>
                 <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                         <h4 className="m-2">Lista de productos</h4>
-                        <Link className='btn btn-success' to='/productos/agregar'>Agregar</Link>
+                        {hasAuthority('PERMISSION_PRODUCTOS_CREATE')&& (
+                          <Link className='btn btn-success' to='/productos/agregar'><i className="bi bi-plus-square"></i> Agregar</Link>
+                        )}
                 </div>  
                 <div className='card-body'>
                         <input className="mb-3" type="text" placeholder="Buscar..." id="supplierSearch" value={searchTerm} onChange={(e)=> setSearchTerm(e.target.value)}/>
@@ -155,7 +165,7 @@ useEffect(() => {
             </div>
         </div>
       </div>
-    <Footer/>
+    {/* <Footer/> */}
   </>  
 
   );

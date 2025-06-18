@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import type { ResidentData } from "../services/ResidentService";
 import { errorAlert } from "../js/alerts";
 import { getRooms, type IRoom } from "../services/RoomService";
+import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 
 interface ResidentProps {
@@ -24,7 +25,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
     });
 
   const isEditing = !!initialData;
-
+  const { hasAuthority } = useAuth();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [filteredRooms, setFilteredRooms] = useState<IRoom[]>([]);
 
@@ -213,6 +214,13 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
         <button type="submit" className="btn btn-success">Guardar</button>
       </div>
 
+      <div className="mt-3 d-flex gap-2 justify-content-end gap-2">
+
+        {hasAuthority('PERMISSION_RESIDENTES_CREATE') && (
+          <button type="submit" className="btn btn-success float-end">Guardar</button>
+        )}
+        <Link className="btn btn-danger" to="/residente/mostrar"> Cancelar</Link>
+      </div>
     </form>
   );
 };

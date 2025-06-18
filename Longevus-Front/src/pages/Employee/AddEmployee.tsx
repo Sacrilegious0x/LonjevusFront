@@ -5,6 +5,7 @@ import Header from '../../components/HeaderAdmin';
 import { useState } from 'react';
 import { createCaregiver } from '../../services/CaregiverService';
 import Footer from '../../components/Footer';
+import { succesAlert, errorAlert } from '../../js/alerts';
 const AddEmployee = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
@@ -19,13 +20,13 @@ const AddEmployee = () => {
             const response = await createCaregiver(formData);
 
             console.log("Empleado creado exitosamente:", response);
-            alert("Empleado agregado exitosamente!");
+            succesAlert("Nuevo empleado","Empleado agregado exitosamente!");
             navigate('/empleado/mostrar');
 
         } catch (err: any) {
             console.error("Error al crear el empleado:", err);
             setError(err.response?.data?.message || err.message || "Ocurrió un error desconocido al crear el empleado.");
-            alert(`Error: ${error}`);
+            errorAlert("Error al intentar crear el empleado");
         } finally {
             setIsLoading(false);
         }
@@ -39,7 +40,7 @@ const AddEmployee = () => {
 
     return (
         <>
-            <Header />
+            {/* <Header /> */}
             <div className="container mt-4">
 
                 {isLoading && (
@@ -67,7 +68,7 @@ const AddEmployee = () => {
                     showHourSelector={true}
                     showOfficeContactField={false} />
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </>
 
     )

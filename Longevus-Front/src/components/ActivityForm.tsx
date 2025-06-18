@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { Activity } from "../services/ActivityService";
 import { getAllCaregivers, type CaregiverApiResponse } from "../services/CaregiverService";
 import { errorAlert } from "../js/alerts";
+import { Link } from "react-router-dom";
 
 interface ActivityProps {
     onSubmit: (data: Activity) => void;
@@ -238,7 +239,10 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                 </select>
             </div>
 
-            <button type="submit" className="btn btn-success float-end float-end">Guardar</button>
+            <div className="mt-3 d-flex gap-2 justify-content-end gap-2">
+                <Link className="btn btn-danger" to="/actividades/mostrar"> Cancelar</Link>
+                <button type="submit" className="btn btn-success">Guardar</button>
+            </div>
         </form>
     );
 };

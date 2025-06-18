@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import type { ResidentData } from "../services/ResidentService";
 import { errorAlert } from "../js/alerts";
 import { getRooms, type IRoom } from "../services/RoomService";
+import { Link } from "react-router-dom";
 
 interface ResidentProps {
   onSubmit: (data: ResidentData) => void;
@@ -207,8 +208,11 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           className="form-control"
         />
       </div>
+      <div className="mt-3 d-flex gap-2 justify-content-end gap-2">
+        <Link className="btn btn-danger" to="/residente/mostrar"> Cancelar</Link>
+        <button type="submit" className="btn btn-success">Guardar</button>
+      </div>
 
-      <button type="submit" className="btn btn-success float-end">Guardar</button>
     </form>
   );
 };

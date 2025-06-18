@@ -48,7 +48,6 @@ const Residents = () => {
                 const allResidents = await getResidents();
 
                 if (searchInput.trim() === "") {
-                    // Mostrar todos los residentes si no hay filtro
                     setResidentData(allResidents);
                     return;
                 }
@@ -71,7 +70,7 @@ const Residents = () => {
         { header: 'Identificacion', accessor: 'identification' },
         { header: 'Nombre', accessor: 'name' },
         { header: 'Edad', accessor: 'age' },
-        { header: 'Habitación', accessor: 'numberRoom' },
+        { header: 'Habitación',accessor: (resident: Resident) => resident.room?.roomNumber ?? 0 ?? 'N/A'},
         {
             header: 'Acciones', accessor: (person) => person,
             Cell: (resident) => (

@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { IRoom } from "./RoomService";
 
 const API_BASE_URL = 'http://localhost:8080'
 
@@ -8,6 +9,7 @@ export interface Resident {
   name?: string,
   age?: number,
   numberRoom?: number
+  room?: IRoom
 }
 
 export interface ResidentData {
@@ -102,12 +104,6 @@ export const updateResident = async (data: ResidentData): Promise<ResidentData> 
     throw error;
   }
 };
-
-/*export const getRooms = async (): Promise<Number[]> => {
-  const response = await axios.get(`${API_BASE_URL}/getRooms`)
-    .then
-}*/
-
 
 export const filterResidents = (residents: Resident[], nameFilter?: string, identificationFilter?: string): Resident[] => {
   return residents.filter((resident) => {

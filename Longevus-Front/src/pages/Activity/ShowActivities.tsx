@@ -105,10 +105,16 @@ const Activities = () => {
         return `${hour}:${minute}`;
     };
 
+    function formatDate(isoDate: string): string {
+        const [year, month, day] = isoDate.split("-");
+        return `${day}/${month}/${year}`;
+    }
+
 
     const activityColumns: columnDefinition<Activity>[] = [
         { header: '#', accessor: 'id', Cell: (activity, index) => { return (index + 1) } },
         { header: 'Nombre', accessor: 'name' },
+        { header: 'Fecha', accessor: 'date', Cell: (actity) => formatDate(actity.date)},
         { header: 'Tipo', accessor: 'type' },
         { header: 'Inicio', accessor: 'startTime', Cell: (activity) => formatTime(activity.startTime) },
         { header: 'Fin', accessor: 'endTime', Cell: (activity) => formatTime(activity.endTime) },

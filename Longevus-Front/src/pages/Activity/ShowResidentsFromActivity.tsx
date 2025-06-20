@@ -139,7 +139,7 @@ const ResidentsFromActivity = () => {
                     <div className='card mt-5 mb-5'>
                         <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                             <h4>Lista de residentes asignados a la actividad</h4>
-                            <Link className='btn btn-secondary float-end' to={`/actividad/info/${id}`}><i className='bi bi-reply' />Volver</Link>
+                            <Link className='btn btn-secondary float-end' to={`/actividad/info/${id}`}><i className='bi bi-reply' /> Volver</Link>
                         </div>
                         <div className='card-body'>
                         

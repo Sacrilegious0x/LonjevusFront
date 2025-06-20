@@ -26,12 +26,11 @@ const AddActivity: React.FC = () => {
             {/* <Header /> */}
             <div className="container">
                 <div className="row">
-                    <div className="div_ResidentForm card mt-5 mb-5 border-primary">
+                    <div className=" border-primary">
                         <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                             <h1 className="fw-bold text-uppercase">Agregar Actividad</h1>
                         </div>
-                        <AddActivtyForm onSubmit={handleCreateActivity} />
-                        
+                        <AddActivtyForm onSubmit={handleCreateActivity} />              
                     </div>
                 </div>
             </div>

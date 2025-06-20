@@ -164,7 +164,7 @@ const AddResidentsToActivity = () => {
                         <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                             <h4>Lista de residentes disponibles</h4>
                             {hasAuthority('PERMISSION_ACTIVIDADES_VIEW') && (
-                            <Link className='btn btn-secondary float-end' to={`/actividad/info/${id}`}><i className='bi bi-reply' /></Link>
+                            <Link className='btn btn-secondary float-end' to={`/actividad/info/${id}`}><i className='bi bi-reply' /> Volver</Link>
                             )}
                         </div>
                         <div className='card-body'>

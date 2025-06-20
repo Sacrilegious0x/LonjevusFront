@@ -138,7 +138,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="residentForm p-4 border rounded">
+    <form onSubmit={handleSubmit} className="p-4 border rounded">
 
       <div className="mb-3">
         <label className="form-label">Identificación</label>
@@ -209,17 +209,14 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           className="form-control"
         />
       </div>
-      <div className="mt-3 d-flex gap-2 justify-content-end gap-2">
-        <Link className="btn btn-danger" to="/residente/mostrar"> Cancelar</Link>
-        <button type="submit" className="btn btn-success">Guardar</button>
-      </div>
 
-      <div className="mt-3 d-flex gap-2 justify-content-end gap-2">
+
+      <div className="mt-3 d-flex gap-2  gap-2">
+        <Link className="btn btn-secondary" to="/residente/mostrar"> Volver</Link>
 
         {hasAuthority('PERMISSION_RESIDENTES_CREATE') && (
-          <button type="submit" className="btn btn-success float-end">Guardar</button>
+          <button type="submit" className="btn btn-primary float-end">Guardar</button>
         )}
-        <Link className="btn btn-danger" to="/residente/mostrar"> Cancelar</Link>
       </div>
     </form>
   );

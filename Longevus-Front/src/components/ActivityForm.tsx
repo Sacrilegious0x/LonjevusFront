@@ -51,6 +51,7 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
         }))
     };
 
+    
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -114,10 +115,28 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
             .padStart(2, "0")}`;
     };
 
+    const generateTimeOptions = (start: string, end: string): string[] => {
+        const options: string[] = [];
+        let [hour, minute] = start.split(":").map(Number);
+        const [endHour, endMinute] = end.split(":").map(Number);
+
+        while (hour < endHour || (hour === endHour && minute <= endMinute)) {
+            const time = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+            options.push(time);
+
+            minute += 30;
+            if (minute >= 60) {
+                minute = 0;
+                hour++;
+            }
+        }
+
+        return options;
+    };
 
 
     return (
-        <form onSubmit={handleSubmit} className="residentForm p-4 border rounded">
+        <form onSubmit={handleSubmit} className="p-4 border rounded">
 
             <div className="mb-3">
                 <label className="form-label">Nombre</label>
@@ -146,7 +165,7 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                 <select name="type" value={data.type}
                     onChange={handleForm} className="form-select">
                     <option value="">Seleccione un tipo</option>
-                    <option value="Recreativa">Recreativa</option>
+                    <option value="Recreativa">Cognitiva</option>
                     <option value="Física">Física</option>
                     <option value="Educativa">Educativa</option>
                     <option value="Médica">Médica</option>
@@ -167,30 +186,40 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
 
             <div className="mb-3">
                 <label className="form-label">Hora de inicio</label>
-                <input
-                    type="time"
+                <select
                     name="startTime"
                     value={data.startTime}
                     onChange={handleForm}
                     className="form-control"
-                    min="07:00"
-                    max="22:00"
-                    step={1800}
-                />
+                >
+                    <option value="">Selecciona una hora</option>
+                    {generateTimeOptions("07:00", "21:30").map((time) => (
+                        <option key={time} value={time}>
+                            {time}
+                        </option>
+                    ))}
+                </select>
+
             </div>
 
             <div className="mb-3">
                 <label className="form-label">Hora de fin</label>
-                <input
-                    type="time"
+                <select
                     name="endTime"
                     value={data.endTime}
                     onChange={handleForm}
                     className="form-control"
-                    min={data.startTime ? getNext30Min(data.startTime) : "07:30"}
-                    max="22:00"
-                    step={1800}
-                />
+                    disabled={!data.startTime}
+                >
+                    <option value="">Selecciona una hora</option>
+                    {data.startTime &&
+                        generateTimeOptions(getNext30Min(data.startTime), "22:00").map((time) => (
+                            <option key={time} value={time}>
+                                {time}
+                            </option>
+                        ))}
+                </select>
+
             </div>
 
 
@@ -239,11 +268,11 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                 </select>
             </div>
 
-            <div className="mt-3 d-flex gap-2 justify-content-end gap-2">
-                {hasAuthority('PERMISSION_ACTIVIDADES_CREATE') && (
-                    <button type="submit" className="btn btn-success float-end float-end">Guardar</button>
-                )}
+            <div className="mt-3 d-flex gap-2  gap-2">
                 <Link className='btn btn-secondary float-end' to="/actividades/mostrar">Volver</Link>
+                {hasAuthority('PERMISSION_ACTIVIDADES_CREATE') && (
+                    <button type="submit" className="btn btn-primary float-end float-end">Guardar</button>
+                )}
             </div>
         </form>
     );

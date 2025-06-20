@@ -53,7 +53,7 @@ export const createPurchase = async (purchase: Purchase): Promise<void> => {
   await axios.post("http://localhost:8080/api/purchases/add", purchase);
 };
 
-export const updatePurchase = async (id: string, purchase: Purchase): Promise<void> => {
+export const updatePurchase = async (id: string, purchase: Purchase, ): Promise<void> => {
   await axios.put(`http://localhost:8080/api/purchases/update/${id}`, purchase);
 };
 

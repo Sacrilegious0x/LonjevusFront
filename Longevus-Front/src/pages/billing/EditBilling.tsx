@@ -7,8 +7,6 @@ import {
   type Billing,
   type Resident,
 } from "../../services/BillingService";
-import Header from "../../components/HeaderAdmin";
-import Footer from "../../components/Footer";
 import { succesAlert, errorAlert, confirmEditAlert } from "../../js/alerts";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -41,9 +39,7 @@ const EditBilling = () => {
     "Dic",
   ];
 
-  const estimateMonthsFromPeriod = (
-    period: string
-  ): number => {
+  const estimateMonthsFromPeriod = (period: string): number => {
     const [start, end] = period.split("-");
     const startIndex = months.indexOf(start);
     const endIndex = months.indexOf(end);
@@ -69,12 +65,14 @@ const EditBilling = () => {
 
         if (id) {
           const data = await getBillingById(parseInt(id));
-          const exists = res.some(r => r.id === data.resident.id);
-        if (!exists) {
-          errorAlert("No se puede editar la factura porque el residente asociado ya no existe.");
-          navigate("/facturas");
-          return;
-        }
+          const exists = res.some((r) => r.id === data.resident.id);
+          if (!exists) {
+            errorAlert(
+              "No se puede editar la factura porque el residente asociado ya no existe."
+            );
+            navigate("/facturas");
+            return;
+          }
           setBilling(data);
           const [year, month, day] = data.date.split("-").map(Number);
           const billingDate = new Date(year, month - 1, day);
@@ -83,9 +81,7 @@ const EditBilling = () => {
           setPaymentMethod(data.paymentMethod);
           setResidentId(data.resident.id);
 
-          const monthsCount = estimateMonthsFromPeriod(
-            data.period
-          );
+          const monthsCount = estimateMonthsFromPeriod(data.period);
           setPeriodMonths(monthsCount);
           setPeriodLabel(calculatePeriodLabel(billingDate, monthsCount));
         }
@@ -169,9 +165,11 @@ const EditBilling = () => {
 
   return (
     <>
-      {/* <Header /> */}
       <div className="container mt-4">
-        <h2>Editar Factura</h2>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h2 className="m-0">Editar Factura</h2>
+        </div>
+
         <form onSubmit={handleSubmit} className="mt-4">
           <div className="mb-3">
             <label className="form-label">Fecha:</label>
@@ -185,6 +183,7 @@ const EditBilling = () => {
               dropdownMode="select"
               placeholderText="Selecciona una fecha"
               onKeyDown={(e) => e.preventDefault()}
+              maxDate={new Date()}
             />
           </div>
 
@@ -276,8 +275,7 @@ const EditBilling = () => {
               ))}
             </select>
           </div>
-
-          <div className="d-flex gap-2 mt-3">
+          <div className="d-flex justify-content-start gap-2 mt-4">
             <button
               type="button"
               className="btn btn-secondary"
@@ -286,13 +284,12 @@ const EditBilling = () => {
               <i className="bi bi-reply me-1"></i>
               Volver
             </button>
-            <button type="submit" className="btn btn-primary">
-              Guardar Cambios
-            </button>
+              <button type="submit" className="btn btn-primary">
+                Guardar
+              </button>
           </div>
         </form>
       </div>
-      {/* <Footer /> */}
     </>
   );
 };

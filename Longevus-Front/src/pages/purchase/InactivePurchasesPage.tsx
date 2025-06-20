@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/HeaderAdmin";
-import Footer from "../../components/Footer";
-import {
-  errorAlert
-} from "../../js/alerts";
+import { errorAlert } from "../../js/alerts";
 
 import {
   getInactivePurchases,
@@ -18,14 +14,26 @@ const formatDate = (isoString: string): string => {
 };
 
 const monthNames = [
-  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
 ];
 
 const InactivePurchasesPage = () => {
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [allPurchases, setAllPurchases] = useState<Purchase[]>([]);
-  const [selectedPurchase, setSelectedPurchase] = useState<Purchase | null>(null);
+  const [selectedPurchase, setSelectedPurchase] = useState<Purchase | null>(
+    null
+  );
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
   const navigate = useNavigate();
@@ -70,17 +78,15 @@ const InactivePurchasesPage = () => {
   }, []);
 
   const availableYears = [
-    ...new Set(allPurchases.map((p) => new Date(p.date).getFullYear()))
+    ...new Set(allPurchases.map((p) => new Date(p.date).getFullYear())),
   ].sort();
 
   return (
     <>
-      {/* <Header /> */}
       <div className="container mt-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h2>Compras Canceladas</h2>
         </div>
-
         <div className="row mb-3">
           <div className="col-md-3">
             <select
@@ -90,7 +96,9 @@ const InactivePurchasesPage = () => {
             >
               <option value="">Año</option>
               {availableYears.map((year) => (
-                <option key={year} value={year}>{year}</option>
+                <option key={year} value={year}>
+                  {year}
+                </option>
               ))}
             </select>
           </div>
@@ -112,49 +120,55 @@ const InactivePurchasesPage = () => {
           </div>
 
           <div className="col-md-3">
-            <button className="btn btn-primary" onClick={handleFilter}>Buscar</button>
+            <button className="btn btn-primary" onClick={handleFilter}>
+              Buscar
+            </button>
           </div>
 
           <div className="col-md-3 text-end">
-            <button className="btn btn-secondary" onClick={handleClearFilters}>Limpiar Filtros</button>
+            <button className="btn btn-secondary" onClick={handleClearFilters}>
+              Limpiar Filtros
+            </button>
           </div>
         </div>
 
-        <table className="table table-bordered text-center">
-          <thead className="table-dark">
-            <tr>
-              <th>#</th>
-              <th>Fecha</th>
-              <th>Monto</th>
-              <th>Administrador</th>
-              <th>Ver</th>
-            </tr>
-          </thead>
-          <tbody>
-            {purchases.length > 0 ? (
-              purchases.map((purchase, index) => (
-                <tr key={purchase.id}>
-                  <td>{index + 1}</td>
-                  <td>{formatDate(purchase.date)}</td>
-                  <td>₡{purchase.amount.toFixed(2)}</td>
-                  <td>{purchase.admin?.name ?? "No asignado"}</td>
-                  <td>
-                    <button
-                      className="btn btn-info btn-sm"
-                      onClick={() => setSelectedPurchase(purchase)}
-                    >
-                      <i className="bi bi-eye"></i>
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
+        <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+          <table className="table table-bordered text-center">
+            <thead className="table-dark">
               <tr>
-                <td colSpan={5}>No hay compras canceladas.</td>
+                <th>#</th>
+                <th>Fecha</th>
+                <th>Monto</th>
+                <th>Administrador</th>
+                <th>Ver</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {purchases.length > 0 ? (
+                purchases.map((purchase, index) => (
+                  <tr key={purchase.id}>
+                    <td>{index + 1}</td>
+                    <td>{formatDate(purchase.date)}</td>
+                    <td>₡{purchase.amount.toFixed(2)}</td>
+                    <td>{purchase.admin?.name ?? "No asignado"}</td>
+                    <td>
+                      <button
+                        className="btn btn-info btn-sm"
+                        onClick={() => setSelectedPurchase(purchase)}
+                      >
+                        <i className="bi bi-eye"></i>
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5}>No hay compras canceladas.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
         {selectedPurchase && (
           <div className="modal show d-block" tabIndex={-1} role="dialog">
@@ -169,9 +183,16 @@ const InactivePurchasesPage = () => {
                   />
                 </div>
                 <div className="modal-body">
-                  <p><strong>Encargado:</strong> {selectedPurchase.admin?.name}</p>
-                  <p><strong>Fecha:</strong> {formatDate(selectedPurchase.date)}</p>
-                  <p><strong>Monto Total:</strong> ₡{selectedPurchase.amount.toFixed(2)}</p>
+                  <p>
+                    <strong>Encargado:</strong> {selectedPurchase.admin?.name}
+                  </p>
+                  <p>
+                    <strong>Fecha:</strong> {formatDate(selectedPurchase.date)}
+                  </p>
+                  <p>
+                    <strong>Monto Total:</strong> ₡
+                    {selectedPurchase.amount.toFixed(2)}
+                  </p>
 
                   <table className="table table-bordered mt-3">
                     <thead className="table-secondary">
@@ -184,7 +205,9 @@ const InactivePurchasesPage = () => {
                     <tbody>
                       {selectedPurchase.items.map((item, idx) => (
                         <tr key={idx}>
-                          <td>{item.productName || `Producto #${item.idProduct}`}</td>
+                          <td>
+                            {item.productName || `Producto #${item.idProduct}`}
+                          </td>
                           <td>{item.quantity}</td>
                           <td>{formatDate(item.expirationDate)}</td>
                         </tr>
@@ -204,8 +227,11 @@ const InactivePurchasesPage = () => {
             </div>
           </div>
         )}
+      </div>
 
+      <div className="mb-3 d-flex justify-content-start ps-3">
         <button
+          type="button"
           className="btn btn-secondary"
           onClick={() => navigate("/compras")}
         >
@@ -213,7 +239,6 @@ const InactivePurchasesPage = () => {
           Volver
         </button>
       </div>
-      {/* <Footer /> */}
     </>
   );
 };

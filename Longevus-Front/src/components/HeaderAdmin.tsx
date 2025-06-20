@@ -184,7 +184,7 @@ const Header = () => {
                                             )}
                                              {hasAuthority('PERMISSION_FACTURAS_VIEW') && (
                                             <li className="sub_ul-actions-li">
-                                                <Link className="sub_menu-options" to="/facturas/inactivas">Inactivas</Link>
+                                                <Link className="sub_menu-options" to="/facturas/inactivas">Canceladas</Link>
                                             </li>
                                             )}
                                         </ul>

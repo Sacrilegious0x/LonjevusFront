@@ -131,21 +131,18 @@ export function infoAlert(title: string, message: string) {
   });
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export function confirmExpiredProductAlert() {
+  return Swal.fire({
+    icon: "warning",
+    title: "Producto vencido",
+    text: "Estás agregando un producto vencido. ¿Quieres continuar?",
+    showCancelButton: true,
+    confirmButtonText: "Sí",
+    cancelButtonText: "No",
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+  });
+}
 
 
 

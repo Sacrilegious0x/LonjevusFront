@@ -19,7 +19,7 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
       name: '',
       birthdate: '',
       age: 0,
-      healthStatus: 'Bueno',
+      healthStatus: '',
       numberRoom: 0,
       photo: null,
     });
@@ -60,6 +60,34 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
     const target = e.target as HTMLInputElement;
     const { name, type, value, checked, files } = target;
 
+    let isValid = true;
+
+    switch (type) {
+      case "text":
+        isValid = value.trim() !== "";
+        break;
+
+      case "date":
+        isValid = value !== "";
+        break;
+
+      case "select-one":
+        isValid = value !== "";
+        break;
+
+      case "file":
+        isValid = !!(files && files.length > 0);
+        break;
+
+      default:
+        isValid = true;
+    }
+
+    if (errors[name] && isValid) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+
+
     if (name === "name" && value !== "" && value.trim() === "") {
       return;
     }
@@ -72,22 +100,14 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
       if (!/^\d*$/.test(value)) {
         return;
       }
-    }
-
-    if (name === "identification") {
-      if (!/^\d*$/.test(value)) {
-        return;
-      }
 
       if (value.length > 0 && (value.length < 9 || value.length > 12)) {
         setErrors(prev => ({
-          ...prev,
-          identification: "Debe tener entre 9 y 12 dígitos"
+          ...prev, identification: "La identificación debe tener entre 9 y 12 digitos"
         }));
       } else {
         setErrors(prev => ({
-          ...prev,
-          identification: ""
+          ...prev, identification: ""
         }));
       }
     }
@@ -107,28 +127,41 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const validIdentification = /^\d{9,12}$/.test(data.identification);
+    const newErrors: Record<string, string> = {};
 
-    if (!validIdentification) {
-      setErrors({ identification: "La identificación debe tener entre 9 y 12 digitos" });
-      return;
+    if (!data.name || data.name.trim() === "") {
+      newErrors.name = "El nombre es obligatorio";
     }
 
-    const requiredFields = [
-      "name", "identification", "birthdate", "healthStatus",
-      "numberRoom", "photo"
-    ];
-
-    const emptyFields = requiredFields.filter((field) => !data[field as keyof typeof data]);
-
-    if (emptyFields.length > 0) {
-      errorAlert("Por favor complete todos los campos antes de guardar.");
-      return;
+    if (!data.identification || !/^\d{9,12}$/.test(data.identification)) {
+      newErrors.identification = "La identificación debe tener entre 9 y 12 dígitos";
     }
 
+    if (!data.birthdate) {
+    newErrors.birthdate = "Debe ingresar su fecha de nacimiento";
+  } else {
+    const birthDate = new Date(data.birthdate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (birthDate > today) {
+      newErrors.birthdate = "La fecha de nacimiento no puede ser posterior a hoy";
+    }
+  }
 
-    if (!data.photo && isEditing) {
-      errorAlert('Seleccione una foto');
+    if (!data.healthStatus) {
+      newErrors.healthStatus = "Debe seleccionar un estado de salud";
+    }
+
+    if (!data.numberRoom) {
+      newErrors.numberRoom = "Debe seleccionar una habitación";
+    }
+
+    if (!data.photo && !isEditing) {
+      newErrors.photo = "Debe seleccionar una foto";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
@@ -161,8 +194,9 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           placeholder="ej: María Gómez"
           value={data.name}
           onChange={handleForm}
-          className="form-control"
+          className={`form-control ${errors.name ? "is-invalid" : ""}`}
         />
+        {errors.name && <div className="invalid-feedback">{errors.name}</div>}
       </div>
 
       <div className="mb-3">
@@ -172,24 +206,27 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           name="birthdate"
           value={data.birthdate}
           onChange={handleForm}
-          className="form-control"
+          className={`form-control ${errors.birthdate ? "is-invalid" : ""}`}
         />
+        {errors.birthdate && <div className="invalid-feedback">{errors.birthdate}</div>}
       </div>
 
       <div className="mb-3">
         <label className="form-label">Estado de Salud</label>
         <select name="healthStatus" value={data.healthStatus}
-          onChange={handleForm} className="form-select">
+          onChange={handleForm} className={`form-select ${errors.healthStatus ? "is-invalid" : ""}`}>
+          <option value="">Seleccione el estado de salud</option>
           <option value="Bueno">Bueno</option>
           <option value="Regular">Regular</option>
           <option value="Malo">Malo</option>
-
         </select>
+        {errors.healthStatus && <div className="invalid-feedback">{errors.healthStatus}</div>}
       </div>
 
       <div className="mb-3">
         <label className="form-label">Habitación</label>
-        <select name="numberRoom" value={data.numberRoom} onChange={handleForm} className="form-select">
+        <select name="numberRoom" value={data.numberRoom} onChange={handleForm} 
+        className={`form-select ${errors.numberRoom ? "is-invalid" : ""}`}>
           <option value="">Seleccione una habitación</option>
           {filteredRooms.map((room) => (
             <option key={room.id} value={room.id}>
@@ -197,6 +234,8 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
             </option>
           ))}
         </select>
+        {errors.numberRoom && <div className="invalid-feedback">{errors.numberRoom}</div>}
+
       </div>
 
       <div className="mb-3">
@@ -206,8 +245,9 @@ const ResidentForm: React.FC<ResidentProps> = ({ onSubmit, initialData }) => {
           name="photo"
           accept="image/*"
           onChange={handleForm}
-          className="form-control"
+          className={`form-control ${errors.photo ? "is-invalid" : ""}`}
         />
+        {errors.photo && <div className="invalid-feedback">{errors.photo}</div>}
       </div>
 
 

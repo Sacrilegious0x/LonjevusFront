@@ -120,7 +120,6 @@ const ViewResident: React.FC = () => {
                             Ver contactos
                         </button>
                         )}
-                        <Link className='btn btn-secondary float-end' to="/residente/mostrar"><i className="bi bi-reply"/> Volver</Link>
                     </center>
 
                 </div>

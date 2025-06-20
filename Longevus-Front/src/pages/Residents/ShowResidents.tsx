@@ -112,6 +112,7 @@ const Residents = () => {
                         </div>
                         <div className='card-body'>
                             <input type="text" placeholder="Buscar..." id="userSearch" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
+                            <button className="btn btn-secondary" id="btnSearch"><i className="bi bi-search"></i></button>
                             <Table<Resident> data={residentData} columns={personColumns} selectedRows={new Set()} onToggleRow={() => { }} onSelectAll={() => { }} />
                         </div>
                     </div>

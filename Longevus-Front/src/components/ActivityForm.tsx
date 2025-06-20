@@ -42,6 +42,29 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
         const target = e.target as HTMLInputElement;
         const { name, type, value } = target;
 
+        let isValid = true;
+
+        switch (type) {
+            case "text":
+                isValid = value.trim() !== "";
+                break;
+
+            case "date":
+                isValid = value !== "";
+                break;
+
+            case "select":
+                isValid = value !== "";
+                break;
+
+            default:
+                isValid = true;
+        }
+
+        if (errors[name] && isValid) {
+            setErrors((prev) => ({ ...prev, [name]: "" }));
+        }
+
         if ((name === "name" || name === "description") && value !== "" && value.trim() === "") {
             return;
         }
@@ -51,36 +74,52 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
         }))
     };
 
-    
+
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const requiredFields = [
-            "name", "description", "type", "date",
-            "startTime", "endTime", "location", "status", "caregiverId"
-        ];
+        const newErrors: Record<string, string> = {};
 
-        const emptyFields = requiredFields.filter((field) => !data[field as keyof typeof data]);
-
-        if (emptyFields.length > 0) {
-            errorAlert("Por favor complete todos los campos antes de guardar.");
-            return;
+        if (!data.name || data.name.trim() === "") {
+            newErrors.name = "El nombre es obligatorio";
         }
 
-        if (data.status === "En progreso") {
-            const today = new Date();
-            const selectedDate = new Date(data.date);
+        if (!data.description || data.description.trim() === "") {
+            newErrors.description = "La descripción es obligatoria";
+        }
 
-            today.setHours(0, 0, 0, 0);
-            selectedDate.setHours(0, 0, 0, 0);
+        if (!data.type) {
+            newErrors.type = "Debe ingresar el tipo de la actividad";
+        }
 
-            if (selectedDate.getTime() !== today.getTime()) {
-                setErrors({ status: "Solo se puede marcar como 'En progreso' una actividad en la fecha actual." });
-                return;
-            }
-        } else {
-            setErrors((prev) => ({ ...prev, status: "" }));
+        if (!data.date) {
+            newErrors.date = "Debe seleccionar una fecha";
+        }
+
+        if (!data.startTime) {
+            newErrors.startTime = "Debe seleccionar una hora de inicio";
+        }
+
+        if (!data.endTime) {
+            newErrors.endTime = "Debe seleccionar una hora de fin";
+        }
+
+        if (!data.location) {
+            newErrors.location = "Debe seleccionar una localización";
+        }
+
+        if (!data.status) {
+            newErrors.status = "Debe seleccionar el estado de la actividad";
+        }
+
+        if (!data.caregiverId) {
+            newErrors.caregiverId = "Debe seleccionar un encargado";
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
         }
 
         onSubmit(data);
@@ -145,8 +184,10 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                     name="name"
                     value={data.name}
                     onChange={handleForm}
-                    className="form-control"
+                    className={`form-control ${errors.name ? "is-invalid" : ""}`}
                 />
+                {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+
             </div>
 
             <div className="mb-3">
@@ -156,14 +197,16 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                     name="description"
                     value={data.description}
                     onChange={handleForm}
-                    className="form-control"
+                    className={`form-control ${errors.description ? "is-invalid" : ""}`}
                 />
+                {errors.description && <div className="invalid-feedback">{errors.description}</div>}
+
             </div>
 
             <div className="mb-3">
                 <label className="form-label">Tipo</label>
                 <select name="type" value={data.type}
-                    onChange={handleForm} className="form-select">
+                    onChange={handleForm} className={`form-select ${errors.type ? "is-invalid" : ""}`}>
                     <option value="">Seleccione un tipo</option>
                     <option value="Recreativa">Cognitiva</option>
                     <option value="Física">Física</option>
@@ -171,6 +214,7 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                     <option value="Médica">Médica</option>
                     <option value="Social">Social</option>
                 </select>
+                {errors.type && <div className="invalid-feedback">{errors.type}</div>}
             </div>
 
             <div className="mb-3">
@@ -180,8 +224,9 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                     name="date"
                     value={data.date}
                     onChange={handleForm}
-                    className="form-control"
+                    className={`form-control ${errors.date ? "is-invalid" : ""}`}
                 />
+                {errors.date && <div className="invalid-feedback">{errors.date}</div>}
             </div>
 
             <div className="mb-3">
@@ -190,7 +235,7 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                     name="startTime"
                     value={data.startTime}
                     onChange={handleForm}
-                    className="form-control"
+                    className={`form-select ${errors.startTime ? "is-invalid" : ""}`}
                 >
                     <option value="">Selecciona una hora</option>
                     {generateTimeOptions("07:00", "21:30").map((time) => (
@@ -199,7 +244,7 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                         </option>
                     ))}
                 </select>
-
+                {errors.startTime && <div className="invalid-feedback">{errors.startTime}</div>}
             </div>
 
             <div className="mb-3">
@@ -208,7 +253,7 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                     name="endTime"
                     value={data.endTime}
                     onChange={handleForm}
-                    className="form-control"
+                    className={`form-select ${errors.endTime ? "is-invalid" : ""}`}
                     disabled={!data.startTime}
                 >
                     <option value="">Selecciona una hora</option>
@@ -219,7 +264,7 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                             </option>
                         ))}
                 </select>
-
+                {errors.endTime && <div className="invalid-feedback">{errors.endTime}</div>}
             </div>
 
 
@@ -230,8 +275,9 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                     name="location"
                     value={data.location}
                     onChange={handleForm}
-                    className="form-control"
+                    className={`form-control ${errors.location ? "is-invalid" : ""}`}
                 />
+                {errors.location && <div className="invalid-feedback">{errors.location}</div>}
             </div>
 
             <div className="mb-3">
@@ -246,7 +292,23 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                     <option value="Pendiente">Pendiente</option>
                     <option
                         value="En progreso"
-                        disabled={!!data.date && new Date(data.date).toDateString() !== new Date().toDateString()}
+                        disabled={
+                            (() => {
+                                const selectedDateValue = data.date;
+                                if (!selectedDateValue) {
+                                    return false;
+                                }
+
+                                const selectedDate = new Date(selectedDateValue + 'T00:00:00Z');
+
+                                const today = new Date();
+                                const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+
+                                const isDisabled = selectedDate.getTime() !== todayUTC.getTime();
+
+                                return isDisabled;
+                            })()
+                        }
                     >
                         En progreso
                     </option>
@@ -258,7 +320,8 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
 
             <div className="mb-3">
                 <label className="form-label">Encargado(a)</label>
-                <select name="caregiverId" value={data.caregiverId} onChange={handleForm} className="form-select">
+                <select name="caregiverId" value={data.caregiverId} onChange={handleForm}
+                    className={`form-select ${errors.caregiverId ? "is-invalid" : ""}`}>
                     <option value="">Seleccione el encargado</option>
                     {caregivers.map((c) => (
                         <option key={c.id} value={c.id}>
@@ -266,6 +329,7 @@ const ActivityForm: React.FC<ActivityProps> = ({ onSubmit, initialData }) => {
                         </option>
                     ))}
                 </select>
+                {errors.caregiverId && <div className="invalid-feedback">{errors.caregiverId}</div>}
             </div>
 
             <div className="mt-3 d-flex gap-2  gap-2">

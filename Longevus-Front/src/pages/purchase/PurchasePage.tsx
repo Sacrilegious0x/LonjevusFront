@@ -4,12 +4,9 @@ import { es } from "date-fns/locale/es";
 import "react-datepicker/dist/react-datepicker.css";
 import StandardTable, { type Column } from "../../components/StandardTable";
 import { useNavigate, useLocation } from "react-router-dom";
-import Header from "../../components/HeaderAdmin";
-import Footer from "../../components/Footer";
 import {succesAlert,errorAlert,confirmDeleteAlert,confirmEditAlert,} from "../../js/alerts";
 import {getAllPurchases,deletePurchase,type Purchase,} from "../../services/PurchaseService";
 import { useAuth } from "../../context/AuthContext";
-import type { ForwardedRef } from "react"; 
 
 registerLocale("es", es);
 
@@ -23,6 +20,7 @@ type CustomInputProps = {
   value?: string;
   onClick?: () => void;
 };
+
 
 const CustomInput = React.forwardRef<HTMLInputElement, CustomInputProps>(
   ({ value, onClick }, ref) => (
@@ -73,6 +71,7 @@ const PurchasePage = () => {
   };
 
   useEffect(() => {
+    
     loadPurchases();
   }, [location, selectedDate]);
 

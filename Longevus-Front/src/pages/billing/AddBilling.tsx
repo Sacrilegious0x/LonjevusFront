@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createBilling, getAllResidents } from "../../services/BillingService";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/HeaderAdmin";
-import Footer from "../../components/Footer";
 import { succesAlert, errorAlert, infoAlert } from "../../js/alerts";
 import type { Resident } from "../../services/BillingService";
 import DatePicker from "react-datepicker";
@@ -10,7 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useAuth } from "../../context/AuthContext";
 const AddBilling = () => {
   const navigate = useNavigate();
-const {hasAuthority} = useAuth();
+  const { hasAuthority } = useAuth();
   const [date, setDate] = useState<Date>(() => {
     const today = new Date();
     return new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -19,7 +17,9 @@ const {hasAuthority} = useAuth();
   const [amount, setAmount] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [residents, setResidents] = useState<Resident[]>([]);
-  const [selectedResidentId, setSelectedResidentId] = useState<number | null>(null);
+  const [selectedResidentId, setSelectedResidentId] = useState<number | null>(
+    null
+  );
   const [periodMonths, setPeriodMonths] = useState<number | "">("");
   const [periodLabel, setPeriodLabel] = useState("");
 
@@ -32,8 +32,18 @@ const {hasAuthority} = useAuth();
   });
 
   const months = [
-    "Ene", "Feb", "Mar", "Abr", "May", "Jun",
-    "Jul", "Ago", "Sep", "Oct", "Nov", "Dic",
+    "Ene",
+    "Feb",
+    "Mar",
+    "Abr",
+    "May",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dic",
   ];
 
   useEffect(() => {
@@ -43,13 +53,18 @@ const {hasAuthority} = useAuth();
         setResidents(data);
       } catch (error) {
         console.error("Error cargando residentes:", error);
-        errorAlert("Hubo un problema al cargar los residentes. Intente de nuevo.");
+        errorAlert(
+          "Hubo un problema al cargar los residentes. Intente de nuevo."
+        );
       }
     };
     loadResidents();
   }, []);
 
-  const calculatePeriodLabel = (startDate: Date, monthsToAdd: number): string => {
+  const calculatePeriodLabel = (
+    startDate: Date,
+    monthsToAdd: number
+  ): string => {
     const startMonth = startDate.getMonth(); // 0-index
     const endMonth = (startMonth + monthsToAdd - 1) % 12;
     return `${months[startMonth]}-${months[endMonth]}`;
@@ -77,11 +92,16 @@ const {hasAuthority} = useAuth();
     setErrors(newErrors);
 
     if (Object.values(newErrors).some(Boolean)) {
-      infoAlert("Campos incompletos", "Por favor complete todos los campos antes de guardar.");
+      infoAlert(
+        "Campos incompletos",
+        "Por favor complete todos los campos antes de guardar."
+      );
       return;
     }
 
-    const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    const formattedDate = `${date.getFullYear()}-${String(
+      date.getMonth() + 1
+    ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
     const billing = {
       date: formattedDate,
       amount,
@@ -93,7 +113,10 @@ const {hasAuthority} = useAuth();
 
     try {
       await createBilling(billing);
-      await succesAlert("¡Factura agregada!", "La factura se ha guardado correctamente.");
+      await succesAlert(
+        "¡Factura agregada!",
+        "La factura se ha guardado correctamente."
+      );
       navigate("/facturas");
     } catch (error) {
       console.error("Error guardando factura:", error);
@@ -103,9 +126,9 @@ const {hasAuthority} = useAuth();
 
   return (
     <>
-      {/* <Header /> */}
       <div className="container mt-4">
         <h2>Agregar Nueva Factura</h2>
+
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label>Fecha:</label>
@@ -121,6 +144,7 @@ const {hasAuthority} = useAuth();
               dropdownMode="select"
               placeholderText="Selecciona una fecha"
               onKeyDown={(e) => e.preventDefault()}
+              maxDate={new Date()}
             />
           </div>
 
@@ -153,7 +177,9 @@ const {hasAuthority} = useAuth();
           <div className="mb-3">
             <label>Cantidad de meses a pagar:</label>
             <select
-              className={`form-control ${errors.periodMonths ? "is-invalid" : ""}`}
+              className={`form-control ${
+                errors.periodMonths ? "is-invalid" : ""
+              }`}
               value={periodMonths}
               onChange={(e) => setPeriodMonths(Number(e.target.value))}
             >
@@ -169,14 +195,21 @@ const {hasAuthority} = useAuth();
           {periodLabel && (
             <div className="mb-3">
               <label>Período:</label>
-              <input type="text" className="form-control" value={periodLabel} readOnly />
+              <input
+                type="text"
+                className="form-control"
+                value={periodLabel}
+                readOnly
+              />
             </div>
           )}
 
           <div className="mb-3">
             <label>Método de Pago:</label>
             <select
-              className={`form-control ${errors.paymentMethod ? "is-invalid" : ""}`}
+              className={`form-control ${
+                errors.paymentMethod ? "is-invalid" : ""
+              }`}
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}
             >
@@ -191,7 +224,9 @@ const {hasAuthority} = useAuth();
           <div className="mb-3">
             <label>Residente:</label>
             <select
-              className={`form-control ${errors.selectedResidentId ? "is-invalid" : ""}`}
+              className={`form-control ${
+                errors.selectedResidentId ? "is-invalid" : ""
+              }`}
               value={selectedResidentId ?? ""}
               onChange={(e) => setSelectedResidentId(Number(e.target.value))}
             >
@@ -203,23 +238,24 @@ const {hasAuthority} = useAuth();
               ))}
             </select>
           </div>
-               {hasAuthority('PERMISSION_FACTURAS_CREATE') && (
-          <button type="submit" className="btn btn-primary me-2">
-            Guardar
-          </button>
-          )}
-          <button
-            type="button"
-            className="btn btn-secondary "
-            onClick={() => navigate("/facturas")}
-          >
-    
-            Volver
-          </button>
-         
+          <div className="d-flex justify-content-start gap-2 mt-4">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => navigate("/facturas")}
+            >
+              <i className="bi bi-reply me-1"></i>
+              Volver
+            </button>
+
+            {hasAuthority("PERMISSION_FACTURAS_CREATE") && (
+              <button type="submit" className="btn btn-primary">
+                Guardar
+              </button>
+            )}
+          </div>
         </form>
       </div>
-      {/* <Footer /> */}
     </>
   );
 };

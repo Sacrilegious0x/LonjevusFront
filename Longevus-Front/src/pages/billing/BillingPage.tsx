@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
 import type { Billing, Resident } from "../../services/BillingService";
+import Select from "react-select";
+import type { SingleValue } from "react-select";
+import "react-datepicker/dist/react-datepicker.css";
+import { useAuth } from "../../context/AuthContext";
+
 import {
   getAllBillings,
   deleteBilling,
@@ -8,8 +13,6 @@ import {
   getBillingsByInactiveResidents,
 } from "../../services/BillingService";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/HeaderAdmin";
-import Footer from "../../components/Footer";
 import {
   succesAlert,
   errorAlert,
@@ -17,19 +20,28 @@ import {
   infoAlert,
   confirmEditAlert,
 } from "../../js/alerts";
-import { useAuth } from "../../context/AuthContext";
+
 const formatDate = (dateString: string): string => {
   const [year, month, day] = dateString.split("-").map(Number);
-  const date = new Date(year, month - 1, day); 
+  const date = new Date(year, month - 1, day);
   const formattedDay = String(date.getDate()).padStart(2, "0");
   const formattedMonth = String(date.getMonth() + 1).padStart(2, "0");
   return `${formattedDay}-${formattedMonth}-${date.getFullYear()}`;
 };
 
-
 const monthNames = [
-  "Enero","Febrero","Marzo","Abril","Mayo","Junio",
-  "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre",
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
 ];
 
 const BillingPage = () => {
@@ -43,7 +55,8 @@ const BillingPage = () => {
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedBilling, setSelectedBilling] = useState<Billing | null>(null);
   const navigate = useNavigate();
-  const {hasAuthority} = useAuth();
+  const { hasAuthority } = useAuth();
+
   const loadBillings = async () => {
     try {
       const data = await getAllBillings();
@@ -69,6 +82,15 @@ const BillingPage = () => {
       errorAlert("No se pudieron cargar los residentes.");
     }
   };
+  const residentOptions = [
+    { label: "Residentes inactivos", value: -1 },
+    ...residents
+      .filter((r) => r.active)
+      .map((r) => ({
+        label: r.name,
+        value: r.id,
+      })),
+  ];
 
   useEffect(() => {
     loadBillings();
@@ -135,35 +157,39 @@ const BillingPage = () => {
 
   return (
     <>
-      {/* <Header /> */}
       <div className="container mt-4">
         <h2>Facturas</h2>
 
         <div className="row g-3 mb-4">
           <div className="col-md-3">
-            <select
-              className="form-control"
-              value={selectedResidentId ?? ""}
-              onChange={(e) => setSelectedResidentId(Number(e.target.value))}
-            >
-              <option value="">Seleccione un residente</option>
-              <option value={-1}>Residentes inactivos</option>
-              {residents
-                .filter((r) => r.active)
-                .map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.name}
-                  </option>
-                ))}
-            </select>
+            <Select
+              options={residentOptions}
+              value={
+                residentOptions.find(
+                  (opt) => opt.value === selectedResidentId
+                ) || null
+              }
+              onChange={(
+                option: SingleValue<{
+                  label: string | undefined;
+                  value: number;
+                }>
+              ) => setSelectedResidentId(option ? option.value : null)}
+              placeholder="Seleccione un residente"
+              isClearable
+            />
           </div>
+
           {selectedResidentId !== null && !isNaN(selectedResidentId) && (
             <>
               <div className="col-md-3">
                 <select
                   className="form-control"
                   value={selectedYear}
-                  onChange={(e) => setSelectedYear(e.target.value)}
+                  onChange={async (e) => {
+                    setSelectedYear(e.target.value);
+                    await handleFilter();
+                  }}
                 >
                   <option value="">Año</option>
                   {availableYears.map((year) => (
@@ -178,7 +204,10 @@ const BillingPage = () => {
                 <select
                   className="form-control"
                   value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  onChange={async (e) => {
+                    setSelectedMonth(e.target.value);
+                    await handleFilter();
+                  }}
                   disabled={!selectedYear}
                 >
                   <option value="">Mes</option>
@@ -212,23 +241,23 @@ const BillingPage = () => {
           >
             Limpiar Filtros
           </button>
-          {hasAuthority('PERMISSION_FACTURAS_CREATE') && (
-          <button
-            className="btn btn-success"
-            onClick={() => navigate("/facturas/nueva")}
-          >
-            <i className="bi bi-journal-plus"></i>
-
-            Nueva
-          </button>
+          {hasAuthority("PERMISSION_FACTURAS_CREATE") && (
+            <button
+              className="btn btn-success"
+              onClick={() => navigate("/facturas/nueva")}
+            >
+              <i className="bi bi-journal-plus"></i>
+              Nueva
+            </button>
           )}
-          {hasAuthority('PERMISSION_FACTURAS_VIEW') && (
-          <button
-            className="btn btn-outline-dark ms-2"
-            onClick={() => navigate("/facturas/inactivas")}
-          >
-            Facturas Canceladas
-          </button>
+
+          {hasAuthority("PERMISSION_FACTURAS_VIEW") && (
+            <button
+              className="btn btn-outline-dark ms-2"
+              onClick={() => navigate("/facturas/inactivas")}
+            >
+              Facturas Canceladas
+            </button>
           )}
         </div>
 
@@ -250,7 +279,6 @@ const BillingPage = () => {
                 <td>{formatDate(billing.date)}</td>
                 <td>₡{billing.amount.toFixed(2)}</td>
                 <td className="d-flex flex-row justify-content-center gap-1">
-                  {hasAuthority('PERMISSION_FACTURAS_VIEW') && (
                   <button
                     className="btn btn-info p-2"
                     onClick={() => setSelectedBilling(billing)}
@@ -258,29 +286,28 @@ const BillingPage = () => {
                   >
                     <i className="bi bi-eye"></i>
                   </button>
+                  {hasAuthority("PERMISSION_FACTURAS_UPDATE") && (
+                    <button
+                      className="btn btn-warning p-2"
+                      onClick={async () => {
+                        const result = await confirmEditAlert("Esta factura");
+                        if (result.isConfirmed) {
+                          navigate(`/facturas/editar/${billing.id}`);
+                        }
+                      }}
+                      title="Editar"
+                    >
+                      <i className="bi bi-pencil-square"></i>
+                    </button>
                   )}
-                  {hasAuthority('PERMISSION_FACTURAS_UPDATE') && (
-                  <button
-                    className="btn btn-warning p-2"
-                    onClick={async () => {
-                      const result = await confirmEditAlert("Esta factura");
-                      if (result.isConfirmed) {
-                        navigate(`/facturas/editar/${billing.id}`);
-                      }
-                    }}
-                    title="Editar"
-                  >
-                    <i className="bi bi-pencil-square"></i>
-                  </button>
-                  )}
-                  {hasAuthority('PERMISSION_FACTURAS_DELETE') && (
-                  <button
-                    className="btn btn-danger p-2"
-                    onClick={() => handleDelete(billing.id!)}
-                    title="Eliminar"
-                  >
-                    <i className="bi bi-trash"></i>
-                  </button>
+                  {hasAuthority("PERMISSION_FACTURAS_DELETE") && (
+                    <button
+                      className="btn btn-danger p-2"
+                      onClick={() => handleDelete(billing.id!)}
+                      title="Eliminar"
+                    >
+                      <i className="bi bi-trash"></i>
+                    </button>
                   )}
                 </td>
               </tr>
@@ -344,7 +371,6 @@ const BillingPage = () => {
           </div>
         )}
       </div>
-      {/* <Footer /> */}
     </>
   );
 };

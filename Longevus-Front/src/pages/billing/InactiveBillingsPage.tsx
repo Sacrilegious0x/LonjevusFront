@@ -1,22 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { getInactiveBillings } from "../../services/BillingService";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/HeaderAdmin";
-import Footer from "../../components/Footer";
 import type { Billing } from "../../services/BillingService";
 
 const formatDate = (isoString: string): string => {
   const [year, month, day] = isoString.split("-").map(Number);
-  const date = new Date(year, month - 1, day); 
+  const date = new Date(year, month - 1, day);
   const formattedDay = String(date.getDate()).padStart(2, "0");
   const formattedMonth = String(date.getMonth() + 1).padStart(2, "0");
   return `${formattedDay}-${formattedMonth}-${date.getFullYear()}`;
 };
 
-
 const monthNames = [
-  "Enero","Febrero","Marzo","Abril","Mayo","Junio",
-  "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre",
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
 ];
 
 const InactiveBillingsPage = () => {
@@ -34,23 +41,22 @@ const InactiveBillingsPage = () => {
   };
 
   const handleFilter = () => {
-  if (!selectedYear) {
-    setBillings(allBillings);
-    return;
-  }
+    if (!selectedYear) {
+      setBillings(allBillings);
+      return;
+    }
 
-  const filtered = allBillings.filter((b) => {
-    const date = new Date(b.date);
-    const matchesYear = String(date.getFullYear()) === selectedYear;
-    const matchesMonth = selectedMonth
-      ? String(date.getMonth() + 1).padStart(2, "0") === selectedMonth
-      : true;
-    return matchesYear && matchesMonth;
-  });
+    const filtered = allBillings.filter((b) => {
+      const date = new Date(b.date);
+      const matchesYear = String(date.getFullYear()) === selectedYear;
+      const matchesMonth = selectedMonth
+        ? String(date.getMonth() + 1).padStart(2, "0") === selectedMonth
+        : true;
+      return matchesYear && matchesMonth;
+    });
 
-  setBillings(filtered);
-};
-
+    setBillings(filtered);
+  };
 
   const handleClearFilters = () => {
     setSelectedYear("");
@@ -68,7 +74,6 @@ const InactiveBillingsPage = () => {
 
   return (
     <>
-      {/* <Header /> */}
       <div className="container mt-4">
         <h2>Facturas Canceladas</h2>
 
@@ -117,40 +122,42 @@ const InactiveBillingsPage = () => {
           </div>
         </div>
 
-        <table className="table table-bordered table-striped text-center align-middle">
-          <thead className="table-dark">
-            <tr>
-              <th>#</th>
-              <th>Consecutivo</th>
-              <th>Fecha</th>
-              <th>Monto</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {billings.map((billing, index) => (
-              <tr key={billing.id}>
-                <td>{index + 1}</td>
-                <td>{billing.consecutive}</td>
-                <td>{formatDate(billing.date)}</td>
-                <td>₡{billing.amount.toFixed(2)}</td>
-                <td>
-                  <button
-                    className="btn btn-info p-2"
-                    onClick={() => setSelectedBilling(billing)}
-                  >
-                    <i className="bi bi-eye"></i>
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {billings.length === 0 && (
+        <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+          <table className="table table-bordered table-striped text-center align-middle">
+            <thead className="table-dark">
               <tr>
-                <td colSpan={5}>No hay facturas canceladas.</td>
+                <th>#</th>
+                <th>Consecutivo</th>
+                <th>Fecha</th>
+                <th>Monto</th>
+                <th>Acciones</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {billings.map((billing, index) => (
+                <tr key={billing.id}>
+                  <td>{index + 1}</td>
+                  <td>{billing.consecutive}</td>
+                  <td>{formatDate(billing.date)}</td>
+                  <td>₡{billing.amount.toFixed(2)}</td>
+                  <td>
+                    <button
+                      className="btn btn-info p-2"
+                      onClick={() => setSelectedBilling(billing)}
+                    >
+                      <i className="bi bi-eye"></i>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {billings.length === 0 && (
+                <tr>
+                  <td colSpan={5}>No hay facturas canceladas.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
         <div className="mb-3">
           <button
@@ -213,7 +220,6 @@ const InactiveBillingsPage = () => {
           </div>
         )}
       </div>
-      {/* <Footer /> */}
     </>
   );
 };

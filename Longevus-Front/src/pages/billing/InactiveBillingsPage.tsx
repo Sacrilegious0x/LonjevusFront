@@ -164,7 +164,7 @@ const InactiveBillingsPage = () => {
             className="btn btn-secondary ms-2"
             onClick={() => navigate("/facturas")}
           >
-            <i className="bi bi-reply me-1"></i>
+            
             Volver
           </button>
         </div>
@@ -207,7 +207,7 @@ const InactiveBillingsPage = () => {
                     <strong>Residente:</strong> {selectedBilling.resident?.name}
                   </p>
                 </div>
-                <div className="modal-footer">
+                <div className="modal-footer d-flex justify-content-start">
                   <button
                     className="btn btn-secondary"
                     onClick={() => setSelectedBilling(null)}

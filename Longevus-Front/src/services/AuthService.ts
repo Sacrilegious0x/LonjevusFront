@@ -27,7 +27,7 @@ export interface ICaregiver extends IUserBase {
 
 export interface IAdmin extends IUserBase {
     officeContact: string;
-    shift?: never; 
+    shift?: never;
 }
 export interface ILoginCredentials {
     email: string;
@@ -43,6 +43,7 @@ interface ILoginResponse {
     user?: UserProfile;
 }
 
+
 export function isAdmin(user: UserProfile): user is IAdmin {
     return 'officeContact' in user && user.officeContact !== undefined && user.officeContact !== null;
 }
@@ -52,30 +53,52 @@ export function isCaregiver(user: UserProfile): user is ICaregiver {
 
 export const login = async (credentials: ILoginCredentials): Promise<ILoginResponse> => {
     try {
+
         const response = await axios.post<ILoginResponse>(`${URL_BASE}/login`, credentials);
         const token = response.data.jwt;
         const authorities = response.data.authorities;
         const user = response.data.user;
         console.log("INFORMACION DEL LOGIN", user);
-        
+
         if (token && authorities) {
             localStorage.setItem('accessToken', token);
             localStorage.setItem('userAuthorities', JSON.stringify(authorities));
             localStorage.setItem('userProfile', JSON.stringify(user));
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         }
-        return response.data;   
-        
+        return response.data;
+
     } catch (error) {
-        console.log('ERROR AL INTENTEAR HACER LOGIN' , error);
+        console.log('ERROR AL INTENTEAR HACER LOGIN', error);
         throw error;
-        
+
     }
 }
 
 export const logout = () => {
+
     localStorage.removeItem('accessToken');
     localStorage.removeItem('userAuthorities');
     localStorage.removeItem('userProfile');
     delete axios.defaults.headers.common['Authorization'];
 };
+
+export const updatePassword = async (formData: ILoginCredentials): Promise<void> => {
+    try {
+        const data = new FormData();
+        data.append("email", formData.email);
+        data.append("newPassword", formData.password);
+
+        const response = await axios.post(`${URL_BASE}/newPassword`, data, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+        return response.data;
+
+    } catch (error) {
+        console.log('Ocurrio un error inesperado');
+        throw error;
+    }
+    return;
+}

@@ -124,7 +124,7 @@ const ViewTasksModal: React.FC<ViewTasksModalProps> = ({
               </div>
             )}
           </div>
-          <div className="modal-footer">
+          <div className="modal-footer d-flex justify-content-start">
             <button type="button" className="btn btn-secondary" onClick={onClose}>Cerrar</button>
           </div>
         </div>

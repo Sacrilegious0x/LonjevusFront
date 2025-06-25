@@ -247,7 +247,7 @@ const PurchasePage = () => {
                     </tbody>
                   </table>
                 </div>
-                <div className="modal-footer">
+                <div className="modal-footer d-flex justify-content-start">
                   <button
                     className="btn btn-secondary"
                     onClick={() => setSelectedPurchase(null)}

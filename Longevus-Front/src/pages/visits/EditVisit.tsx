@@ -145,8 +145,9 @@ const EditVisit = () => {
                                     readOnly/>
                                 </div>
                                 <div className="me-3">
-                                <button type="submit" className="btn btn-success">Guardar</button>
-                                <button type="button"className="btn btn-secondary" onClick={()=> navigate("/residente/visitas")}>Cancelar</button>
+                                    <button type="button"className="btn btn-secondary me-2" onClick={()=> navigate("/residente/visitas")}>Cancelar</button>
+                                <button type="submit" className="btn btn-primary">Guardar</button>
+                                
                             </div>
                             </form>
 

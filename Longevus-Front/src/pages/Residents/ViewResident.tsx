@@ -91,7 +91,7 @@ const ViewResident: React.FC = () => {
                 <div className="card shadow p-4">
                     <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                         <h2 className="mb-4">Información del Residente</h2>
-                        <Link className='btn btn-secondary float-end' to="/residente/mostrar"><i className="bi bi-reply" /> Volver</Link>
+                        <Link className='btn btn-secondary float-end' to="/residente/mostrar">Volver</Link>
                     </div>
                     {residentData?.photo && (
                         <div className=" mb-3">
@@ -110,14 +110,15 @@ const ViewResident: React.FC = () => {
                     <p><strong>Número de habitación:</strong> {residentData?.numberRoom}</p>
 
                     <center>
-                        {hasAuthority('PERMISSION_CONTACTOS_CREATE') && (
-                        <button className="btn btn-primary mt-3" onClick={() => setShowAddContactModal(true)}>
-                            Agregar contactos
+                        
+                        {hasAuthority('PERMISSION_CONTACTOS_VIEW') && (
+                        <button className="btn btn-primary mt-3 me-2" onClick={() => setShowContactModal(true)}>
+                            Ver contactos
                         </button>
                         )}
-                        {hasAuthority('PERMISSION_CONTACTOS_VIEW') && (
-                        <button className="btn btn-info mt-3 ms-2" onClick={() => setShowContactModal(true)}>
-                            Ver contactos
+                        {hasAuthority('PERMISSION_CONTACTOS_CREATE') && (
+                        <button className="btn btn-success mt-3" onClick={() => setShowAddContactModal(true)}>
+                            Agregar contactos
                         </button>
                         )}
                     </center>

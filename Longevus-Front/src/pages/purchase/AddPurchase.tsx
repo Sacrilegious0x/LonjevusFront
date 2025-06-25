@@ -423,12 +423,14 @@ const AddPurchase = () => {
                   </td>
 
                   <td>
+                    
                     <button
                       type="button"
-                      className="btn btn-danger btn-sm"
+                      className="btn btn-danger btn-lg"
                       onClick={() => handleRemoveProduct(index)}
                     >
-                      Eliminar
+                     {/* <i className="bi bi-trash-fill"/>  */}
+                     Eliminar
                     </button>
                   </td>
                 </tr>
@@ -451,13 +453,12 @@ const AddPurchase = () => {
           <strong>Total: ₡{getTotal().toFixed(2)}</strong>
         </div>
 
-        <div className="d-flex justify-content-start gap-3 mt-4 mb-3">
+        <div className="d-flex justify-content-start gap-2 mt-4 mb-3">
           <button
             type="button"
             className="btn btn-secondary"
             onClick={handleBack}
           >
-            <i className="bi bi-reply me-1"></i>
             Volver
           </button>
           <button type="submit" className="btn btn-primary">

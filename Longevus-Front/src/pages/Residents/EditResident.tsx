@@ -44,7 +44,7 @@ const EditResidentPage: React.FC = () => {
                     <div className=" border-primary">
                         <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                             <h1 className="fw-bold text-uppercase">Editar Residente</h1>
-                            <Link className='btn btn-secondary float-end' to="/residente/mostrar"><i className="bi bi-reply" /> Volver</Link>
+                            
                         </div>
                         {residentData ? (
                             <EditResidentForm initialData={residentData} onSubmit={handleUpdateResident} />

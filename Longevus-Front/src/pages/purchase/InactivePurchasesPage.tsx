@@ -215,7 +215,7 @@ const InactivePurchasesPage = () => {
                     </tbody>
                   </table>
                 </div>
-                <div className="modal-footer">
+                <div className="modal-footer d-flex justify-content-start">
                   <button
                     className="btn btn-secondary"
                     onClick={() => setSelectedPurchase(null)}
@@ -229,13 +229,13 @@ const InactivePurchasesPage = () => {
         )}
       </div>
 
-      <div className="mb-3 d-flex justify-content-start ps-3">
+      <div className="mb-3 d-flex justify-content-start ps-5">
         <button
           type="button"
           className="btn btn-secondary"
           onClick={() => navigate("/compras")}
         >
-          <i className="bi bi-reply me-1"></i>
+
           Volver
         </button>
       </div>

@@ -177,11 +177,16 @@ const RolesList = () => {
   }
 
   const handleDelete = async (roleId: number, roleName: string) => {
-
+    console.log(`ID SELECCIONADO PARA BORRAR${roleId}`)
     const response = await confirmDeleteAlert(roleName);
     if (response.isConfirmed) {
 
       try {
+        if(roleId===1){
+          errorAlert(`No se puede eliminar el Role: ${roleName}`);
+          return;
+        }
+
         await deleteRole(roleId);
         succesAlert("Eliminado", "Rol eliminado exitosamente");
         fetchRoles();
@@ -209,7 +214,7 @@ const RolesList = () => {
               </h2>
               {hasAuthority('PERMISSION_ROLES_CREATE')&& (
               <button className="btn btn-success" onClick={handleOpenAddRoleModal}>
-                <i className="bi bi-plus-lg me-1"></i> Nuevo
+                <i className="bi bi-plus-square"></i> Nuevo
               </button>
               )}
             </div>
@@ -269,7 +274,7 @@ const RolesList = () => {
                   )
                 }
               </div>
-              <div className="modal-footer">
+              <div className="modal-footer d-flex justify-content-start">
                 <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>Cancelar</button>
                 <button type="button" className="btn btn-primary" onClick={handleSave}>Guardar</button>
               </div>
@@ -306,7 +311,7 @@ const RolesList = () => {
                   />
                 </div>
               </div>
-              <div className="modal-footer">
+              <div className="modal-footer d-flex justify-content-start">
                 <button className="btn btn-secondary" onClick={handleCloseNewModal}>
                   Cancelar
                 </button>

@@ -43,7 +43,7 @@ const ViewContactModal: React.FC<ContactProps> = ({ show, onClose, residentName,
                                         <div className="d-flex gap-2">
                                             {hasAuthority('PERMISSION_CONTACTOS_UPDATE') && (
                                             <button
-                                                className="btn btn-sm btn-primary"
+                                                className="btn btn-sm btn-warning"
                                                 onClick={() => {
                                                     console.log("Editing contact:", contact);
                                                     console.log("Resident exists:", !!contact.resident);
@@ -51,7 +51,7 @@ const ViewContactModal: React.FC<ContactProps> = ({ show, onClose, residentName,
                                                     setEditContactModal(contact)
                                                 }}
                                             >
-                                                Editar
+                                                <i className="bi bi-pencil-square"/>
                                             </button>
                                             )}
                                             {hasAuthority('PERMISSION_CONTACTOS_DELETE') && (
@@ -59,7 +59,7 @@ const ViewContactModal: React.FC<ContactProps> = ({ show, onClose, residentName,
                                                 className="btn btn-sm btn-danger"
                                                 onClick={() => onDeleteContact(contact.id)}
                                             >
-                                                Eliminar
+                                                <i className="bi bi-trash-fill"/>
                                             </button>
                                             )}
                                         </div>
@@ -69,7 +69,7 @@ const ViewContactModal: React.FC<ContactProps> = ({ show, onClose, residentName,
                         )}
                     </div>
 
-                    <div className="modal-footer">
+                    <div className="modal-footer justify-content-start">
                         <button type="button" className="btn btn-secondary" onClick={onClose}>
                             Cerrar
                         </button>

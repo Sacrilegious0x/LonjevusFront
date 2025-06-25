@@ -71,10 +71,10 @@ const productColumns: columnDefinition<IProduct>[]=[
         Cell: (product) =>(
             <>
             {hasAuthority('PERMISSION_PRODUCTOS_UPDATE')&& (
-            <Link className="btn btn-warning me-2" to={`/productos/editar/${product.id}`}><i className='bi bi-pencil-square' /></Link>
+            <Link className="btn btn-warning me-2 btn-sm" to={`/productos/editar/${product.id}`}><i className='bi bi-pencil-square' /></Link>
             )}
             {hasAuthority('PERMISSION_PRODUCTOS_DELETE')&& (
-            <a className='btn btn-danger me-2' onClick={()=>handleDelete(product.id,product.name)}>
+            <a className='btn btn-danger me-2 btn-sm' onClick={()=>handleDelete(product.id,product.name)}>
                 <i className="bi bi-trash"/>
             </a> 
             )} 
@@ -154,12 +154,12 @@ useEffect(() => {
                 <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                         <h4 className="m-2">Lista de productos</h4>
                         {hasAuthority('PERMISSION_PRODUCTOS_CREATE')&& (
-                          <Link className='btn btn-success' to='/productos/agregar'><i className="bi bi-plus-square"></i> Agregar</Link>
+                          <Link className='btn btn-success' to='/productos/agregar'><i className="bi bi-plus-square"></i> </Link>
                         )}
                 </div>  
                 <div className='card-body'>
                         <input className="mb-3" type="text" placeholder="Buscar..." id="supplierSearch" value={searchTerm} onChange={(e)=> setSearchTerm(e.target.value)}/>
-                        <button className="btn btn-secondary" id="btnSearch"><i className='bi bi-search'/></button>
+                        
                         <Table<IProduct> data={filteredProducts} columns={productColumns} selectedRows={new Set()} onToggleRow={()=>{}} onSelectAll={()=>{}}/>
                 </div>
             </div>

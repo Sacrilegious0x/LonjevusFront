@@ -134,9 +134,9 @@ const ShowEmployee = () => {
                             )}
                         </div>
                         <div className='card-body'>
-                            <input type="text" placeholder="Buscar..." id="userSearch" value={searchTerm}
+                            <input className='mb-3' type="text" placeholder="Buscar..." id="userSearch" value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)} />
-                            <button className="btn btn-secondary" id="btnSearch"><i className='bi bi-search' /></button>
+        
                             <Table<IPerson> data={filteredUsers} columns={personColumns} selectedRows={new Set()} onToggleRow={() => { }} onSelectAll={() => { }} />
                         </div>
                     </div>

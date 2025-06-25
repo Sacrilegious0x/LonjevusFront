@@ -161,7 +161,7 @@ const showVisits = () => {
                     <div className='card mt-5 mb-5'>
                         <div className='card-title  mt-3'><h4>Visitas registradas</h4></div>
                         <div className='card-body'>
-                            <input type="text" placeholder="Buscar..." id="visitSearch" value={searchTerm}
+                            <input className="mb-3"type="text" placeholder="Buscar..." id="visitSearch" value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)} />
                             <Table<IVisitData> data={filteredVisits}
                                 columns={visitColumns} selectedRows={new Set()}

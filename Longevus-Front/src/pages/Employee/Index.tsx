@@ -4,6 +4,7 @@ import Footer from '../../components/Footer';
 import { succesAlert, errorAlert } from '../../js/alerts';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 const Index = () => {
     const navigate = useNavigate();
     const { login, isAuthenticated, loginSuccess } = useAuth();
@@ -62,10 +63,10 @@ const Index = () => {
                         <form onSubmit={submit}>
                             <input type='text' name='userEmail' onChange={handleForm} placeholder='Ingrese su correo' value={formData.userEmail} />
                             <input type='password' name='password' onChange={handleForm} placeholder='Ingrese su contraseña ' value={formData.password} />
-                            <button className='btn btn-success btn-fload-end' type='submit'> <i className="bi bi-box-arrow-in-right" />Iniciar sesion</button>
+                            <button className='btn btn-success btn-fload-end' type='submit'> <i className="bi bi-box-arrow-in-right" /> Iniciar sesion</button>
                         </form>
                         <div className='card-footer'>
-                            <a href='#'>Olvide mi contraseña</a>
+                            <Link to={'/password'}>Olvide mi contraseña</Link>
                         </div>
                     </div>
                 </div>

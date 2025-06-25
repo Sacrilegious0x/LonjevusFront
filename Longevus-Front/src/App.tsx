@@ -43,7 +43,7 @@ import AddResidentsToActivity from './pages/Activity/AddResidentToActivity';
 import AddAdmin from './pages/Employee/AddAdmin';
 import EditAdmin from './pages/Employee/EditAdmin';
 import RolesList from './pages/role_permissions/Role_permission';
-
+import UpdatePassword from './pages/Employee/UpdatePassword';
 
 function App() {
   
@@ -54,6 +54,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/visita" element={<VisitSchedule />} />
           <Route path='/login' element={<Index />} />
+          <Route path='/password' element={<UpdatePassword/>}/>
           <Route element={<ProtectedRoute />}>
             <Route element={<ProtectedPage />}>
               <Route path="/inventario" element={<InventoryPage />} />

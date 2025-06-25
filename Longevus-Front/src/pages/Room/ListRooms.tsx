@@ -132,12 +132,12 @@ const RoomList=() => {
                 <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                         <h4 className="m-2">Lista de habitaciones</h4>
                         {hasAuthority('PERMISSION_HABITACIONES_UPDATE')&& (
-                            <Link className='btn btn-success' to='/habitaciones/agregar'><i className="bi bi-building-add"></i> Agregar</Link>
+                            <Link className='btn btn-success' to='/habitaciones/agregar'><i className="bi bi-building-add"></i> </Link>
                         )}
                 </div>  
                 <div className='card-body'>
                         <input className="mb-3" type="text" placeholder="Buscar por número..." id="RoomSearch" value={searchTerm} onChange={(e)=> setSearchTerm(e.target.value)}/>
-                        <button className="btn btn-secondary" id="btnSearch"><i className='bi bi-search'/></button>
+                      
                         <Table<IRoom> data={filteredRooms} columns={roomColumns} selectedRows={new Set()} onToggleRow={()=>{}} onSelectAll={()=>{}}/>
                 </div>
             </div>

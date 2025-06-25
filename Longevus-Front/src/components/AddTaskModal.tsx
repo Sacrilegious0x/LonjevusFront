@@ -95,7 +95,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
 
 
             </div>
-            <div className="modal-footer">
+            <div className="modal-footer d-flex justify-content-start">
               {hasAuthority('PERMISSION_TAREAS_CREATE') && (
                 <button type="submit" className="btn btn-primary"><i className="bi bi-clipboard-check-fill" />Guardar </button>
               )}

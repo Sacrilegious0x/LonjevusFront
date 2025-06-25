@@ -221,7 +221,7 @@ const Activities = () => {
                         <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                             <h4>Lista de actividades</h4>
                             {hasAuthority('PERMISSION_ACTIVIDADES_CREATE') && (
-                            <Link className='btn btn-success' to='/actividad/agregar'><i className='bi bi-calendar-plus' /> Agregar</Link>
+                            <Link className='btn btn-success' to='/actividad/agregar'><i className='bi bi-calendar-plus' /> </Link>
                             )}
                         </div>
                         <div className='card-body'>

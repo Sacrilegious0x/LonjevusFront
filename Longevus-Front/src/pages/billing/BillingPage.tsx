@@ -358,7 +358,7 @@ const BillingPage = () => {
                     <strong>Residente:</strong> {selectedBilling.resident?.name}
                   </p>
                 </div>
-                <div className="modal-footer">
+                <div className="modal-footer d-flex justify-content-start">
                   <button
                     className="btn btn-secondary"
                     onClick={() => setSelectedBilling(null)}

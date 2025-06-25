@@ -332,10 +332,11 @@ const validateForm = (): boolean => {
                         )}
                         
                         <div className='mb-3'>
+                            <button type="button" className='btn btn-secondary me-2' onClick={onCancel}>Volver</button>
+                            
                             {(hasAuthority('PERMISSION_ADMINISTRADORES_VIEW') || hasAuthority('PERMISSION_CUIDADORES_VIEW')) && (
-                                <input type='submit' value={"Guardar"} className='btn btn-primary btn-sm me-3' />
+                                <input type='submit' value={"Guardar"} className='btn btn-primary ' />
                             )}
-                            <button type="button" className='btn btn-secondary btn-sm ' onClick={onCancel}>Volver</button>
                             
                         </div>
                     </form>

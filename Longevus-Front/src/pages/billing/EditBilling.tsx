@@ -281,7 +281,7 @@ const EditBilling = () => {
               className="btn btn-secondary"
               onClick={() => navigate("/facturas")}
             >
-              <i className="bi bi-reply me-1"></i>
+              
               Volver
             </button>
               <button type="submit" className="btn btn-primary">

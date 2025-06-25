@@ -3,7 +3,7 @@ import type { ForwardedRef } from "react";
 import TableBasic, { type columnDefinition } from "../../components/TableBasic";
 import DatePicker, { registerLocale } from "react-datepicker";
 import Select from "react-select";
-import type {GroupBase } from "react-select";
+import type { GroupBase } from "react-select";
 import { es } from "date-fns/locale/es";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuth } from "../../context/AuthContext";
@@ -66,7 +66,7 @@ const InventoryPage = () => {
         errorAlert("No se pudo cargar el inventario.");
       });
   }, []);
-
+  console.log(inventoryData);
   const handleDelete = async (id: number, name: string) => {
     const result = await confirmDeleteAlert(name);
     if (!result.isConfirmed) return;
@@ -82,14 +82,14 @@ const InventoryPage = () => {
   };
 
   const toggleRow = (id: number) => {
-  const newSelection = new Set(selectedRows);
-  if (newSelection.has(id)) {
-    newSelection.delete(id);
-  } else {
-    newSelection.add(id);
-  }
-  setSelectedRows(newSelection);
-};
+    const newSelection = new Set(selectedRows);
+    if (newSelection.has(id)) {
+      newSelection.delete(id);
+    } else {
+      newSelection.add(id);
+    }
+    setSelectedRows(newSelection);
+  };
 
 
   const selectAll = (isSelected: boolean) => {
@@ -129,7 +129,7 @@ const InventoryPage = () => {
   });
 
   const categoryOptions = Array.from(
-    new Set(inventoryData.map((item) => item.product.category || "Sin categoría"))
+    new Set(inventoryData.map((item) => item.product?.category ?? "Sin categoría"))
   ).map((cat) => ({
     label: cat,
     value: cat,
@@ -139,8 +139,8 @@ const InventoryPage = () => {
 
   const uniqueProductMap = new Map<string, string>();
   inventoryData.forEach((item) => {
-    const name = item.product.name;
-    const category = item.product.category || "Sin categoría";
+    const name = item.product?.name;
+    const category = item.product?.category ?? "Sin categoría";
     if (!uniqueProductMap.has(name)) {
       uniqueProductMap.set(name, category);
     }
@@ -256,11 +256,12 @@ const InventoryPage = () => {
                 isClearable
                 placeholder="Buscar producto o categoría"
                 filterOption={(option, inputValue) => {
-                  const input = inputValue.toLowerCase();
-                  const label = option.label.toLowerCase();
-                  const category = (option.data.category || "").toLowerCase();
+                  const input = (inputValue ?? "").toLowerCase();
+                  const label = (option.label ?? "").toLowerCase();
+                  const category = (option.data?.category ?? "").toLowerCase();
                   return label.includes(input) || category.includes(input);
                 }}
+
               />
             </div>
           </div>
@@ -342,17 +343,17 @@ const InventoryPage = () => {
                 />
               </div>
               <div className="modal-body">
-                <p><strong>Nombre:</strong> {selectedItem.product.name}</p>
-                <p><strong>Categoría:</strong> {selectedItem.product.category}</p>
+                <p><strong>Nombre:</strong> {selectedItem.product?.name}</p>
+                <p><strong>Categoría:</strong> {selectedItem.product?.category}</p>
                 <p><strong>Fecha de vencimiento:</strong> {formatDate(selectedItem.expirationDate)}</p>
-                <p><strong>Proveedor:</strong> {selectedItem.product.supplier.name}</p>
+                <p><strong>Proveedor:</strong> {selectedItem.product?.supplier?.name}</p>
                 <p><strong>ID de compra:</strong> {selectedItem.purchase.id}</p>
                 <img
                   src={`http://localhost:8080/${selectedItem.photoURL}`}
                   className="modal-img"
                 />
               </div>
-              <div className="modal-footer">
+              <div className="modal-footer d-flex justify-content-start">
                 <button
                   className="btn btn-secondary"
                   onClick={() => setSelectedItem(null)}

@@ -117,7 +117,7 @@ const AddContactModal: React.FC<AddContactProps> = ({ show, onClose, residentNam
                         </div>
                     </div>
 
-                    <div className="modal-footer">
+                    <div className="modal-footer d-flex justify-content-start">
                         <button className="btn btn-secondary" onClick={onClose}>
                             Cancelar
                         </button>

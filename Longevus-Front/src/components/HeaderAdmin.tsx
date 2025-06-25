@@ -165,12 +165,12 @@ const Header = () => {
                             )}
                              {hasAuthority('PERMISSION_FACTURAS_VIEW') && (
                                 <li className="ul-actions-li"
-                                    onMouseEnter={() => setMenuActive('permissions')}
+                                    onMouseEnter={() => setMenuActive('Facturas')}
                                     onMouseLeave={() => setMenuActive(null)}>
 
                                     Facturas
 
-                                    {menuActive === 'permissions' && (
+                                    {menuActive === 'Facturas' && (
                                         <ul className="sub_ul-actions">
                                             {hasAuthority('PERMISSION_FACTURAS_VIEW') && (
                                             <li className="sub_ul-actions-li">

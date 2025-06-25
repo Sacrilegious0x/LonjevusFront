@@ -5,9 +5,16 @@ import { useAuth } from "../context/AuthContext";
 const ProtectedRoute = () => {
   const { isAuthenticated, loading} = useAuth();
   if (loading) {
-    return <div>Cargando sesión...</div>; 
+    return(
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+    )  
   }
-  if (!isAuthenticated) {
+  const token = localStorage.getItem('accessToken');
+  if (!isAuthenticated || !token) {
     return <Navigate to="/login" replace />;
   }
 

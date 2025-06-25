@@ -230,7 +230,7 @@ const ViewEmployee = () => {
                         <div className="col-md-8">
                             <div className="card-body">
 
-                                <Link className='btn btn-secondary float-end' to="/empleado/mostrar"><i className="bi bi-reply" /> Volver</Link>
+                                <Link className='btn btn-secondary float-end' to="/empleado/mostrar"> Volver</Link>
                                 <div className="card-text">
 
                                     <strong>Días de trabajo:</strong>

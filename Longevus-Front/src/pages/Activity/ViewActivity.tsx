@@ -39,7 +39,7 @@ const ViewActivity: React.FC = () => {
                 <div className="card shadow p-4">
                     <div className='card-title d-flex justify-content-between align-items-center mt-3'>
                         <h2 className="mb-4">Información de la Actividad</h2>
-                        <Link className='btn btn-secondary float-end' to="/actividades/mostrar"><i className="bi bi-reply" /> Volver</Link>
+                        <Link className='btn btn-secondary float-end' to="/actividades/mostrar">Volver</Link>
                     </div>
 
                     <p><strong>Nombre:</strong> {activityData?.name}</p>
